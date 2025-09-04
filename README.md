@@ -4,5 +4,5 @@ Spy is a modern, mobile-friendly social deduction party game." Play with your fr
 
 
 
-https://github.com/user-attachments/assets/83596336-67df-4973-bb02-16fc3f916d10
 
+https://github.com/user-attachments/assets/33248075-c040-43f1-8be8-3578a567a6c6
