@@ -149,78 +149,77 @@ export default function TopicsScreen() {
         ))}
       </ScrollView>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.searchRow}>
-          <View style={styles.searchInputWrap}>
-            <Search size={16} color="#888" />
-            <TextInput
-              testID="search-input"
-              style={styles.searchInput}
-              placeholder="Search topics 🔎"
-              placeholderTextColor="#666666"
-              value={search}
-              onChangeText={setSearch}
-            />
-          </View>
-          <TouchableOpacity
-            testID="sort-toggle"
-            onPress={() => setSort((s) => (s === 'alpha' ? 'recent' : 'alpha'))}
-            style={styles.sortButton}
-          >
-            <LayoutGrid size={16} color="#0A84FF" />
-            <Text style={styles.sortButtonText}>{sort === 'alpha' ? 'A→Z' : 'Recent'}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.addSection}>
-          <Text style={styles.sectionTitle}>Add New Topic 💡</Text>
-          <TextInput
-            testID="new-topic-name"
-            style={styles.input}
-            placeholder={`Topic name ${selectedCategory === 'famous-people' ? '👤' : '📝'}`}
-            placeholderTextColor="#666666"
-            value={newTopicName}
-            onChangeText={setNewTopicName}
-          />
-          {presetSuggestions.length > 0 && (
-            <View style={styles.presetChips}>
-              {presetSuggestions.map((p) => (
-                <TouchableOpacity key={p} testID={`preset-${p}`} onPress={() => setNewTopicName(p)} style={styles.chip}>
-                  <Text style={styles.chipText}>{p}</Text>
-                </TouchableOpacity>
-              ))}
+      <FlatList
+        data={filteredTopics}
+        renderItem={renderTopic}
+        keyExtractor={(item) => item.id}
+        numColumns={3}
+        columnWrapperStyle={styles.topicsGrid}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.topicsList}
+        ListHeaderComponent={
+          <>
+            <View style={styles.searchRow}>
+              <View style={styles.searchInputWrap}>
+                <Search size={16} color="#888" />
+                <TextInput
+                  testID="search-input"
+                  style={styles.searchInput}
+                  placeholder="Search topics 🔎"
+                  placeholderTextColor="#666666"
+                  value={search}
+                  onChangeText={setSearch}
+                />
+              </View>
+              <TouchableOpacity
+                testID="sort-toggle"
+                onPress={() => setSort((s) => (s === 'alpha' ? 'recent' : 'alpha'))}
+                style={styles.sortButton}
+              >
+                <LayoutGrid size={16} color="#0A84FF" />
+                <Text style={styles.sortButtonText}>{sort === 'alpha' ? 'A→Z' : 'Recent'}</Text>
+              </TouchableOpacity>
             </View>
-          )}
-          <TextInput
-            testID="new-topic-roles"
-            style={[styles.input, styles.rolesInput]}
-            placeholder="Roles (comma separated) 👥 e.g. Fan, Manager, Security"
-            placeholderTextColor="#666666"
-            value={newTopicRoles}
-            onChangeText={setNewTopicRoles}
-            multiline
-          />
-          <TouchableOpacity testID="add-topic" style={styles.addButton} onPress={handleAddTopic}>
-            <Plus size={20} color="#0A84FF" />
-            <Text style={styles.addButtonText}>Add Topic</Text>
-          </TouchableOpacity>
-        </View>
 
-        <View style={styles.topicsSection}>
-          <Text style={styles.sectionTitle}>
-            {categories.find((c) => c.id === selectedCategory)?.name} ({filteredTopics.length})
-          </Text>
-          <FlatList
-            data={filteredTopics}
-            renderItem={renderTopic}
-            keyExtractor={(item) => item.id}
-            numColumns={3}
-            columnWrapperStyle={styles.topicsGrid}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.topicsList}
-          />
-        </View>
-      </ScrollView>
+            <View style={styles.addSection}>
+              <Text style={styles.sectionTitle}>Add New Topic 💡</Text>
+              <TextInput
+                testID="new-topic-name"
+                style={styles.input}
+                placeholder={`Topic name ${selectedCategory === 'famous-people' ? '👤' : '📝'}`}
+                placeholderTextColor="#666666"
+                value={newTopicName}
+                onChangeText={setNewTopicName}
+              />
+              {presetSuggestions.length > 0 && (
+                <View style={styles.presetChips}>
+                  {presetSuggestions.map((p) => (
+                    <TouchableOpacity key={p} testID={`preset-${p}`} onPress={() => setNewTopicName(p)} style={styles.chip}>
+                      <Text style={styles.chipText}>{p}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+              <TextInput
+                testID="new-topic-roles"
+                style={[styles.input, styles.rolesInput]}
+                placeholder="Roles (comma separated) 👥 e.g. Fan, Manager, Security"
+                placeholderTextColor="#666666"
+                value={newTopicRoles}
+                onChangeText={setNewTopicRoles}
+                multiline
+              />
+              <TouchableOpacity testID="add-topic" style={styles.addButton} onPress={handleAddTopic}>
+                <Plus size={20} color="#0A84FF" />
+                <Text style={styles.addButtonText}>Add Topic</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.sectionTitle}>
+              {categories.find((c) => c.id === selectedCategory)?.name} ({filteredTopics.length})
+            </Text>
+          </>
+        }
+      />
     </SafeAreaView>
   );
 }
@@ -251,31 +250,33 @@ const styles = StyleSheet.create({
     width: 40,
   },
   categoryTabs: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   categoryTab: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    justifyContent: 'center',
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    marginRight: 12,
-    borderRadius: 20,
+    marginRight: 10,
+    borderRadius: 16,
     backgroundColor: '#111111',
-    gap: 8,
     borderWidth: 1,
     borderColor: '#1f1f1f',
+    minHeight: 40,
   },
   categoryTabSelected: {
     backgroundColor: '#0A84FF',
     borderColor: '#0A84FF',
   },
   categoryTabIcon: {
-    fontSize: 16,
+    fontSize: 14,
+    marginRight: 6,
   },
   categoryTabText: {
     color: '#9ca3af',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
   },
   categoryTabTextSelected: {
