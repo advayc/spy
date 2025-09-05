@@ -81,10 +81,10 @@ export default function GameScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ChevronLeft size={24} color="#666666" />
-          <Text style={styles.backText}>Create Game</Text>
+          <ChevronLeft size={24} color="#0A84FF" />
         </TouchableOpacity>
         <Text style={styles.categoryText}>{selectedCategory}</Text>
+        <View style={styles.placeholder} />
       </View>
 
       <View style={styles.timerContainer}>
@@ -172,6 +172,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    padding: 8,
+  },
+  placeholder: {
+    width: 32,
   },
   backText: {
     color: '#007AFF',
