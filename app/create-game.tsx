@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2, Play, Clock, List, Shuffle } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useGameStore } from '@/stores/game-store';
+import { useCategoriesStore } from '@/stores/categories-store';
 
 export default function CreateGameScreen() {
   const { 
@@ -20,12 +21,9 @@ export default function CreateGameScreen() {
 
   const [newPlayerName, setNewPlayerName] = useState('');
 
+  const { getAllCategories } = useCategoriesStore();
   const categories = [
-    { id: 'locations', name: 'Locations', icon: '🏢' },
-    { id: 'movies', name: 'Movies', icon: '🎬' },
-    { id: 'tv-shows', name: 'TV Shows', icon: '📺' },
-    { id: 'pop-culture', name: 'Pop Culture', icon: '⭐' },
-    { id: 'events', name: 'Events', icon: '🎉' },
+    ...getAllCategories().map(c => ({ id: c.id, name: c.name, icon: c.icon })),
     { id: 'random', name: 'Random Mix', icon: '🎲' },
   ];
 

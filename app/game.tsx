@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, Pressabl
 import { router } from 'expo-router';
 import { ChevronLeft, Clock, RotateCcw, Eye } from 'lucide-react-native';
 import { useGameStore } from '@/stores/game-store';
+import { useCategoriesStore } from '@/stores/categories-store';
 
 export default function GameScreen() {
   const { 
@@ -12,6 +13,7 @@ export default function GameScreen() {
     gameState,
     resetGame 
   } = useGameStore();
+  const { getCategory } = useCategoriesStore();
 
   const [timeLeft, setTimeLeft] = useState(timerDuration * 60);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
@@ -56,15 +58,9 @@ export default function GameScreen() {
   const playerRole = selectedPlayerData ? gameState.playerRoles[selectedPlayerData.id] : null;
 
   const getCategoryDisplay = (category: string) => {
-    const categoryMap: Record<string, { name: string; icon: string }> = {
-      'locations': { name: 'Location', icon: '🏢' },
-      'movies': { name: 'Movie', icon: '🎬' },
-      'tv-shows': { name: 'TV Show', icon: '📺' },
-      'pop-culture': { name: 'Pop Culture', icon: '⭐' },
-      'events': { name: 'Event', icon: '🎉' },
-      'random': { name: 'Topic', icon: '🎲' },
-    };
-    return categoryMap[category] || { name: 'Topic', icon: '🎲' };
+    if (category === 'random') return { name: 'Topic', icon: '�' };
+    const c = getCategory(category);
+    return c ? { name: c.name, icon: c.icon } : { name: 'Topic', icon: '🎲' };
   };
 
   if (!gameState.currentTopic) {
@@ -83,7 +79,9 @@ export default function GameScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ChevronLeft size={24} color="#0A84FF" />
         </TouchableOpacity>
-        <Text style={styles.categoryText}>{selectedCategory}</Text>
+        <Text style={styles.categoryText}>
+          {selectedCategory === 'random' ? 'Random Mix' : getCategory(selectedCategory)?.name || selectedCategory}
+        </Text>
         <View style={styles.placeholder} />
       </View>
 

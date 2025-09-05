@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { useTopicsStore } from './topics-store';
+import { useCategoriesStore } from './categories-store';
 
 export interface Player {
   id: string;
@@ -77,6 +78,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   startGame: () => {
     const { players, selectedCategory } = get();
     const { topics } = useTopicsStore.getState();
+  const { getCategory } = useCategoriesStore.getState();
     
     // Get topics for selected category or all topics if random
     let availableTopics = topics;
@@ -96,6 +98,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const spyIndex = Math.floor(Math.random() * players.length);
     const spyId = players[spyIndex].id;
     
+    // Determine if this category uses roles
+    const catMeta = selectedCategory === 'random' ? undefined : getCategory(selectedCategory);
+    const usesRoles = catMeta ? catMeta.useRoles : true;
+
     // Assign roles to players
     const playerRoles: Record<string, { role: string; isSpy: boolean }> = {};
     
@@ -103,9 +109,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       if (player.id === spyId) {
         playerRoles[player.id] = { role: 'Spy', isSpy: true };
       } else {
-        // Assign random role from topic
-        const randomRole = randomTopic.roles[Math.floor(Math.random() * randomTopic.roles.length)];
-        playerRoles[player.id] = { role: randomRole, isSpy: false };
+        if (usesRoles && randomTopic.roles.length > 0) {
+          // Assign random role from topic
+          const randomRole = randomTopic.roles[Math.floor(Math.random() * randomTopic.roles.length)];
+          playerRoles[player.id] = { role: randomRole, isSpy: false };
+        } else {
+          // No roles; generic participant
+          playerRoles[player.id] = { role: 'Participant', isSpy: false };
+        }
       }
     });
 

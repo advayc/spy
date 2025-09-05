@@ -3,27 +3,20 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Tex
 import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2, Edit2 } from 'lucide-react-native';
 import { useTopicsStore, Topic } from '@/stores/topics-store';
+import { useCategoriesStore, builtinCategories } from '@/stores/categories-store';
 
 export default function TopicsScreen() {
   const { topics, addTopic, removeTopic } = useTopicsStore();
+  const { customCategories, addCategory, removeCategory, updateCategory, getAllCategories, getCategory } = useCategoriesStore();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [newTopicName, setNewTopicName] = useState<string>('');
   const [newCategoryName, setNewCategoryName] = useState<string>('');
+  const [newCategoryIcon, setNewCategoryIcon] = useState<string>('⭐');
+  const [newCategoryUseRoles, setNewCategoryUseRoles] = useState<boolean>(true);
   const [showAddCategory, setShowAddCategory] = useState<boolean>(false);
   const [showAddTopic, setShowAddTopic] = useState<boolean>(false);
 
-  const categories: Array<{ id: string; name: string; emoji: string }> = [
-    { id: 'locations', name: 'Locations', emoji: '📍' },
-    { id: 'movies', name: 'Movies', emoji: '🎬' },
-    { id: 'tv-shows', name: 'TV Shows', emoji: '📺' },
-    { id: 'pop-culture', name: 'Pop Culture', emoji: '⭐' },
-    { id: 'events', name: 'Events', emoji: '🎉' },
-    { id: 'sports', name: 'Sports', emoji: '⚽' },
-    { id: 'music', name: 'Music', emoji: '🎵' },
-    { id: 'science', name: 'Science', emoji: '🔬' },
-    { id: 'history', name: 'History', emoji: '📜' },
-    { id: 'internet', name: 'Internet', emoji: '🌐' },
-  ];
+  const categories = getAllCategories();
 
   const getTopicsCountForCategory = useCallback((categoryId: string) => {
     return topics.filter(topic => topic.category === categoryId).length;
@@ -39,15 +32,12 @@ export default function TopicsScreen() {
       return;
     }
     
-    const defaultRoles = ['Player 1', 'Player 2', 'Player 3', 'Spy'];
-    addTopic({ 
-      name: newTopicName.trim(), 
-      category: selectedCategory, 
-      roles: defaultRoles 
-    });
+    const cat = getCategory(selectedCategory);
+    const roles = cat && cat.useRoles ? ['Player 1', 'Player 2', 'Player 3', 'Spy'] : [];
+    addTopic({ name: newTopicName.trim(), category: selectedCategory, roles });
     setNewTopicName('');
     setShowAddTopic(false);
-  }, [addTopic, newTopicName, selectedCategory]);
+  }, [addTopic, newTopicName, selectedCategory, getCategory]);
 
   const handleDeleteTopic = useCallback((topicId: string) => {
     Alert.alert('Delete Topic', 'Are you sure you want to delete this topic?', [
@@ -69,14 +59,23 @@ export default function TopicsScreen() {
             style: 'destructive', 
             onPress: () => {
               categoryTopics.forEach(topic => removeTopic(topic.id));
+              // Remove custom category metadata (not for built-ins)
+              if (!builtinCategories[categoryId]) {
+                removeCategory(categoryId);
+              }
             }
           },
         ]
       );
+    } else {
+      // No topics; just remove custom category if applicable
+      if (!builtinCategories[categoryId]) {
+        removeCategory(categoryId);
+      }
     }
-  }, [getCategoryTopics, removeTopic]);
+  }, [getCategoryTopics, removeTopic, removeCategory]);
 
-  const renderCategoryItem = useCallback(({ item }: { item: { id: string; name: string; emoji: string } }) => {
+  const renderCategoryItem = useCallback(({ item }: { item: { id: string; name: string; icon: string; useRoles: boolean } }) => {
     const topicsCount = getTopicsCountForCategory(item.id);
     
     return (
@@ -86,7 +85,7 @@ export default function TopicsScreen() {
       >
         <View style={styles.categoryHeader}>
           <View style={styles.categoryInfo}>
-            <Text style={styles.categoryEmoji}>{item.emoji}</Text>
+            <Text style={styles.categoryEmoji}>{item.icon}</Text>
             <Text style={styles.categoryName}>{item.name}</Text>
           </View>
           <View style={styles.categoryActions}>
@@ -104,7 +103,7 @@ export default function TopicsScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        <Text style={styles.topicsCount}>{topicsCount} topics</Text>
+        <Text style={styles.topicsCount}>{topicsCount} topics • {item.useRoles ? 'Roles on' : 'No roles'}</Text>
       </TouchableOpacity>
     );
   }, [getTopicsCountForCategory, handleDeleteCategory]);
@@ -178,7 +177,7 @@ export default function TopicsScreen() {
           </View>
         )}
 
-        <FlatList
+  <FlatList
           data={categoryTopics}
           renderItem={renderTopicItem}
           keyExtractor={(item) => item.id}
@@ -211,12 +210,55 @@ export default function TopicsScreen() {
         <View style={styles.addCategorySection}>
           <TextInput
             style={styles.addCategoryInput}
-            placeholder="Add new category"
+            placeholder="Category name (e.g., Animals)"
             placeholderTextColor="#666666"
             value={newCategoryName}
             onChangeText={setNewCategoryName}
             autoFocus
           />
+          <TextInput
+            style={[styles.addCategoryInput, { marginTop: 8 }]}
+            placeholder="Icon (emoji, e.g., 🐾)"
+            placeholderTextColor="#666666"
+            value={newCategoryIcon}
+            onChangeText={setNewCategoryIcon}
+            maxLength={4}
+          />
+          <TouchableOpacity
+            style={{ marginTop: 8 }}
+            onPress={() => setNewCategoryUseRoles(v => !v)}
+          >
+            <Text style={{ color: 'white' }}>
+              {newCategoryUseRoles ? '☑ Use roles' : '☐ No roles'}
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.addTopicActions}>
+            <TouchableOpacity 
+              style={styles.cancelButton}
+              onPress={() => {
+                setShowAddCategory(false);
+                setNewCategoryName('');
+                setNewCategoryIcon('⭐');
+                setNewCategoryUseRoles(true);
+              }}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.saveButton}
+              onPress={() => {
+                const name = newCategoryName.trim();
+                if (!name) return;
+                addCategory({ name, icon: newCategoryIcon || '⭐', useRoles: newCategoryUseRoles });
+                setShowAddCategory(false);
+                setNewCategoryName('');
+                setNewCategoryIcon('⭐');
+                setNewCategoryUseRoles(true);
+              }}
+            >
+              <Text style={styles.saveButtonText}>Add</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
