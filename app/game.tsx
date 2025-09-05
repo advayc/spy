@@ -114,8 +114,10 @@ export default function GameScreen() {
       </View>
 
       <View style={styles.footer}>
-        <TouchableOpacity onPress={handleRestart} style={styles.restartButton}>
-          <RotateCcw size={24} color="white" />
+        <TouchableOpacity onPress={() => router.back()} style={styles.goBackButton}>
+          <View style={styles.goBackIconContainer}>
+            <ChevronLeft size={32} color="#000" />
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -245,11 +247,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 32,
   },
-  restartButton: {
+  goBackButton: {
     width: 64,
     height: 64,
     borderRadius: 32,
     backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  goBackIconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },

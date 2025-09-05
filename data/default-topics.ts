@@ -913,5 +913,765 @@ export const defaultTopics: Topic[] = [
     name: 'Harry Styles',
     category: 'famous-people',
     roles: ['Singer', 'Guitarist', 'Fan', 'Security', 'Stylist', 'Publicist', 'Tour Manager', 'Photographer']
+  },
+
+  // Sports (25 topics)
+  {
+    id: '151',
+    name: 'Football Stadium',
+    category: 'sports',
+    roles: ['Player', 'Coach', 'Referee', 'Fan', 'Mascot', 'Commentator', 'Security', 'Photographer']
+  },
+  {
+    id: '152',
+    name: 'Basketball Court',
+    category: 'sports',
+    roles: ['Player', 'Coach', 'Referee', 'Fan', 'Cheerleader', 'Commentator', 'Photographer', 'Water Boy']
+  },
+  {
+    id: '153',
+    name: 'Tennis Match',
+    category: 'sports',
+    roles: ['Player', 'Coach', 'Umpire', 'Ball Boy', 'Fan', 'Commentator', 'Photographer', 'Line Judge']
+  },
+  {
+    id: '154',
+    name: 'Swimming Pool',
+    category: 'sports',
+    roles: ['Swimmer', 'Coach', 'Lifeguard', 'Judge', 'Fan', 'Photographer', 'Pool Maintenance', 'Commentator']
+  },
+  {
+    id: '155',
+    name: 'Golf Course',
+    category: 'sports',
+    roles: ['Golfer', 'Caddie', 'Pro Shop Manager', 'Groundskeeper', 'Fan', 'Commentator', 'Photographer', 'Judge']
+  },
+  {
+    id: '156',
+    name: 'Boxing Ring',
+    category: 'sports',
+    roles: ['Boxer', 'Trainer', 'Referee', 'Fan', 'Corner Man', 'Commentator', 'Photographer', 'Ring Girl']
+  },
+  {
+    id: '157',
+    name: 'Ice Hockey Arena',
+    category: 'sports',
+    roles: ['Player', 'Coach', 'Referee', 'Fan', 'Mascot', 'Commentator', 'Photographer', 'Zamboni Driver']
+  },
+  {
+    id: '158',
+    name: 'Baseball Stadium',
+    category: 'sports',
+    roles: ['Player', 'Coach', 'Umpire', 'Fan', 'Mascot', 'Commentator', 'Photographer', 'Vendor']
+  },
+  {
+    id: '159',
+    name: 'Soccer Stadium',
+    category: 'sports',
+    roles: ['Player', 'Coach', 'Referee', 'Fan', 'Mascot', 'Commentator', 'Photographer', 'Security']
+  },
+  {
+    id: '160',
+    name: 'Volleyball Court',
+    category: 'sports',
+    roles: ['Player', 'Coach', 'Referee', 'Fan', 'Commentator', 'Photographer', 'Scorekeeper', 'Ball Retriever']
+  },
+  {
+    id: '161',
+    name: 'Track and Field',
+    category: 'sports',
+    roles: ['Athlete', 'Coach', 'Judge', 'Fan', 'Commentator', 'Photographer', 'Timer', 'Medical Staff']
+  },
+  {
+    id: '162',
+    name: 'Gymnastics Arena',
+    category: 'sports',
+    roles: ['Gymnast', 'Coach', 'Judge', 'Fan', 'Commentator', 'Photographer', 'Spotter', 'Equipment Manager']
+  },
+  {
+    id: '163',
+    name: 'Wrestling Match',
+    category: 'sports',
+    roles: ['Wrestler', 'Coach', 'Referee', 'Fan', 'Commentator', 'Photographer', 'Medical Staff', 'Timekeeper']
+  },
+  {
+    id: '164',
+    name: 'Martial Arts Dojo',
+    category: 'sports',
+    roles: ['Fighter', 'Sensei', 'Judge', 'Student', 'Parent', 'Photographer', 'Medical Staff', 'Announcer']
+  },
+  {
+    id: '165',
+    name: 'Skateboard Park',
+    category: 'sports',
+    roles: ['Skater', 'Judge', 'Photographer', 'Fan', 'Park Manager', 'Medical Staff', 'Equipment Vendor', 'Security']
+  },
+  {
+    id: '166',
+    name: 'Ski Resort',
+    category: 'sports',
+    roles: ['Skier', 'Instructor', 'Lift Operator', 'Guest', 'Photographer', 'Ski Patrol', 'Equipment Rental', 'Restaurant Staff']
+  },
+  {
+    id: '167',
+    name: 'Rock Climbing Gym',
+    category: 'sports',
+    roles: ['Climber', 'Instructor', 'Belayer', 'Route Setter', 'Guest', 'Photographer', 'Equipment Manager', 'Safety Inspector']
+  },
+  {
+    id: '168',
+    name: 'Cycling Race',
+    category: 'sports',
+    roles: ['Cyclist', 'Coach', 'Judge', 'Fan', 'Commentator', 'Photographer', 'Medical Staff', 'Mechanic']
+  },
+  {
+    id: '169',
+    name: 'Marathon Race',
+    category: 'sports',
+    roles: ['Runner', 'Spectator', 'Volunteer', 'Medical Staff', 'Photographer', 'Commentator', 'Water Station Staff', 'Race Official']
+  },
+  {
+    id: '170',
+    name: 'Formula 1 Race',
+    category: 'sports',
+    roles: ['Driver', 'Mechanic', 'Fan', 'Commentator', 'Photographer', 'Pit Crew', 'Race Official', 'Safety Marshal']
+  },
+  {
+    id: '171',
+    name: 'Surfing Competition',
+    category: 'sports',
+    roles: ['Surfer', 'Judge', 'Photographer', 'Fan', 'Commentator', 'Safety Personnel', 'Equipment Manager', 'Beach Official']
+  },
+  {
+    id: '172',
+    name: 'Bowling Alley',
+    category: 'sports',
+    roles: ['Bowler', 'League Organizer', 'Counter Staff', 'Maintenance', 'Spectator', 'Photographer', 'Pro Shop Manager', 'Food Service']
+  },
+  {
+    id: '173',
+    name: 'Badminton Court',
+    category: 'sports',
+    roles: ['Player', 'Coach', 'Referee', 'Spectator', 'Commentator', 'Photographer', 'Scorekeeper', 'Equipment Manager']
+  },
+  {
+    id: '174',
+    name: 'Table Tennis Tournament',
+    category: 'sports',
+    roles: ['Player', 'Coach', 'Umpire', 'Spectator', 'Commentator', 'Photographer', 'Ball Retriever', 'Tournament Director']
+  },
+  {
+    id: '175',
+    name: 'CrossFit Gym',
+    category: 'sports',
+    roles: ['Athlete', 'Coach', 'Judge', 'Member', 'Photographer', 'Equipment Manager', 'Nutritionist', 'Medical Staff']
+  },
+
+  // Music (25 topics)
+  {
+    id: '176',
+    name: 'Concert Hall',
+    category: 'music',
+    roles: ['Musician', 'Conductor', 'Audience Member', 'Sound Engineer', 'Photographer', 'Security', 'Usher', 'Stage Manager']
+  },
+  {
+    id: '177',
+    name: 'Recording Studio',
+    category: 'music',
+    roles: ['Artist', 'Producer', 'Sound Engineer', 'Session Musician', 'Songwriter', 'Manager', 'Assistant', 'Intern']
+  },
+  {
+    id: '178',
+    name: 'Music Festival',
+    category: 'music',
+    roles: ['Performer', 'Fan', 'Security', 'Photographer', 'Vendor', 'Sound Technician', 'Stage Crew', 'Organizer']
+  },
+  {
+    id: '179',
+    name: 'Opera House',
+    category: 'music',
+    roles: ['Opera Singer', 'Conductor', 'Audience Member', 'Orchestra Member', 'Stage Hand', 'Costume Designer', 'Usher', 'Critic']
+  },
+  {
+    id: '180',
+    name: 'Jazz Club',
+    category: 'music',
+    roles: ['Jazz Musician', 'Singer', 'Audience Member', 'Bartender', 'Sound Engineer', 'Photographer', 'Music Critic', 'Club Owner']
+  },
+  {
+    id: '181',
+    name: 'Rock Concert',
+    category: 'music',
+    roles: ['Rock Star', 'Guitarist', 'Fan', 'Security', 'Photographer', 'Roadie', 'Sound Engineer', 'Groupie']
+  },
+  {
+    id: '182',
+    name: 'Hip-Hop Studio',
+    category: 'music',
+    roles: ['Rapper', 'Producer', 'DJ', 'Sound Engineer', 'Manager', 'Songwriter', 'Backup Dancer', 'Photographer']
+  },
+  {
+    id: '183',
+    name: 'Symphony Orchestra',
+    category: 'music',
+    roles: ['Violinist', 'Conductor', 'Audience Member', 'Cellist', 'Pianist', 'Flutist', 'Photographer', 'Music Director']
+  },
+  {
+    id: '184',
+    name: 'Country Music Venue',
+    category: 'music',
+    roles: ['Country Singer', 'Guitarist', 'Fan', 'Bartender', 'Sound Engineer', 'Photographer', 'Line Dancer', 'DJ']
+  },
+  {
+    id: '185',
+    name: 'Electronic Music Club',
+    category: 'music',
+    roles: ['DJ', 'Producer', 'Dancer', 'VJ', 'Sound Engineer', 'Photographer', 'Security', 'Promoter']
+  },
+  {
+    id: '186',
+    name: 'Music School',
+    category: 'music',
+    roles: ['Student', 'Teacher', 'Principal', 'Piano Tuner', 'Janitor', 'Parent', 'Photographer', 'Accompanist']
+  },
+  {
+    id: '187',
+    name: 'Broadway Musical',
+    category: 'music',
+    roles: ['Actor', 'Singer', 'Dancer', 'Audience Member', 'Director', 'Choreographer', 'Photographer', 'Usher']
+  },
+  {
+    id: '188',
+    name: 'Karaoke Bar',
+    category: 'music',
+    roles: ['Singer', 'Audience Member', 'DJ', 'Bartender', 'Photographer', 'Security', 'Waitress', 'Manager']
+  },
+  {
+    id: '189',
+    name: 'Music Store',
+    category: 'music',
+    roles: ['Customer', 'Sales Person', 'Manager', 'Guitar Technician', 'Music Teacher', 'Photographer', 'Delivery Person', 'Cashier']
+  },
+  {
+    id: '190',
+    name: 'Radio Station',
+    category: 'music',
+    roles: ['DJ', 'Producer', 'Sound Engineer', 'Music Director', 'Intern', 'Photographer', 'Station Manager', 'Advertiser']
+  },
+  {
+    id: '191',
+    name: 'Choir Practice',
+    category: 'music',
+    roles: ['Choir Member', 'Conductor', 'Pianist', 'Soloist', 'Music Director', 'Photographer', 'Parent', 'Assistant']
+  },
+  {
+    id: '192',
+    name: 'Music Video Set',
+    category: 'music',
+    roles: ['Artist', 'Director', 'Camera Operator', 'Dancer', 'Lighting Technician', 'Makeup Artist', 'Producer', 'Assistant']
+  },
+  {
+    id: '193',
+    name: 'Blues Bar',
+    category: 'music',
+    roles: ['Blues Musician', 'Singer', 'Audience Member', 'Bartender', 'Photographer', 'Sound Engineer', 'Harmonica Player', 'Owner']
+  },
+  {
+    id: '194',
+    name: 'Reggae Festival',
+    category: 'music',
+    roles: ['Reggae Artist', 'Fan', 'Photographer', 'Security', 'Vendor', 'Sound Technician', 'Stage Manager', 'Dancer']
+  },
+  {
+    id: '195',
+    name: 'Classical Concert',
+    category: 'music',
+    roles: ['Pianist', 'Violinist', 'Audience Member', 'Conductor', 'Page Turner', 'Photographer', 'Usher', 'Music Critic']
+  },
+  {
+    id: '196',
+    name: 'Punk Rock Show',
+    category: 'music',
+    roles: ['Punk Musician', 'Fan', 'Photographer', 'Security', 'Sound Engineer', 'Roadie', 'Venue Owner', 'Mosher']
+  },
+  {
+    id: '197',
+    name: 'Folk Music Gathering',
+    category: 'music',
+    roles: ['Folk Singer', 'Guitarist', 'Audience Member', 'Storyteller', 'Photographer', 'Sound Engineer', 'Organizer', 'Vendor']
+  },
+  {
+    id: '198',
+    name: 'Music Awards Show',
+    category: 'music',
+    roles: ['Nominee', 'Presenter', 'Audience Member', 'Photographer', 'Cameraman', 'Producer', 'Security', 'Usher']
+  },
+  {
+    id: '199',
+    name: 'Acoustic Coffee Shop',
+    category: 'music',
+    roles: ['Singer-Songwriter', 'Audience Member', 'Barista', 'Photographer', 'Sound Engineer', 'Open Mic Host', 'Customer', 'Manager']
+  },
+  {
+    id: '200',
+    name: 'Orchestra Pit',
+    category: 'music',
+    roles: ['Musician', 'Conductor', 'Performer on Stage', 'Audience Member', 'Sound Engineer', 'Photographer', 'Stage Manager', 'Music Director']
+  },
+
+  // Science (25 topics)
+  {
+    id: '201',
+    name: 'Science Laboratory',
+    category: 'science',
+    roles: ['Scientist', 'Lab Assistant', 'Researcher', 'Graduate Student', 'Lab Manager', 'Safety Officer', 'Equipment Technician', 'Photographer']
+  },
+  {
+    id: '202',
+    name: 'Space Station',
+    category: 'science',
+    roles: ['Astronaut', 'Mission Commander', 'Flight Engineer', 'Ground Control', 'Scientist', 'Photographer', 'Medical Officer', 'Communications Specialist']
+  },
+  {
+    id: '203',
+    name: 'Observatory',
+    category: 'science',
+    roles: ['Astronomer', 'Telescope Operator', 'Graduate Student', 'Visitor', 'Photographer', 'Data Analyst', 'Maintenance Technician', 'Director']
+  },
+  {
+    id: '204',
+    name: 'Medical Research Facility',
+    category: 'science',
+    roles: ['Medical Researcher', 'Lab Technician', 'Test Subject', 'Ethics Committee Member', 'Photographer', 'Data Analyst', 'Lab Manager', 'Graduate Student']
+  },
+  {
+    id: '205',
+    name: 'Particle Accelerator',
+    category: 'science',
+    roles: ['Physicist', 'Engineer', 'Technician', 'Visitor', 'Photographer', 'Safety Officer', 'Data Analyst', 'Research Director']
+  },
+  {
+    id: '206',
+    name: 'Marine Biology Station',
+    category: 'science',
+    roles: ['Marine Biologist', 'Diver', 'Research Assistant', 'Boat Captain', 'Photographer', 'Equipment Technician', 'Student', 'Station Manager']
+  },
+  {
+    id: '207',
+    name: 'Chemistry Lab',
+    category: 'science',
+    roles: ['Chemist', 'Lab Assistant', 'Graduate Student', 'Safety Officer', 'Photographer', 'Equipment Manager', 'Research Director', 'Visiting Scientist']
+  },
+  {
+    id: '208',
+    name: 'Natural History Museum',
+    category: 'science',
+    roles: ['Curator', 'Visitor', 'Tour Guide', 'Researcher', 'Photographer', 'Security Guard', 'Janitor', 'Gift Shop Worker']
+  },
+  {
+    id: '209',
+    name: 'Genetics Lab',
+    category: 'science',
+    roles: ['Geneticist', 'Lab Technician', 'Bioinformatician', 'Photographer', 'Equipment Specialist', 'Ethics Officer', 'Graduate Student', 'Lab Manager']
+  },
+  {
+    id: '210',
+    name: 'Weather Station',
+    category: 'science',
+    roles: ['Meteorologist', 'Weather Observer', 'Data Analyst', 'Equipment Technician', 'Photographer', 'Research Assistant', 'Station Manager', 'Visitor']
+  },
+  {
+    id: '211',
+    name: 'Archaeological Dig Site',
+    category: 'science',
+    roles: ['Archaeologist', 'Graduate Student', 'Local Worker', 'Site Director', 'Photographer', 'Conservator', 'Surveyor', 'Security Guard']
+  },
+  {
+    id: '212',
+    name: 'Nuclear Power Plant',
+    category: 'science',
+    roles: ['Nuclear Engineer', 'Technician', 'Safety Inspector', 'Security Guard', 'Photographer', 'Plant Manager', 'Control Room Operator', 'Maintenance Worker']
+  },
+  {
+    id: '213',
+    name: 'Robotics Lab',
+    category: 'science',
+    roles: ['Robotics Engineer', 'Programmer', 'Technician', 'Graduate Student', 'Photographer', 'Lab Manager', 'Test Subject', 'Visitor']
+  },
+  {
+    id: '214',
+    name: 'Planetarium',
+    category: 'science',
+    roles: ['Astronomer', 'Visitor', 'Presenter', 'Technician', 'Photographer', 'Student', 'Teacher', 'Manager']
+  },
+  {
+    id: '215',
+    name: 'Forensics Lab',
+    category: 'science',
+    roles: ['Forensic Scientist', 'Lab Technician', 'Detective', 'Photographer', 'Evidence Clerk', 'DNA Analyst', 'Lab Manager', 'Court Reporter']
+  },
+  {
+    id: '216',
+    name: 'Botanical Garden',
+    category: 'science',
+    roles: ['Botanist', 'Visitor', 'Gardener', 'Tour Guide', 'Photographer', 'Student', 'Researcher', 'Gift Shop Worker']
+  },
+  {
+    id: '217',
+    name: 'Seismic Monitoring Station',
+    category: 'science',
+    roles: ['Seismologist', 'Data Analyst', 'Equipment Technician', 'Photographer', 'Research Assistant', 'Station Manager', 'Emergency Coordinator', 'Visitor']
+  },
+  {
+    id: '218',
+    name: 'Vaccine Research Center',
+    category: 'science',
+    roles: ['Immunologist', 'Clinical Researcher', 'Test Subject', 'Lab Technician', 'Photographer', 'Ethics Committee Member', 'Data Manager', 'Research Director']
+  },
+  {
+    id: '219',
+    name: 'Environmental Research Station',
+    category: 'science',
+    roles: ['Environmental Scientist', 'Field Researcher', 'Data Collector', 'Photographer', 'Equipment Technician', 'Station Manager', 'Graduate Student', 'Local Guide']
+  },
+  {
+    id: '220',
+    name: 'Neuroscience Lab',
+    category: 'science',
+    roles: ['Neuroscientist', 'Research Subject', 'Lab Technician', 'Graduate Student', 'Photographer', 'Equipment Specialist', 'Data Analyst', 'Lab Manager']
+  },
+  {
+    id: '221',
+    name: 'Solar Observatory',
+    category: 'science',
+    roles: ['Solar Physicist', 'Observatory Technician', 'Data Analyst', 'Photographer', 'Visitor', 'Graduate Student', 'Equipment Manager', 'Director']
+  },
+  {
+    id: '222',
+    name: 'Paleontology Dig',
+    category: 'science',
+    roles: ['Paleontologist', 'Graduate Student', 'Local Worker', 'Site Director', 'Photographer', 'Fossil Preparator', 'Surveyor', 'Security Guard']
+  },
+  {
+    id: '223',
+    name: 'Quantum Physics Lab',
+    category: 'science',
+    roles: ['Quantum Physicist', 'Research Assistant', 'Graduate Student', 'Lab Technician', 'Photographer', 'Equipment Specialist', 'Theoretical Physicist', 'Lab Manager']
+  },
+  {
+    id: '224',
+    name: 'Antarctic Research Base',
+    category: 'science',
+    roles: ['Research Scientist', 'Base Commander', 'Equipment Technician', 'Cook', 'Photographer', 'Medical Officer', 'Communications Operator', 'Meteorologist']
+  },
+  {
+    id: '225',
+    name: 'Crystallography Lab',
+    category: 'science',
+    roles: ['Crystallographer', 'X-ray Technician', 'Graduate Student', 'Photographer', 'Equipment Manager', 'Data Analyst', 'Research Director', 'Lab Assistant']
+  },
+
+  // History (25 topics)
+  {
+    id: '226',
+    name: 'Medieval Castle',
+    category: 'history',
+    roles: ['King', 'Queen', 'Knight', 'Peasant', 'Blacksmith', 'Archer', 'Cook', 'Court Jester']
+  },
+  {
+    id: '227',
+    name: 'Ancient Rome',
+    category: 'history',
+    roles: ['Emperor', 'Gladiator', 'Senator', 'Slave', 'Centurion', 'Merchant', 'Citizen', 'Chariot Racer']
+  },
+  {
+    id: '228',
+    name: 'Wild West Town',
+    category: 'history',
+    roles: ['Sheriff', 'Outlaw', 'Saloon Owner', 'Cowboy', 'Banker', 'Doctor', 'Bartender', 'Town Mayor']
+  },
+  {
+    id: '229',
+    name: 'Ancient Egypt',
+    category: 'history',
+    roles: ['Pharaoh', 'Priest', 'Scribe', 'Slave', 'Pyramid Builder', 'Merchant', 'Noble', 'Embalmer']
+  },
+  {
+    id: '230',
+    name: 'Pirate Ship',
+    category: 'history',
+    roles: ['Captain', 'First Mate', 'Cook', 'Navigator', 'Gunner', 'Sailor', 'Cabin Boy', 'Prisoner']
+  },
+  {
+    id: '231',
+    name: 'Victorian London',
+    category: 'history',
+    roles: ['Gentleman', 'Lady', 'Butler', 'Maid', 'Detective', 'Street Sweeper', 'Merchant', 'Chimney Sweep']
+  },
+  {
+    id: '232',
+    name: 'Samurai Village',
+    category: 'history',
+    roles: ['Samurai', 'Daimyo', 'Peasant', 'Monk', 'Blacksmith', 'Geisha', 'Merchant', 'Ronin']
+  },
+  {
+    id: '233',
+    name: 'Renaissance Italy',
+    category: 'history',
+    roles: ['Artist', 'Patron', 'Merchant', 'Noble', 'Peasant', 'Priest', 'Scholar', 'Apprentice']
+  },
+  {
+    id: '234',
+    name: 'Colonial America',
+    category: 'history',
+    roles: ['Colonial Governor', 'Farmer', 'Blacksmith', 'Merchant', 'Native American', 'Soldier', 'Preacher', 'Indentured Servant']
+  },
+  {
+    id: '235',
+    name: 'Ancient Greece',
+    category: 'history',
+    roles: ['Philosopher', 'Citizen', 'Slave', 'Politician', 'Soldier', 'Merchant', 'Athlete', 'Oracle']
+  },
+  {
+    id: '236',
+    name: 'Stone Age Settlement',
+    category: 'history',
+    roles: ['Hunter', 'Gatherer', 'Shaman', 'Toolmaker', 'Elder', 'Child', 'Cave Painter', 'Fire Keeper']
+  },
+  {
+    id: '237',
+    name: '1920s Speakeasy',
+    category: 'history',
+    roles: ['Bootlegger', 'Flapper', 'Bartender', 'Jazz Musician', 'Police Officer', 'Gangster', 'Customer', 'Singer']
+  },
+  {
+    id: '238',
+    name: 'World War II Bunker',
+    category: 'history',
+    roles: ['General', 'Soldier', 'Radio Operator', 'Medic', 'Resistance Fighter', 'Spy', 'Code Breaker', 'Prisoner of War']
+  },
+  {
+    id: '239',
+    name: 'Viking Longhouse',
+    category: 'history',
+    roles: ['Jarl', 'Viking Warrior', 'Skald', 'Thrall', 'Blacksmith', 'Shield Maiden', 'Trader', 'Seer']
+  },
+  {
+    id: '240',
+    name: 'Aztec Temple',
+    category: 'history',
+    roles: ['High Priest', 'Emperor', 'Warrior', 'Scribe', 'Merchant', 'Slave', 'Artisan', 'Farmer']
+  },
+  {
+    id: '241',
+    name: 'Industrial Revolution Factory',
+    category: 'history',
+    roles: ['Factory Owner', 'Worker', 'Foreman', 'Child Laborer', 'Union Organizer', 'Engineer', 'Inspector', 'Mechanic']
+  },
+  {
+    id: '242',
+    name: 'Gold Rush Camp',
+    category: 'history',
+    roles: ['Prospector', 'Saloon Owner', 'Merchant', 'Sheriff', 'Banker', 'Doctor', 'Claim Jumper', 'Supply Runner']
+  },
+  {
+    id: '243',
+    name: 'Mongol Encampment',
+    category: 'history',
+    roles: ['Khan', 'Warrior', 'Horse Trainer', 'Shaman', 'Trader', 'Scout', 'Captive', 'Archer']
+  },
+  {
+    id: '244',
+    name: 'Ottoman Palace',
+    category: 'history',
+    roles: ['Sultan', 'Vizier', 'Janissary', 'Eunuch', 'Concubine', 'Scribe', 'Merchant', 'Ambassador']
+  },
+  {
+    id: '245',
+    name: 'Mayan City',
+    category: 'history',
+    roles: ['Priest King', 'Astronomer', 'Warrior', 'Scribe', 'Merchant', 'Farmer', 'Artisan', 'Slave']
+  },
+  {
+    id: '246',
+    name: 'French Revolution',
+    category: 'history',
+    roles: ['Revolutionary', 'Aristocrat', 'Peasant', 'Executioner', 'Politician', 'Journalist', 'Soldier', 'Citizen']
+  },
+  {
+    id: '247',
+    name: 'Cold War Berlin',
+    category: 'history',
+    roles: ['CIA Agent', 'KGB Spy', 'East German Guard', 'West Berlin Citizen', 'Journalist', 'Smuggler', 'Diplomat', 'Refugee']
+  },
+  {
+    id: '248',
+    name: 'Salem Witch Trials',
+    category: 'history',
+    roles: ['Accused Witch', 'Judge', 'Puritan Minister', 'Townsperson', 'Accuser', 'Magistrate', 'Witness', 'Executioner']
+  },
+  {
+    id: '249',
+    name: 'Chinese Imperial Court',
+    category: 'history',
+    roles: ['Emperor', 'Empress', 'Eunuch', 'Mandarin', 'Concubine', 'Guard', 'Servant', 'Court Physician']
+  },
+  {
+    id: '250',
+    name: 'Inca Empire',
+    category: 'history',
+    roles: ['Sapa Inca', 'High Priest', 'Warrior', 'Quipu Keeper', 'Farmer', 'Artisan', 'Messenger', 'Noble']
+  },
+
+  // Internet (25 topics)
+  {
+    id: '251',
+    name: 'Social Media Office',
+    category: 'internet',
+    roles: ['Content Creator', 'Social Media Manager', 'Influencer', 'Photographer', 'Video Editor', 'Community Manager', 'Analytics Specialist', 'Brand Manager']
+  },
+  {
+    id: '252',
+    name: 'Gaming Tournament',
+    category: 'internet',
+    roles: ['Pro Gamer', 'Streamer', 'Commentator', 'Fan', 'Tournament Organizer', 'Photographer', 'Sponsor Rep', 'Technical Support']
+  },
+  {
+    id: '253',
+    name: 'Tech Startup Office',
+    category: 'internet',
+    roles: ['CEO', 'Developer', 'Designer', 'Investor', 'Intern', 'Marketing Manager', 'Product Manager', 'Sales Rep']
+  },
+  {
+    id: '254',
+    name: 'YouTube Studio',
+    category: 'internet',
+    roles: ['YouTuber', 'Video Editor', 'Camera Operator', 'Subscriber', 'Sponsor', 'Channel Manager', 'Thumbnail Designer', 'Sound Engineer']
+  },
+  {
+    id: '255',
+    name: 'Data Center',
+    category: 'internet',
+    roles: ['Network Engineer', 'Server Administrator', 'Security Guard', 'Technician', 'Manager', 'Photographer', 'Maintenance Worker', 'Visitor']
+  },
+  {
+    id: '256',
+    name: 'Podcast Studio',
+    category: 'internet',
+    roles: ['Host', 'Co-host', 'Guest', 'Producer', 'Sound Engineer', 'Listener', 'Sponsor', 'Editor']
+  },
+  {
+    id: '257',
+    name: 'E-commerce Warehouse',
+    category: 'internet',
+    roles: ['Warehouse Worker', 'Manager', 'Delivery Driver', 'Customer Service Rep', 'Photographer', 'Quality Control', 'Inventory Specialist', 'Packer']
+  },
+  {
+    id: '258',
+    name: 'Streaming Platform Office',
+    category: 'internet',
+    roles: ['Content Curator', 'Algorithm Engineer', 'UX Designer', 'Data Analyst', 'Customer Support', 'Photographer', 'Product Manager', 'Marketing Specialist']
+  },
+  {
+    id: '259',
+    name: 'Cybersecurity Firm',
+    category: 'internet',
+    roles: ['Ethical Hacker', 'Security Analyst', 'Penetration Tester', 'Cybersecurity Consultant', 'Incident Responder', 'Photographer', 'Research Director', 'Sales Engineer']
+  },
+  {
+    id: '260',
+    name: 'Virtual Reality Studio',
+    category: 'internet',
+    roles: ['VR Developer', 'Game Designer', 'Test User', 'Motion Capture Actor', 'Photographer', 'Creative Director', 'Technical Artist', 'Producer']
+  },
+  {
+    id: '261',
+    name: 'Crypto Trading Floor',
+    category: 'internet',
+    roles: ['Crypto Trader', 'Blockchain Developer', 'Investment Advisor', 'Market Analyst', 'Photographer', 'Compliance Officer', 'Day Trader', 'Exchange Manager']
+  },
+  {
+    id: '262',
+    name: 'Online Learning Platform',
+    category: 'internet',
+    roles: ['Online Instructor', 'Student', 'Course Developer', 'Technical Support', 'Photographer', 'Learning Designer', 'Platform Administrator', 'Content Reviewer']
+  },
+  {
+    id: '263',
+    name: 'Digital Marketing Agency',
+    category: 'internet',
+    roles: ['Digital Marketer', 'SEO Specialist', 'Content Writer', 'Graphic Designer', 'Photographer', 'Account Manager', 'PPC Specialist', 'Analytics Expert']
+  },
+  {
+    id: '264',
+    name: 'Online Marketplace',
+    category: 'internet',
+    roles: ['Seller', 'Buyer', 'Customer Service Rep', 'Platform Developer', 'Photographer', 'Trust & Safety Officer', 'Payment Processor', 'Marketplace Manager']
+  },
+  {
+    id: '265',
+    name: 'Cloud Computing Center',
+    category: 'internet',
+    roles: ['Cloud Architect', 'DevOps Engineer', 'System Administrator', 'Customer', 'Photographer', 'Security Specialist', 'Technical Support', 'Sales Engineer']
+  },
+  {
+    id: '266',
+    name: 'Meme Creation Studio',
+    category: 'internet',
+    roles: ['Meme Creator', 'Viral Content Manager', 'Social Media Strategist', 'Graphic Designer', 'Photographer', 'Community Manager', 'Trend Analyst', 'Content Moderator']
+  },
+  {
+    id: '267',
+    name: 'NFT Marketplace',
+    category: 'internet',
+    roles: ['Digital Artist', 'NFT Collector', 'Blockchain Developer', 'Art Curator', 'Photographer', 'Marketplace Admin', 'Crypto Investor', 'Community Manager']
+  },
+  {
+    id: '268',
+    name: 'TikTok House',
+    category: 'internet',
+    roles: ['TikToker', 'Content Manager', 'Choreographer', 'Videographer', 'Photographer', 'Social Media Manager', 'Brand Partner', 'House Manager']
+  },
+  {
+    id: '269',
+    name: 'Online Gaming Guild',
+    category: 'internet',
+    roles: ['Guild Leader', 'Raid Member', 'Streamer', 'Moderator', 'Photographer', 'Community Manager', 'Esports Coach', 'Game Analyst']
+  },
+  {
+    id: '270',
+    name: 'Web Development Agency',
+    category: 'internet',
+    roles: ['Web Developer', 'UX Designer', 'Project Manager', 'Client', 'Photographer', 'SEO Specialist', 'Quality Assurance Tester', 'Creative Director']
+  },
+  {
+    id: '271',
+    name: 'Online Dating Platform',
+    category: 'internet',
+    roles: ['Dating App User', 'Algorithm Engineer', 'Safety Moderator', 'Customer Support', 'Photographer', 'Product Manager', 'Marketing Specialist', 'Data Scientist']
+  },
+  {
+    id: '272',
+    name: 'Artificial Intelligence Lab',
+    category: 'internet',
+    roles: ['AI Researcher', 'Machine Learning Engineer', 'Data Scientist', 'Ethics Officer', 'Photographer', 'Product Manager', 'Research Director', 'Test Engineer']
+  },
+  {
+    id: '273',
+    name: 'Internet Cafe',
+    category: 'internet',
+    roles: ['Customer', 'Cafe Owner', 'Tech Support', 'Gamer', 'Photographer', 'Student', 'Tourist', 'Security Guard']
+  },
+  {
+    id: '274',
+    name: 'Online News Website',
+    category: 'internet',
+    roles: ['Journalist', 'Editor', 'Reader', 'Photographer', 'Web Developer', 'Social Media Manager', 'Fact Checker', 'News Director']
+  },
+  {
+    id: '275',
+    name: 'Remote Work Hub',
+    category: 'internet',
+    roles: ['Remote Worker', 'IT Support', 'Coworking Manager', 'Digital Nomad', 'Photographer', 'Cafe Staff', 'Network Administrator', 'Community Coordinator']
   }
 ];
