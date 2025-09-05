@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Spy - Guess the Spy ",
+    "name": "Guess The Spy Party Game ",
     "slug": "spy-social-deduction-party-game",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -25,7 +25,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "app.rork.spy-social-deduction-party-game"
+  "package": "com.rork.spy"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
@@ -48,6 +48,12 @@
       "eas": {
         "projectId": "b8231e8f-73bb-40f6-aa55-11c9dd2fb3ea"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b8231e8f-73bb-40f6-aa55-11c9dd2fb3ea"
     }
   }
 }
