@@ -22,3 +22,9 @@ run
 ```bash
 expo prebuild --clean
 ```
+
+or 
+
+```bash
+eas build -p ios --profile production
+```

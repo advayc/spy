@@ -50,7 +50,7 @@ export default function WelcomeScreen() {
             onPress={handleCreateGame}
           >
             <LinearGradient
-              colors={[colorScheme.primary, colorScheme.secondary]}
+              colors={[colors.primary, colors.secondary]}
               style={styles.gradientButton}
             >
               <Play size={24} color="white" />
@@ -59,10 +59,10 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={[styles.secondaryButton, { borderColor: `${colorScheme.primary}40` }]}
+            style={[styles.secondaryButton, { borderColor: `${colors.primary}40` }]}
             onPress={handleManageTopics}
           >
-            <Settings size={20} color={colorScheme.primary} />
+            <Settings size={20} color={colors.primary} />
             <Text style={[styles.secondaryButtonText, { color: colors.accent }]}>Manage Topics</Text>
           </TouchableOpacity>
         </View>
@@ -108,10 +108,9 @@ const styles = StyleSheet.create({
     height: 80,
   },
   title: {
-  fontSize: 48,
-  fontWeight: 'bold',
-  marginBottom: 8,
-  color: colors.accent,
+    fontSize: 48,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
@@ -149,9 +148,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   secondaryButtonText: {
-  fontSize: 16,
-  fontWeight: '500',
-  color: colors.accent,
+    fontSize: 16,
+    fontWeight: '500',
   },
   infoContainer: {
     marginTop: 60,

@@ -37,7 +37,8 @@
         {
           "origin": "https://rork.com/"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
@@ -50,9 +51,7 @@
         "projectId": "b8231e8f-73bb-40f6-aa55-11c9dd2fb3ea"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.1.0",
     "updates": {
       "url": "https://u.expo.dev/b8231e8f-73bb-40f6-aa55-11c9dd2fb3ea"
     }
