@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, Pressable, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft, Clock, RotateCcw, Eye } from 'lucide-react-native';
 import { useGameStore } from '@/stores/game-store';
@@ -11,13 +11,16 @@ export default function GameScreen() {
     timerDuration, 
     selectedCategory, 
     gameState,
-    resetGame 
+    resetGame,
+    updatePlayer 
   } = useGameStore();
   const { getCategory } = useCategoriesStore();
 
   const [timeLeft, setTimeLeft] = useState(timerDuration * 60);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
+  const [editPlayerId, setEditPlayerId] = useState<string | null>(null);
+  const [editPlayerName, setEditPlayerName] = useState('');
 
   useEffect(() => {
     if (!isTimerRunning || timeLeft <= 0) return;
@@ -95,18 +98,28 @@ export default function GameScreen() {
       <View style={styles.playersContainer}>
         <View style={styles.playersGrid}>
           {players.map((player) => (
-            <TouchableOpacity
-              key={player.id}
-              style={styles.playerCard}
-              onPress={() => handlePlayerPress(player.id)}
-            >
-              <View style={styles.playerAvatar}>
-                <Text style={styles.playerInitial}>
-                  {player.name.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-              <Text style={styles.playerName}>{player.name}</Text>
-            </TouchableOpacity>
+            <View key={player.id} style={styles.playerCard}>
+              <TouchableOpacity
+                style={{ flex: 1, alignItems: 'center' }}
+                onPress={() => handlePlayerPress(player.id)}
+              >
+                <View style={styles.playerAvatar}>
+                  <Text style={styles.playerInitial}>
+                    {player.name.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <Text style={styles.playerName}>{player.name}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => {
+                  setEditPlayerId(player.id);
+                  setEditPlayerName(player.name);
+                }}
+              >
+                <Text style={styles.editButtonText}>Edit</Text>
+              </TouchableOpacity>
+            </View>
           ))}
         </View>
       </View>
@@ -152,11 +165,87 @@ export default function GameScreen() {
           </View>
         </Pressable>
       </Modal>
+      {/* Edit Player Modal */}
+      <Modal
+        visible={editPlayerId !== null}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setEditPlayerId(null)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setEditPlayerId(null)}>
+          <View style={styles.modalContent}>
+            <Text style={styles.playerNameInModal}>Edit Name</Text>
+            <TextInput
+              style={styles.playerEditInput}
+              value={editPlayerName}
+              onChangeText={setEditPlayerName}
+              maxLength={20}
+              placeholder="Player name"
+              placeholderTextColor="#666"
+              autoFocus
+            />
+            <View style={{ flexDirection: 'row', gap: 16, marginTop: 24 }}>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={() => {
+                  if (editPlayerId && editPlayerName.trim()) {
+                    updatePlayer(editPlayerId, editPlayerName.trim());
+                    setEditPlayerId(null);
+                  }
+                }}
+              >
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setEditPlayerId(null)}
+              >
+                <Text style={styles.closeButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  editButton: {
+    padding: 8,
+    backgroundColor: '#222',
+    borderRadius: 8,
+    marginLeft: 8,
+    alignSelf: 'center',
+  },
+  editButtonText: {
+    color: '#007AFF',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  playerEditInput: {
+    backgroundColor: '#222',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    color: 'white',
+    fontSize: 18,
+    marginBottom: 12,
+    width: 220,
+    alignSelf: 'center',
+  },
+  saveButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
   container: {
     flex: 1,
     backgroundColor: '#000000',

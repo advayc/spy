@@ -1,0 +1,58 @@
+name: iOS Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install CocoaPods
+        run: sudo gem install cocoapods
+
+      - name: Prebuild native project
+        run: npx expo prebuild --clean
+
+      - name: Install iOS pods
+        run: cd ios && pod install --repo-update
+
+      - name: Set up signing certificates
+        uses: apple-actions/import-codesign-certs@v2
+        with:
+          p12-file-base64: ${{ secrets.APPLE_CERT_P12 }}
+          p12-password: ${{ secrets.APPLE_CERT_PASSWORD }}
+          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      - name: Build iOS app
+        run: |
+          cd ios
+          xcodebuild \
+            -workspace Spy.xcworkspace \
+            -scheme spy \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath $PWD/build/spy.xcarchive archive
+          xcodebuild \
+            -exportArchive \
+            -archivePath $PWD/build/spy.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath $PWD/build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios/build/*.ipa
