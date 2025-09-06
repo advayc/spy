@@ -42,8 +42,8 @@ interface SettingsState {
 const defaultColorScheme: ColorScheme = {
   name: 'Ocean Blue',
   primary: '#007AFF',
-  secondary: '#0056CC',
-  accent: '#64B5F6',
+  secondary: '#2196F3',
+  accent: '#5AC8FA',
 };
 
 const defaultSettings = {

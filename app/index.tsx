@@ -39,7 +39,7 @@ export default function WelcomeScreen() {
 
       <View style={styles.content}>
         <View style={styles.logoContainer}>
-            <Eye size={120} color={colors.accent} strokeWidth={2} />
+            <Eye size={120} color={colors.primary} strokeWidth={2} />
           <Text style={[styles.title, { color: colors.accent }]}>Spy</Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Social Deduction Party Game</Text>
         </View>

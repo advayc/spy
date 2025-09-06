@@ -80,7 +80,7 @@ export default function GameScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ChevronLeft size={24} color={colors.accent} />
+          <ChevronLeft size={24} color={colors.primary} />
         </TouchableOpacity>
         <Text style={styles.categoryText}>
           {selectedCategory === 'random' ? 'Random Mix' : getCategory(selectedCategory)?.name || selectedCategory}
@@ -100,10 +100,10 @@ export default function GameScreen() {
           {players.map((player) => (
             <View key={player.id} style={styles.playerCard}>
               <TouchableOpacity
-                style={{ flex: 1, alignItems: 'center' }}
+                style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 onPress={() => handlePlayerPress(player.id)}
               >
-                <View style={[styles.playerAvatar, { backgroundColor: colors.accent }]}>
+                <View style={[styles.playerAvatar, { backgroundColor: colors.primary }]}> 
                   <Text style={styles.playerInitial}>
                     {player.name.charAt(0).toUpperCase()}
                   </Text>
@@ -137,7 +137,7 @@ export default function GameScreen() {
             )}
             {playerRole?.isSpy ? (
               <View style={styles.spyContainer}>
-                <Eye size={48} color={colors.accent} />
+                <Eye size={48} color={colors.primary} />
                 <Text style={styles.spyText}>You are the spy!</Text>
               </View>
             ) : (
@@ -150,7 +150,7 @@ export default function GameScreen() {
                 </Text>
               </View>
             )}
-            <TouchableOpacity style={[styles.closeButton, { backgroundColor: colors.accent }]} onPress={handleCloseModal}>
+            <TouchableOpacity style={[styles.closeButton, { backgroundColor: colors.primary }]} onPress={handleCloseModal}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -225,7 +225,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
   },
   playerAvatar: {
     width: 48,

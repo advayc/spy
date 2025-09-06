@@ -95,11 +95,11 @@ export default function CreateGameScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ChevronLeft size={24} color={colors.accent} />
+          <ChevronLeft size={24} color={colors.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create Game</Text>
         <TouchableOpacity onPress={() => router.push('/topics')} style={styles.topicsButton}>
-          <List size={24} color={colors.accent} />
+          <List size={24} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -123,7 +123,7 @@ export default function CreateGameScreen() {
               style={[styles.addButton, !newPlayerName.trim() && styles.addButtonDisabled]}
               disabled={!newPlayerName.trim() || players.length >= 15}
             >
-              <Plus size={20} color={!newPlayerName.trim() || players.length >= 15 ? "#666666" : colors.accent} />
+              <Plus size={20} color={!newPlayerName.trim() || players.length >= 15 ? "#666666" : colors.primary} />
             </TouchableOpacity>
           </View>
 
@@ -143,14 +143,14 @@ export default function CreateGameScreen() {
                       <TouchableOpacity onPress={handleCancelPlayerEdit} style={styles.editActionButton}>
                         <Text style={styles.editActionText}>Cancel</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={handleSavePlayerEdit} style={[styles.editActionButton, { backgroundColor: colors.accent }]}>
+                      <TouchableOpacity onPress={handleSavePlayerEdit} style={[styles.editActionButton, { backgroundColor: colors.primary }]}>
                         <Text style={[styles.editActionText, { color: 'white' }]}>Save</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
                 ) : (
                   <View style={styles.playerInfo}>
-                    <View style={[styles.playerAvatar, { backgroundColor: colors.accent }]}>
+                    <View style={[styles.playerAvatar, { backgroundColor: colors.primary }]}>
                       <Text style={styles.playerInitial}>
                         {player.name.charAt(0).toUpperCase()}
                       </Text>
@@ -161,7 +161,7 @@ export default function CreateGameScreen() {
                         onPress={() => handleEditPlayer(player.id)}
                         style={styles.playerActionButton}
                       >
-                        <Edit2 size={16} color={colors.accent} />
+                        <Edit2 size={16} color={colors.primary} />
                       </TouchableOpacity>
                       <TouchableOpacity 
                         onPress={() => handleRemovePlayer(player.id)}
@@ -188,13 +188,13 @@ export default function CreateGameScreen() {
                 key={option.value}
                 style={[
                   styles.timerOption,
-                  timerDuration === option.value && { ...styles.timerOptionSelected, borderColor: colors.accent, backgroundColor: colors.surface }
+                  timerDuration === option.value && { ...styles.timerOptionSelected, borderColor: colors.primary, backgroundColor: colors.surface }
                 ]}
                 onPress={() => setTimerDuration(option.value)}
               >
                 <Text style={[
                   styles.timerOptionText,
-                  timerDuration === option.value && { ...styles.timerOptionTextSelected, color: colors.accent }
+                  timerDuration === option.value && { ...styles.timerOptionTextSelected, color: colors.primary }
                 ]}>
                   {option.label}
                 </Text>

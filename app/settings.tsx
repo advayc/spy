@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
 
 const colorSchemes = [
-  { name: 'Ocean Blue', primary: '#007AFF', secondary: '#0056CC', accent: '#64B5F6' },
+  { name: 'Ocean Blue',   primary: '#007AFF', secondary: '#2196F3', accent: '#5AC8FA' },
   { name: 'Forest Green', primary: '#4CAF50', secondary: '#2E7D32', accent: '#81C784' },
   { name: 'Sunset Orange', primary: '#FF9500', secondary: '#FF6F00', accent: '#FFB74D' },
   { name: 'Purple Magic', primary: '#9C27B0', secondary: '#6A1B9A', accent: '#BA68C8' },
