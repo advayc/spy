@@ -344,7 +344,7 @@ export default function SettingsScreen() {
           <SettingItem
             icon={Info}
             title="App Version"
-            subtitle="1.0.0"
+            subtitle="1.1.0"
             rightComponent={null}
           />
         </View>
