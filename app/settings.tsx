@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Alert, Linking, TextInput } from 'react-native';
 import { router } from 'expo-router';
-import { ArrowLeft, Palette, RotateCcw, Heart, Volume2, VolumeX, Moon, Sun, Vibrate, Bell, Info, ExternalLink } from 'lucide-react-native';
+import { ArrowLeft, Palette, RotateCcw, Heart, Volume2, VolumeX, Moon, Sun, Vibrate, Bell, Info, ExternalLink, Eye, Target } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useTheme } from '@/hooks/useTheme';
@@ -25,6 +25,8 @@ export default function SettingsScreen() {
     customSchemes,
     addCustomScheme,
     removeCustomScheme,
+    defaultGameMode,
+    setDefaultGameMode,
     rolesEnabled,
     setRolesEnabled,
     soundEnabled,
@@ -252,6 +254,42 @@ export default function SettingsScreen() {
         {/* Game Settings */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Game Settings</Text>
+          
+          <SettingItem
+            icon={defaultGameMode === 'spy' ? Eye : Target}
+            title="Default Game Mode"
+            subtitle={`Quick Start will launch ${defaultGameMode === 'spy' ? 'Guess the Spy' : 'Range Game'}`}
+            rightComponent={
+              <View style={styles.gameModeSelector}>
+                <TouchableOpacity
+                  style={[
+                    styles.gameModeOption,
+                    defaultGameMode === 'spy' && styles.gameModeOptionActive
+                  ]}
+                  onPress={() => setDefaultGameMode('spy')}
+                >
+                  <Eye size={16} color={defaultGameMode === 'spy' ? '#fff' : colorScheme.primary} />
+                  <Text style={[
+                    styles.gameModeOptionText,
+                    { color: defaultGameMode === 'spy' ? '#fff' : colorScheme.primary }
+                  ]}>Spy</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.gameModeOption,
+                    defaultGameMode === 'range' && styles.gameModeOptionActive
+                  ]}
+                  onPress={() => setDefaultGameMode('range')}
+                >
+                  <Target size={16} color={defaultGameMode === 'range' ? '#fff' : colorScheme.primary} />
+                  <Text style={[
+                    styles.gameModeOptionText,
+                    { color: defaultGameMode === 'range' ? '#fff' : colorScheme.primary }
+                  ]}>Range</Text>
+                </TouchableOpacity>
+              </View>
+            }
+          />
           
           <SettingItem
             icon={RotateCcw}
@@ -569,5 +607,27 @@ const styles = StyleSheet.create({
   saveCustomText: {
     color: 'white',
     fontWeight: '600',
+  },
+  gameModeSelector: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  gameModeOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#333',
+    gap: 6,
+  },
+  gameModeOptionActive: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  gameModeOptionText: {
+    fontSize: 12,
+    fontWeight: '500',
   },
 });

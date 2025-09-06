@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spy – Social Deduction Party Game</title>
+    <meta name="description" content="Play Spy, a fast social deduction party game for web and mobile. Guess the spy or blend in as one—free to play." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+      :root { --bg:#0b0b10; --text:#f7f7fb; --muted:#a3a3ad; --primary:#6c5ce7; --accent:#ef4444; }
+      *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+      a{color:inherit;text-decoration:none}
+      .wrap{max-width:960px;margin:0 auto;padding:24px}
+      .hero{display:grid;gap:16px;padding:48px 0}
+      .title{font-size:48px;line-height:1.05;margin:0}
+      .subtitle{color:var(--muted);font-size:18px;margin:0}
+      .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+      .btn{padding:12px 18px;border-radius:10px;background:#1a1a22;border:1px solid #262633;display:inline-flex;align-items:center;gap:8px}
+      .btn.primary{background:linear-gradient(135deg,var(--primary),#8e7cff);border:0;color:white}
+      .btn.accent{background:linear-gradient(135deg,var(--accent),#f97316);border:0;color:white}
+      .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:28px}
+      .card{background:#101017;border:1px solid #1e1e2a;border-radius:14px;padding:16px}
+      .heading{font-size:22px;margin:0 0 8px}
+      .muted{color:var(--muted)}
+      .footer{border-top:1px solid #1e1e2a;margin-top:48px;padding:24px 0;color:var(--muted);font-size:14px}
+      .demo{width:100%;border-radius:10px;border:1px solid #1e1e2a}
+      .section-gap{margin-top:28px}
+      .links{display:flex;gap:8px;flex-wrap:wrap}
+      .copyright{margin-top:8px}
+      @media (max-width:600px){.title{font-size:36px}}
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <h1 class="title">Spy — Party Game</h1>
+        <p class="subtitle">A modern, mobile-friendly social deduction game. Play classic "Guess the Spy" or the new Range Mode with friends in seconds.</p>
+        <div class="cta">
+          <a class="btn primary" href="./play/index.html">Play on Web</a>
+          <a class="btn" href="#how">How it works</a>
+          <a class="btn accent" href="#download">Get the App</a>
+        </div>
+      </section>
+
+      <section id="how" class="grid">
+        <div class="card">
+          <h3 class="heading">Two Game Modes</h3>
+          <p class="muted">• Guess the Spy: 1 spy, everyone else shares a topic. Talk, deduce, vote.<br/>• Range Mode: 1 player gets a hidden range, others get the same prompt. Stay in range to win.</p>
+        </div>
+        <div class="card">
+          <h3 class="heading">Quick Start</h3>
+          <p class="muted">No accounts. Add players, pick a topic, and start. Perfect for living rooms, classrooms, or calls.</p>
+        </div>
+        <div class="card">
+          <h3 class="heading">Hundreds of Prompts</h3>
+          <p class="muted">Curated topics and 400+ range prompts for endless replayability. Create your own topics, too.</p>
+        </div>
+      </section>
+
+      <section class="grid section-gap">
+        <div class="card">
+          <h3 class="heading">Demos</h3>
+          <img class="demo" src="../assets/demos/demos.png" alt="Spy game demo screenshots" />
+        </div>
+        <div class="card" id="download">
+          <h3 class="heading">Download</h3>
+          <p class="muted">iOS and Android builds available. Search for "Spy – Party Game" or use the links below when live.</p>
+          <p><a class="btn" href="https://apps.apple.com/" target="_blank" rel="noopener noreferrer">App Store</a>
+             <a class="btn" href="https://play.google.com/" target="_blank" rel="noopener noreferrer">Google Play</a></p>
+        </div>
+        <div class="card">
+          <h3 class="heading">Open Source</h3>
+          <p class="muted">This app is open-source. Contribute or report issues on GitHub.</p>
+          <p><a class="btn" href="https://github.com/advayc/spy" target="_blank" rel="noopener noreferrer">Mobile Repo</a>
+             <a class="btn" href="https://github.com/advayc/spy-web" target="_blank" rel="noopener noreferrer">Website Repo</a></p>
+        </div>
+      </section>
+
+      <section class="footer">
+        <div class="links">
+          <a href="/website/privacy.html">Privacy Policy</a>
+          <span>•</span>
+          <a href="/website/support.html">Support</a>
+        </div>
+        <div class="copyright">© 2025 Advay Chandorkar. All rights reserved.</div>
+      </section>
+    </main>
+  </body>
+</html>

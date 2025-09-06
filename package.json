@@ -2,13 +2,17 @@
   "name": "expo-app",
   "main": "expo-router/entry",
   "version": "1.1.0",
+  "workspaces": [
+    "website"
+  ],
   "scripts": {
     "start": "bunx rork start -p o1d9kua2jj94sagp33bod --tunnel",
     "start-web": "bunx rork start -p o1d9kua2jj94sagp33bod --web --tunnel",
     "start-web-dev": "DEBUG=expo* bunx rork start -p o1d9kua2jj94sagp33bod --web --tunnel",
     "lint": "expo lint",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "build:web": "expo export --platform web --output-dir website/play"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

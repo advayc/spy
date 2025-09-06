@@ -18,6 +18,8 @@ interface SettingsState {
   removeCustomScheme: (name: string) => void;
   
   // Game settings
+  defaultGameMode: 'spy' | 'range';
+  setDefaultGameMode: (mode: 'spy' | 'range') => void;
   rolesEnabled: boolean;
   setRolesEnabled: (enabled: boolean) => void;
   autoStartTimer: boolean;
@@ -46,9 +48,17 @@ const defaultColorScheme: ColorScheme = {
   accent: '#5AC8FA',
 };
 
+export const redColorScheme: ColorScheme = {
+  name: 'Crimson Red',
+  primary: '#DC2626',
+  secondary: '#EF4444',
+  accent: '#F87171',
+};
+
 const defaultSettings = {
   colorScheme: defaultColorScheme,
   customSchemes: [] as ColorScheme[],
+  defaultGameMode: 'spy' as 'spy' | 'range',
   rolesEnabled: true,
   autoStartTimer: false,
   soundEnabled: true,
@@ -63,6 +73,7 @@ export const useSettingsStore = create<SettingsState>()(
       ...defaultSettings,
       
       setColorScheme: (scheme) => set({ colorScheme: scheme }),
+      setDefaultGameMode: (mode) => set({ defaultGameMode: mode }),
       setRolesEnabled: (enabled) => set({ rolesEnabled: enabled }),
       setAutoStartTimer: (enabled) => set({ autoStartTimer: enabled }),
       setSoundEnabled: (enabled) => set({ soundEnabled: enabled }),
