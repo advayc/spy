@@ -21,6 +21,7 @@ function RootLayoutNav() {
       <Stack.Screen name="create-game" />
       <Stack.Screen name="game" />
       <Stack.Screen name="topics" />
+      <Stack.Screen name="settings" />
     </Stack>
   );
 }
@@ -29,11 +30,11 @@ export default function RootLayout() {
   const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
-    // Simulate loading, replace with real logic if needed
+    // Show splash screen for the animation duration
     const timer = setTimeout(() => {
       setAppReady(true);
       SplashScreen.hideAsync();
-    }, 1800);
+    }, 3000); // Increased to 3 seconds to see the full animation
     return () => clearTimeout(timer);
   }, []);
 

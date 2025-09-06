@@ -1,16 +1,27 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { router } from 'expo-router';
-import { Eye, Play, Settings } from 'lucide-react-native';
+import { Eye, Play, Settings, Cog } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSettingsStore } from '@/stores/settings-store';
 
 export default function WelcomeScreen() {
+  const { colorScheme } = useSettingsStore();
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* Settings Button */}
+      <TouchableOpacity 
+        style={styles.settingsButton}
+        onPress={() => router.push('/settings')}
+      >
+        <Cog size={24} color="white" />
+      </TouchableOpacity>
+
       <View style={styles.content}>
         <View style={styles.logoContainer}>
-          <View style={styles.eyeContainer}>
-            <Eye size={80} color="#007AFF" strokeWidth={2} />
+          <View style={[styles.eyeContainer, { backgroundColor: `${colorScheme.primary}20` }]}>
+            <Eye size={80} color={colorScheme.primary} strokeWidth={2} />
           </View>
           <Text style={styles.title}>Spy</Text>
           <Text style={styles.subtitle}>Social Deduction Party Game</Text>
@@ -22,7 +33,7 @@ export default function WelcomeScreen() {
             onPress={() => router.push('/create-game')}
           >
             <LinearGradient
-              colors={['#007AFF', '#0056CC']}
+              colors={[colorScheme.primary, colorScheme.secondary]}
               style={styles.gradientButton}
             >
               <Play size={24} color="white" />
@@ -31,11 +42,11 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={styles.secondaryButton}
+            style={[styles.secondaryButton, { borderColor: `${colorScheme.primary}40` }]}
             onPress={() => router.push('/topics')}
           >
-            <Settings size={20} color="#007AFF" />
-            <Text style={styles.secondaryButtonText}>Manage Topics</Text>
+            <Settings size={20} color={colorScheme.primary} />
+            <Text style={[styles.secondaryButtonText, { color: colorScheme.primary }]}>Manage Topics</Text>
           </TouchableOpacity>
         </View>
 
@@ -53,6 +64,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 60,
+    right: 20,
+    zIndex: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     flex: 1,

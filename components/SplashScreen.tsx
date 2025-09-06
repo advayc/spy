@@ -1,77 +1,161 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-import { Animated as RNAnimated } from 'react-native';
+import { View, Animated, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Eye, Play, Settings } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSettingsStore } from '@/stores/settings-store';
 
 export default function SplashScreen() {
-  // Animation values for eye drawing
-  const eyeStroke = useRef(new Animated.Value(0)).current;
-  // Animation for buttons fade-in and slide up
+  const { colorScheme } = useSettingsStore();
+  // Animation values
+  const logoScale = useRef(new Animated.Value(0.5)).current;
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const titleOpacity = useRef(new Animated.Value(0)).current;
+  const titleTranslate = useRef(new Animated.Value(30)).current;
   const buttonsOpacity = useRef(new Animated.Value(0)).current;
-  const buttonsTranslate = useRef(new Animated.Value(40)).current;
+  const buttonsTranslate = useRef(new Animated.Value(50)).current;
+  
+  // Floating animation for buttons
+  const buttonFloat1 = useRef(new Animated.Value(0)).current;
+  const buttonFloat2 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Animate the eye drawing
-    Animated.timing(eyeStroke, {
-      toValue: 1,
-      duration: 1200,
-      useNativeDriver: false,
-    }).start(() => {
-      // Fade in and slide up buttons after eye is drawn
+    // Start animation sequence
+    Animated.sequence([
+      // Logo entrance
       Animated.parallel([
-        Animated.timing(buttonsOpacity, {
+        Animated.timing(logoOpacity, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.spring(logoScale, {
+          toValue: 1,
+          tension: 50,
+          friction: 7,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Title entrance
+      Animated.parallel([
+        Animated.timing(titleOpacity, {
           toValue: 1,
           duration: 600,
           useNativeDriver: true,
         }),
-        Animated.timing(buttonsTranslate, {
+        Animated.timing(titleTranslate, {
           toValue: 0,
           duration: 600,
           useNativeDriver: true,
-        })
-      ]).start();
-    });
-  }, [eyeStroke, buttonsOpacity, buttonsTranslate]);
+        }),
+      ]),
+      // Buttons entrance
+      Animated.parallel([
+        Animated.timing(buttonsOpacity, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.spring(buttonsTranslate, {
+          toValue: 0,
+          tension: 50,
+          friction: 8,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
 
-  // Eye SVG path (replace with your actual SVG path from icon.svg)
-  const eyePath =
-    'M64 128C64 92.7 92.7 64 128 64C163.3 64 192 92.7 192 128C192 163.3 163.3 192 128 192C92.7 192 64 163.3 64 128ZM128 160C146.7 160 160 146.7 160 128C160 109.3 146.7 96 128 96C109.3 96 96 109.3 96 128C96 146.7 109.3 160 128 160Z';
+    // Start floating animations for buttons
+    const createFloatingAnimation = (animatedValue: Animated.Value, delay: number) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(animatedValue, {
+            toValue: -8,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(animatedValue, {
+            toValue: 8,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+    };
 
-  // Animate strokeDashoffset to "draw" the path
-  const pathLength = 600; // Approximate, adjust for your SVG
-  const strokeDashoffset = eyeStroke.interpolate({
-    inputRange: [0, 1],
-    outputRange: [pathLength, 0],
-  });
-  // Create an animated Path component
-  const AnimatedPath = RNAnimated.createAnimatedComponent(Path);
+    const floating1 = createFloatingAnimation(buttonFloat1, 0);
+    const floating2 = createFloatingAnimation(buttonFloat2, 1000);
+    
+    floating1.start();
+    floating2.start();
+
+    return () => {
+      floating1.stop();
+      floating2.stop();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Animated.View style={{ opacity: 1 }}>
-        <Svg width={180} height={180} viewBox="0 0 256 256">
-          <AnimatedPath
-            d={eyePath}
-            stroke="#007AFF"
-            strokeWidth={8}
-            fill="none"
-            strokeDasharray={pathLength}
-            strokeDashoffset={strokeDashoffset}
-          />
-        </Svg>
+      {/* Logo */}
+      <Animated.View style={[
+        styles.logoContainer,
+        {
+          opacity: logoOpacity,
+          transform: [{ scale: logoScale }],
+        }
+      ]}>
+        <View style={[styles.eyeContainer, { backgroundColor: `${colorScheme.primary}20` }]}>
+          <Eye size={80} color={colorScheme.primary} strokeWidth={2} />
+        </View>
       </Animated.View>
-      <Animated.View style={[styles.buttonsContainer, {
-        opacity: buttonsOpacity,
-        transform: [{ translateY: buttonsTranslate }],
-      }]}> 
-        {/* Example buttons, replace with your actual splash buttons */}
-        <View style={styles.button} />
-        <View style={styles.button} />
+
+      {/* Title */}
+      <Animated.View style={[
+        styles.titleContainer,
+        {
+          opacity: titleOpacity,
+          transform: [{ translateY: titleTranslate }],
+        }
+      ]}>
+        <Text style={styles.title}>Spy</Text>
+        <Text style={styles.subtitle}>Social Deduction Party Game</Text>
+      </Animated.View>
+
+      {/* Animated Buttons */}
+      <Animated.View style={[
+        styles.buttonsContainer,
+        {
+          opacity: buttonsOpacity,
+          transform: [{ translateY: buttonsTranslate }],
+        }
+      ]}>
+        <Animated.View style={{
+          transform: [{ translateY: buttonFloat1 }],
+        }}>
+          <TouchableOpacity style={styles.primaryButton}>
+            <LinearGradient
+              colors={[colorScheme.primary, colorScheme.secondary]}
+              style={styles.gradientButton}
+            >
+              <Play size={20} color="white" />
+              <Text style={styles.primaryButtonText}>Create Game</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </Animated.View>
+        
+        <Animated.View style={{
+          transform: [{ translateY: buttonFloat2 }],
+        }}>
+          <TouchableOpacity style={[styles.secondaryButton, { borderColor: `${colorScheme.primary}40` }]}>
+            <Settings size={18} color={colorScheme.primary} />
+            <Text style={[styles.secondaryButtonText, { color: colorScheme.primary }]}>Manage Topics</Text>
+          </TouchableOpacity>
+        </Animated.View>
       </Animated.View>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -79,16 +163,74 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  eyeContainer: {
+    padding: 20,
+    borderRadius: 50,
+    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 60,
+  },
+  title: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#888',
+    textAlign: 'center',
   },
   buttonsContainer: {
-    flexDirection: 'row',
-    marginTop: 48,
-    gap: 24,
+    alignItems: 'center',
+    gap: 20,
+    width: '100%',
   },
-  button: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#007AFF',
+  primaryButton: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#007AFF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  gradientButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    gap: 12,
+  },
+  primaryButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  secondaryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0, 122, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 122, 255, 0.3)',
+    gap: 8,
+  },
+  secondaryButtonText: {
+    color: '#007AFF',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

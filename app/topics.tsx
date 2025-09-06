@@ -4,8 +4,10 @@ import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2, Edit2 } from 'lucide-react-native';
 import { useTopicsStore, Topic } from '@/stores/topics-store';
 import { useCategoriesStore, builtinCategories } from '@/stores/categories-store';
+import { useSettingsStore } from '@/stores/settings-store';
 
 export default function TopicsScreen() {
+  const { colorScheme } = useSettingsStore();
   const { topics, addTopic, removeTopic } = useTopicsStore();
   const { customCategories, addCategory, removeCategory, updateCategory, getAllCategories, getCategory } = useCategoriesStore();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -15,6 +17,7 @@ export default function TopicsScreen() {
   const [newCategoryUseRoles, setNewCategoryUseRoles] = useState<boolean>(true);
   const [showAddCategory, setShowAddCategory] = useState<boolean>(false);
   const [showAddTopic, setShowAddTopic] = useState<boolean>(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
 
   const categories = getAllCategories();
 
@@ -177,7 +180,7 @@ export default function TopicsScreen() {
           </View>
         )}
 
-  <FlatList
+        <FlatList
           data={categoryTopics}
           renderItem={renderTopicItem}
           keyExtractor={(item) => item.id}
@@ -216,22 +219,34 @@ export default function TopicsScreen() {
             onChangeText={setNewCategoryName}
             autoFocus
           />
-          <TextInput
-            style={[styles.addCategoryInput, { marginTop: 8 }]}
-            placeholder="Icon (emoji, e.g., 🐾)"
-            placeholderTextColor="#666666"
-            value={newCategoryIcon}
-            onChangeText={setNewCategoryIcon}
-            maxLength={4}
-          />
-          <TouchableOpacity
-            style={{ marginTop: 8 }}
-            onPress={() => setNewCategoryUseRoles(v => !v)}
-          >
-            <Text style={{ color: 'white' }}>
-              {newCategoryUseRoles ? '☑ Use roles' : '☐ No roles'}
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.emojiAndRolesRow}>
+            {/* Emoji Picker */}
+            <TouchableOpacity
+              style={styles.emojiPicker}
+              onPress={() => setShowEmojiPicker(true)}
+            >
+              <Text style={styles.emojiLabel}>Icon:</Text>
+              <Text style={styles.emojiDisplay}>{newCategoryIcon}</Text>
+            </TouchableOpacity>
+            {/* Checkbox */}
+            <TouchableOpacity
+              style={styles.rolesCheckbox}
+              onPress={() => setNewCategoryUseRoles(v => !v)}
+            >
+              <Text style={styles.checkboxIcon}>{newCategoryUseRoles ? '✅' : '⬜️'}</Text>
+              <Text style={styles.checkboxLabel}>Use roles</Text>
+            </TouchableOpacity>
+          </View>
+          {showEmojiPicker && (
+            <View style={styles.emojiPickerModal}>
+              {/* Simple emoji selector, you can expand this list */}
+              {['⭐','🐾','🎲','🎉','🦁','🐶','🐱','🐼','🐸','🦊','🐵','🐧','🐦','🐤','🐺','🦄','🐝','🐛','🦋','🐌','🐞','🐢','🐍','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦣','🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🪶','🐓','🦃','🦤','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦫','🦦','🦥','🐁','🐀','🐿','🦔'].map(emoji => (
+                <TouchableOpacity key={emoji} onPress={() => { setNewCategoryIcon(emoji); setShowEmojiPicker(false); }}>
+                  <Text style={styles.emojiOption}>{emoji}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
           <View style={styles.addTopicActions}>
             <TouchableOpacity 
               style={styles.cancelButton}
@@ -437,5 +452,57 @@ const styles = StyleSheet.create({
     color: 'white',
     borderWidth: 1,
     borderColor: '#2a2a2a',
+  },
+  emojiAndRolesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 8,
+  },
+  emojiPicker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#222',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginRight: 12,
+  },
+  emojiLabel: {
+    color: '#aaa',
+    fontSize: 16,
+    marginRight: 6,
+  },
+  emojiDisplay: {
+    fontSize: 24,
+  },
+  rolesCheckbox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#222',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  checkboxIcon: {
+    fontSize: 22,
+    marginRight: 6,
+  },
+  checkboxLabel: {
+    color: 'white',
+    fontSize: 16,
+  },
+  emojiPickerModal: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    backgroundColor: '#111',
+    borderRadius: 12,
+    padding: 12,
+    marginVertical: 8,
+    maxHeight: 180,
+  },
+  emojiOption: {
+    fontSize: 28,
+    margin: 6,
   },
 });

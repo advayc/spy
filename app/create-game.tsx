@@ -5,8 +5,10 @@ import { ChevronLeft, Plus, Trash2, Play, Clock, List, Shuffle } from 'lucide-re
 import { LinearGradient } from 'expo-linear-gradient';
 import { useGameStore } from '@/stores/game-store';
 import { useCategoriesStore } from '@/stores/categories-store';
+import { useSettingsStore } from '@/stores/settings-store';
 
 export default function CreateGameScreen() {
+  const { colorScheme, rolesEnabled } = useSettingsStore();
   const { 
     players, 
     timerDuration, 
@@ -87,21 +89,18 @@ export default function CreateGameScreen() {
           </View>
 
           <View style={styles.playersGrid}>
-            {players.map((player) => (
-              <View key={player.id} style={styles.playerCard}>
-                <View style={styles.playerInfo}>
-                  <View style={styles.playerAvatar}>
-                    <Text style={styles.playerInitial}>
-                      {player.name.charAt(0).toUpperCase()}
-                    </Text>
-                  </View>
-                  <Text style={styles.playerName}>{player.name}</Text>
-                </View>
-                <TouchableOpacity 
-                  onPress={() => removePlayer(player.id)}
-                  style={styles.removeButton}
-                >
-                  <Trash2 size={16} color="#FF3B30" />
+            {players.map((player, idx) => (
+              <View key={player.id} style={styles.playerRow}>
+                <TextInput
+                  style={styles.playerNameInput}
+                  value={player.name}
+                  onChangeText={name => updatePlayer(player.id, name)}
+                  placeholder={`Player ${idx + 1}`}
+                  placeholderTextColor="#888"
+                  maxLength={16}
+                />
+                <TouchableOpacity onPress={() => removePlayer(player.id)} style={styles.removePlayerButton}>
+                  <Text style={styles.removePlayerText}>Remove</Text>
                 </TouchableOpacity>
               </View>
             ))}
@@ -365,5 +364,42 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+  },
+  playerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  playerNameInput: {
+    flex: 1,
+    backgroundColor: '#222',
+    color: 'white',
+    fontSize: 18,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginRight: 10,
+  },
+  removePlayerButton: {
+    backgroundColor: '#333',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  removePlayerText: {
+    color: '#ff6666',
+    fontSize: 16,
+  },
+  addPlayerButton: {
+    backgroundColor: '#444',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    alignSelf: 'flex-start',
+    marginTop: 8,
+  },
+  addPlayerText: {
+    color: '#66ff99',
+    fontSize: 18,
   },
 });

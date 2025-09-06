@@ -45,7 +45,8 @@ jobs:
             -scheme spy \
             -configuration Release \
             -sdk iphoneos \
-            -archivePath $PWD/build/spy.xcarchive archive
+            -archivePath $PWD/build/spy.xcarchive \
+            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} archive
           xcodebuild \
             -exportArchive \
             -archivePath $PWD/build/spy.xcarchive \

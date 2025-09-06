@@ -1,0 +1,103 @@
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export interface ColorScheme {
+  name: string;
+  primary: string;
+  secondary: string;
+  accent: string;
+}
+
+interface SettingsState {
+  // Color scheme
+  colorScheme: ColorScheme;
+  setColorScheme: (scheme: ColorScheme) => void;
+  customSchemes: ColorScheme[];
+  addCustomScheme: (scheme: ColorScheme) => void;
+  removeCustomScheme: (name: string) => void;
+  
+  // Game settings
+  rolesEnabled: boolean;
+  setRolesEnabled: (enabled: boolean) => void;
+  autoStartTimer: boolean;
+  setAutoStartTimer: (enabled: boolean) => void;
+  
+  // Audio & feedback
+  soundEnabled: boolean;
+  setSoundEnabled: (enabled: boolean) => void;
+  vibrationsEnabled: boolean;
+  setVibrationsEnabled: (enabled: boolean) => void;
+  notificationsEnabled: boolean;
+  setNotificationsEnabled: (enabled: boolean) => void;
+  
+  // Appearance
+  darkMode: boolean;
+  setDarkMode: (enabled: boolean) => void;
+  
+  // Actions
+  resetAllSettings: () => void;
+}
+
+const defaultColorScheme: ColorScheme = {
+  name: 'Ocean Blue',
+  primary: '#007AFF',
+  secondary: '#0056CC',
+  accent: '#64B5F6',
+};
+
+const defaultSettings = {
+  colorScheme: defaultColorScheme,
+  customSchemes: [] as ColorScheme[],
+  rolesEnabled: true,
+  autoStartTimer: false,
+  soundEnabled: true,
+  vibrationsEnabled: true,
+  notificationsEnabled: true,
+  darkMode: true,
+};
+
+export const useSettingsStore = create<SettingsState>()(
+  persist(
+    (set, get) => ({
+      ...defaultSettings,
+      
+      setColorScheme: (scheme) => set({ colorScheme: scheme }),
+      setRolesEnabled: (enabled) => set({ rolesEnabled: enabled }),
+      setAutoStartTimer: (enabled) => set({ autoStartTimer: enabled }),
+      setSoundEnabled: (enabled) => set({ soundEnabled: enabled }),
+      setVibrationsEnabled: (enabled) => set({ vibrationsEnabled: enabled }),
+      setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
+      setDarkMode: (enabled) => set({ darkMode: enabled }),
+      
+      addCustomScheme: (scheme) => {
+        const current = get().customSchemes;
+        // Ensure unique name by appending a counter if needed
+        let base = scheme.name?.trim() || 'Custom';
+        let unique = base;
+        let i = 2;
+        while (current.some(s => s.name === unique)) {
+          unique = `${base} ${i++}`;
+        }
+        const finalScheme = { ...scheme, name: unique };
+        set({ customSchemes: [...current, finalScheme] });
+        // Optionally select the newly added scheme
+        set({ colorScheme: finalScheme });
+      },
+      removeCustomScheme: (name) => {
+        const filtered = get().customSchemes.filter(s => s.name !== name);
+        set({ customSchemes: filtered });
+        // If the current scheme was removed, revert to default
+        if (get().colorScheme.name === name) {
+          set({ colorScheme: defaultColorScheme });
+        }
+      },
+      
+      resetAllSettings: () => set(defaultSettings),
+    }),
+    {
+      name: 'settings-storage',
+      storage: createJSONStorage(() => AsyncStorage),
+    }
+  )
+);

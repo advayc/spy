@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { useTopicsStore } from './topics-store';
 import { useCategoriesStore } from './categories-store';
+import { useSettingsStore } from './settings-store';
 
 export interface Player {
   id: string;
@@ -78,7 +79,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   startGame: () => {
     const { players, selectedCategory } = get();
     const { topics } = useTopicsStore.getState();
-  const { getCategory } = useCategoriesStore.getState();
+    const { getCategory } = useCategoriesStore.getState();
+    const { rolesEnabled } = useSettingsStore.getState();
     
     // Get topics for selected category or all topics if random
     let availableTopics = topics;
@@ -98,9 +100,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const spyIndex = Math.floor(Math.random() * players.length);
     const spyId = players[spyIndex].id;
     
-    // Determine if this category uses roles
+    // Determine if this category uses roles and if roles are globally enabled
     const catMeta = selectedCategory === 'random' ? undefined : getCategory(selectedCategory);
-    const usesRoles = catMeta ? catMeta.useRoles : true;
+    const usesRoles = rolesEnabled && (catMeta ? catMeta.useRoles : true);
 
     // Assign roles to players
     const playerRoles: Record<string, { role: string; isSpy: boolean }> = {};
