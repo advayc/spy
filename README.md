@@ -6,3 +6,9 @@ Spy is a modern, mobile-friendly social deduction party game." Play with your fr
 
 https://github.com/user-attachments/assets/33248075-c040-43f1-8be8-3578a567a6c6
 
+### setup
+- run workflow and get .ipa
+- open xcode 
+- window -> organizer
+- distribute app -> app store connect
+- upload ipa
