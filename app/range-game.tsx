@@ -74,7 +74,7 @@ export default function RangeGameScreen() {
     router.push('/range-play');
   };
 
-  const renderPlayerItem = ({ item, index }: { item: any; index: number }) => (
+  const renderPlayerItem = ({ item, index }: { item: { id: string; name: string }; index: number }) => (
     <View style={[styles.playerItem, { backgroundColor: colors.surface, borderColor: `${colors.primary}20` }]}>
       <View style={styles.playerInfo}>
         <Text style={[styles.playerNumber, { color: colors.primary }]}>#{index + 1}</Text>
@@ -192,7 +192,7 @@ export default function RangeGameScreen() {
             <FlatList
               data={players}
               renderItem={renderPlayerItem}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item: { id: string; name: string }) => item.id}
               style={styles.playersList}
               scrollEnabled={false}
             />

@@ -4,13 +4,15 @@
     "strict": true,
     "esModuleInterop": true,
   "jsx": "react-native",
+  "target": "es2015",
   "module": "esnext",
   "forceConsistentCasingInFileNames": true,
     "paths": {
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "downlevelIteration": true
   },
   "include": [
     "**/*.ts",
