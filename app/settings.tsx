@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Alert, Linking, TextInput } from 'react-native';
-import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { ArrowLeft, Palette, RotateCcw, Heart, Volume2, VolumeX, Moon, Sun, Vibrate, Bell, Info, ExternalLink } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore } from '@/stores/settings-store';
+import { useTheme } from '@/hooks/useTheme';
+import { useVibration } from '@/hooks/useVibration';
 
 const colorSchemes = [
   { name: 'Ocean Blue', primary: '#007AFF', secondary: '#0056CC', accent: '#64B5F6' },
@@ -21,9 +22,9 @@ export default function SettingsScreen() {
   const {
     colorScheme,
     setColorScheme,
-  customSchemes,
-  addCustomScheme,
-  removeCustomScheme,
+    customSchemes,
+    addCustomScheme,
+    removeCustomScheme,
     rolesEnabled,
     setRolesEnabled,
     soundEnabled,
@@ -38,6 +39,9 @@ export default function SettingsScreen() {
     setAutoStartTimer,
     resetAllSettings,
   } = useSettingsStore();
+
+  const { colors } = useTheme();
+  const vibrate = useVibration();
 
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showCustomCreator, setShowCustomCreator] = useState(false);
@@ -62,6 +66,7 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: () => {
             resetAllSettings();
+            vibrate.success();
             Alert.alert('Settings Reset', 'All settings have been reset to default values.');
           },
         },
@@ -70,20 +75,21 @@ export default function SettingsScreen() {
   };
 
   const handleSupportDeveloper = () => {
+    vibrate.light();
     Linking.openURL('https://advay.ca').catch(() => {
       Alert.alert('Error', 'Could not open the website. Please visit advay.ca manually.');
     });
   };
 
   const SettingItem = ({ icon: Icon, title, subtitle, rightComponent, onPress }: any) => (
-    <TouchableOpacity style={styles.settingItem} onPress={onPress}>
+    <TouchableOpacity style={[styles.settingItem, { backgroundColor: colors.surface }]} onPress={onPress}>
       <View style={styles.settingLeft}>
         <View style={[styles.iconContainer, { backgroundColor: `${colorScheme.primary}20` }]}>
           <Icon size={20} color={colorScheme.primary} />
         </View>
         <View style={styles.settingText}>
-          <Text style={styles.settingTitle}>{title}</Text>
-          {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
+          <Text style={[styles.settingTitle, { color: colors.text }]}>{title}</Text>
+          {subtitle && <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>{subtitle}</Text>}
         </View>
       </View>
       {rightComponent}
@@ -96,9 +102,7 @@ export default function SettingsScreen() {
       onPress={() => {
         setColorScheme(scheme);
         setShowColorPicker(false);
-        if (vibrationsEnabled) {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        }
+        vibrate.medium();
         Alert.alert('Color Scheme Changed', `Switched to ${scheme.name}!`);
       }}
     >
@@ -106,7 +110,7 @@ export default function SettingsScreen() {
         colors={[scheme.primary, scheme.secondary]}
         style={styles.colorPreview}
       />
-      <Text style={styles.colorSchemeName}>{scheme.name}</Text>
+      <Text style={[styles.colorSchemeName, { color: colors.text }]}>{scheme.name}</Text>
       {isSelected && (
         <View style={styles.selectedIndicator}>
           <Text style={styles.selectedIcon}>✓</Text>
@@ -116,13 +120,13 @@ export default function SettingsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ArrowLeft size={24} color="white" />
+          <ArrowLeft size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Settings</Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -217,7 +221,7 @@ export default function SettingsScreen() {
                     disabled={!canSaveCustom}
                     onPress={() => {
                       addCustomScheme({ name: customName.trim(), primary: customPrimary.trim(), secondary: customSecondary.trim(), accent: customAccent.trim() });
-                      if (vibrationsEnabled) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      vibrate.success();
                       Alert.alert('Saved', 'Custom gradient saved and applied.');
                       setShowCustomCreator(false);
                     }}
@@ -362,7 +366,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
   },
   header: {
     flexDirection: 'row',
@@ -371,7 +374,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
   },
   backButton: {
     padding: 8,
@@ -379,7 +381,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: 'white',
   },
   placeholder: {
     width: 40,
@@ -394,7 +395,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: 'white',
     marginBottom: 16,
   },
   settingItem: {
@@ -403,9 +403,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 16,
-    backgroundColor: '#111',
-    borderRadius: 12,
     marginBottom: 8,
+    borderRadius: 12,
   },
   settingLeft: {
     flexDirection: 'row',

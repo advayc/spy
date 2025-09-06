@@ -4,33 +4,50 @@ import { router } from 'expo-router';
 import { Eye, Play, Settings, Cog } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore } from '@/stores/settings-store';
+import { useTheme } from '@/hooks/useTheme';
+import { useVibration } from '@/hooks/useVibration';
 
 export default function WelcomeScreen() {
   const { colorScheme } = useSettingsStore();
+  const { colors } = useTheme();
+  const vibrate = useVibration();
+
+  const handleCreateGame = () => {
+    vibrate.medium();
+    router.push('/create-game');
+  };
+
+  const handleManageTopics = () => {
+    vibrate.light();
+    router.push('/topics');
+  };
+
+  const handleSettings = () => {
+    vibrate.light();
+    router.push('/settings');
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Settings Button */}
       <TouchableOpacity 
-        style={styles.settingsButton}
-        onPress={() => router.push('/settings')}
+        style={[styles.settingsButton, { backgroundColor: `${colors.primary}20` }]}
+        onPress={handleSettings}
       >
-        <Cog size={24} color="white" />
+        <Cog size={24} color={colors.primary} />
       </TouchableOpacity>
 
       <View style={styles.content}>
         <View style={styles.logoContainer}>
-          <View style={[styles.eyeContainer, { backgroundColor: `${colorScheme.primary}20` }]}>
-            <Eye size={80} color={colorScheme.primary} strokeWidth={2} />
-          </View>
-          <Text style={styles.title}>Spy</Text>
-          <Text style={styles.subtitle}>Social Deduction Party Game</Text>
+            <Eye size={120} color={colors.accent} strokeWidth={2} />
+          <Text style={[styles.title, { color: colors.accent }]}>Spy</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Social Deduction Party Game</Text>
         </View>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity 
             style={styles.primaryButton}
-            onPress={() => router.push('/create-game')}
+            onPress={handleCreateGame}
           >
             <LinearGradient
               colors={[colorScheme.primary, colorScheme.secondary]}
@@ -43,15 +60,15 @@ export default function WelcomeScreen() {
 
           <TouchableOpacity 
             style={[styles.secondaryButton, { borderColor: `${colorScheme.primary}40` }]}
-            onPress={() => router.push('/topics')}
+            onPress={handleManageTopics}
           >
             <Settings size={20} color={colorScheme.primary} />
-            <Text style={[styles.secondaryButtonText, { color: colorScheme.primary }]}>Manage Topics</Text>
+            <Text style={[styles.secondaryButtonText, { color: colors.accent }]}>Manage Topics</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>
+          <Text style={[styles.infoText, { color: colors.textSecondary }]}>
             A game of deception and deduction for 3-15 players
           </Text>
         </View>
@@ -63,7 +80,6 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
   },
   settingsButton: {
     position: 'absolute',
@@ -73,7 +89,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -87,18 +102,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 80,
   },
-  eyeContainer: {
-    marginBottom: 24,
+  // removed iconContainer, no background around Eye icon
+  logoImage: {
+    width: 80,
+    height: 80,
   },
   title: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 8,
+  fontSize: 48,
+  fontWeight: 'bold',
+  marginBottom: 8,
+  color: colors.accent,
   },
   subtitle: {
     fontSize: 18,
-    color: '#666666',
     textAlign: 'center',
   },
   buttonContainer: {
@@ -130,20 +146,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#007AFF',
     gap: 8,
   },
   secondaryButtonText: {
-    color: '#007AFF',
-    fontSize: 16,
-    fontWeight: '500',
+  fontSize: 16,
+  fontWeight: '500',
+  color: colors.accent,
   },
   infoContainer: {
     marginTop: 60,
     paddingHorizontal: 20,
   },
   infoText: {
-    color: '#888888',
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,

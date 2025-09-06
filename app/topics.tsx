@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, FlatList, Modal, Pressable, Switch } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2, Edit2 } from 'lucide-react-native';
 import { useTopicsStore, Topic } from '@/stores/topics-store';
@@ -8,8 +8,14 @@ import { useSettingsStore } from '@/stores/settings-store';
 
 export default function TopicsScreen() {
   const { colorScheme } = useSettingsStore();
-  const { topics, addTopic, removeTopic } = useTopicsStore();
+  const { topics, addTopic, removeTopic, updateTopic } = useTopicsStore();
   const { customCategories, addCategory, removeCategory, updateCategory, getAllCategories, getCategory } = useCategoriesStore();
+  const [editingTopic, setEditingTopic] = useState<Topic | null>(null);
+  const [editingTopicName, setEditingTopicName] = useState<string>('');
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editingCategoryName, setEditingCategoryName] = useState<string>('');
+  const [editingCategoryIcon, setEditingCategoryIcon] = useState<string>('');
+  const [editingCategoryUseRoles, setEditingCategoryUseRoles] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [newTopicName, setNewTopicName] = useState<string>('');
   const [newCategoryName, setNewCategoryName] = useState<string>('');
@@ -94,7 +100,7 @@ export default function TopicsScreen() {
           <View style={styles.categoryActions}>
             <TouchableOpacity 
               style={styles.editButton}
-              onPress={() => setSelectedCategory(item.id)}
+              onPress={() => startEditCategory(item.id)}
             >
               <Edit2 size={16} color="#0A84FF" />
             </TouchableOpacity>
@@ -116,17 +122,64 @@ export default function TopicsScreen() {
       <TouchableOpacity style={styles.topicItem}>
         <View style={styles.topicHeader}>
           <Text style={styles.topicName}>{item.name}</Text>
-          <TouchableOpacity 
-            style={styles.deleteTopicButton}
-            onPress={() => handleDeleteTopic(item.id)}
-          >
-            <Trash2 size={14} color="#FF3B30" />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <TouchableOpacity style={styles.editButton} onPress={() => startEditTopic(item)}>
+              <Edit2 size={14} color="#0A84FF" />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.deleteTopicButton}
+              onPress={() => handleDeleteTopic(item.id)}
+            >
+              <Trash2 size={14} color="#FF3B30" />
+            </TouchableOpacity>
+          </View>
         </View>
         <Text style={styles.rolesCount}>{item.roles.length} roles</Text>
       </TouchableOpacity>
     );
   }, [handleDeleteTopic]);
+
+  const startEditTopic = (topic: Topic) => {
+    setEditingTopic(topic);
+    setEditingTopicName(topic.name);
+  };
+
+  const saveEditTopic = () => {
+    if (editingTopic && editingTopicName.trim()) {
+      updateTopic(editingTopic.id, { name: editingTopicName.trim() });
+      setEditingTopic(null);
+    }
+  };
+
+  const cancelEditTopic = () => {
+    setEditingTopic(null);
+    setEditingTopicName('');
+  };
+
+  const startEditCategory = (catId: string) => {
+    const cat = getCategory(catId);
+    if (!cat) return;
+    setEditingCategoryId(catId);
+    setEditingCategoryName(cat.name);
+    setEditingCategoryIcon(cat.icon);
+    setEditingCategoryUseRoles(cat.useRoles ?? true);
+  };
+
+  const saveEditCategory = () => {
+    if (!editingCategoryId) return;
+    // only allow updating custom categories
+    if (!builtinCategories[editingCategoryId]) {
+      updateCategory(editingCategoryId, { name: editingCategoryName.trim(), icon: editingCategoryIcon, useRoles: editingCategoryUseRoles });
+    }
+    setEditingCategoryId(null);
+  };
+
+  const cancelEditCategory = () => {
+    setEditingCategoryId(null);
+    setEditingCategoryName('');
+    setEditingCategoryIcon('');
+    setEditingCategoryUseRoles(true);
+  };
 
   if (selectedCategory) {
     const category = categories.find(c => c.id === selectedCategory);
@@ -187,6 +240,34 @@ export default function TopicsScreen() {
           contentContainerStyle={styles.topicsList}
           showsVerticalScrollIndicator={false}
         />
+        {/* Topic Edit Modal */}
+        <Modal
+          visible={!!editingTopic}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={cancelEditTopic}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Edit Topic</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={editingTopicName}
+                onChangeText={setEditingTopicName}
+                placeholder="Topic name"
+                placeholderTextColor="#999"
+              />
+              <View style={styles.modalButtons}>
+                <Pressable style={[styles.modalButton, styles.modalCancel]} onPress={cancelEditTopic}>
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </Pressable>
+                <Pressable style={[styles.modalButton, styles.modalSave]} onPress={saveEditTopic}>
+                  <Text style={[styles.modalButtonText, { color: '#fff' }]}>Save</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     );
   }
@@ -284,6 +365,46 @@ export default function TopicsScreen() {
         contentContainerStyle={styles.categoriesList}
         showsVerticalScrollIndicator={false}
       />
+
+      {/* Category Edit Modal */}
+      <Modal
+        visible={!!editingCategoryId}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={cancelEditCategory}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Category</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={editingCategoryName}
+              onChangeText={setEditingCategoryName}
+              placeholder="Category name"
+              placeholderTextColor="#999"
+            />
+            <TextInput
+              style={styles.modalInput}
+              value={editingCategoryIcon}
+              onChangeText={setEditingCategoryIcon}
+              placeholder="Icon (emoji or text)"
+              placeholderTextColor="#999"
+            />
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+              <Text style={{ marginRight: 8, color: 'white' }}>Use Roles</Text>
+              <Switch value={editingCategoryUseRoles} onValueChange={setEditingCategoryUseRoles} />
+            </View>
+            <View style={styles.modalButtons}>
+              <Pressable style={[styles.modalButton, styles.modalCancel]} onPress={cancelEditCategory}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </Pressable>
+              <Pressable style={[styles.modalButton, styles.modalSave]} onPress={saveEditCategory}>
+                <Text style={[styles.modalButtonText, { color: '#fff' }]}>Save</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -504,5 +625,57 @@ const styles = StyleSheet.create({
   emojiOption: {
     fontSize: 28,
     margin: 6,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 520,
+    backgroundColor: '#111',
+    borderRadius: 12,
+    padding: 16,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+    marginBottom: 12,
+  },
+  modalInput: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: 'white',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 12,
+    marginTop: 8,
+  },
+  modalButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  modalCancel: {
+    backgroundColor: '#2a2a2a',
+  },
+  modalSave: {
+    backgroundColor: '#0A84FF',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

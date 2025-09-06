@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronLeft, Plus, Trash2, Play, Clock, List, Shuffle } from 'lucide-react-native';
+import { ChevronLeft, Plus, Trash2, Play, Clock, List, Shuffle, Edit2 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useGameStore } from '@/stores/game-store';
 import { useCategoriesStore } from '@/stores/categories-store';
-import { useSettingsStore } from '@/stores/settings-store';
+import { useTheme } from '@/hooks/useTheme';
+import { useVibration } from '@/hooks/useVibration';
 
 export default function CreateGameScreen() {
-  const { colorScheme, rolesEnabled } = useSettingsStore();
+  const { colors } = useTheme();
+  const vibrate = useVibration();
   const { 
     players, 
     timerDuration, 
@@ -22,6 +24,8 @@ export default function CreateGameScreen() {
   } = useGameStore();
 
   const [newPlayerName, setNewPlayerName] = useState('');
+  const [editingPlayer, setEditingPlayer] = useState<string | null>(null);
+  const [editPlayerName, setEditPlayerName] = useState('');
 
   const { getAllCategories } = useCategoriesStore();
   const categories = [
@@ -40,15 +44,50 @@ export default function CreateGameScreen() {
     if (newPlayerName.trim() && players.length < 15) {
       addPlayer(newPlayerName.trim());
       setNewPlayerName('');
+      vibrate.light();
     }
+  };
+
+  const handleRemovePlayer = (playerId: string) => {
+    removePlayer(playerId);
+    vibrate.medium();
+  };
+
+  const handleEditPlayer = (playerId: string) => {
+    const player = players.find(p => p.id === playerId);
+    if (player) {
+      setEditingPlayer(playerId);
+      setEditPlayerName(player.name);
+    }
+  };
+
+  const handleSavePlayerEdit = () => {
+    if (editingPlayer && editPlayerName.trim()) {
+      // Simple approach: remove and re-add with new name
+      const player = players.find(p => p.id === editingPlayer);
+      if (player) {
+        removePlayer(editingPlayer);
+        addPlayer(editPlayerName.trim());
+      }
+      setEditingPlayer(null);
+      setEditPlayerName('');
+      vibrate.light();
+    }
+  };
+
+  const handleCancelPlayerEdit = () => {
+    setEditingPlayer(null);
+    setEditPlayerName('');
   };
 
   const handleStartGame = () => {
     if (players.length < 3) {
+      vibrate.error();
       Alert.alert('Not Enough Players', 'You need at least 3 players to start the game.');
       return;
     }
     startGame();
+    vibrate.success();
     router.push('/game');
   };
 
@@ -56,11 +95,11 @@ export default function CreateGameScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ChevronLeft size={24} color="#007AFF" />
+          <ChevronLeft size={24} color={colors.accent} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create Game</Text>
         <TouchableOpacity onPress={() => router.push('/topics')} style={styles.topicsButton}>
-          <List size={24} color="#007AFF" />
+          <List size={24} color={colors.accent} />
         </TouchableOpacity>
       </View>
 
@@ -84,24 +123,55 @@ export default function CreateGameScreen() {
               style={[styles.addButton, !newPlayerName.trim() && styles.addButtonDisabled]}
               disabled={!newPlayerName.trim() || players.length >= 15}
             >
-              <Plus size={20} color={!newPlayerName.trim() || players.length >= 15 ? "#666666" : "#007AFF"} />
+              <Plus size={20} color={!newPlayerName.trim() || players.length >= 15 ? "#666666" : colors.accent} />
             </TouchableOpacity>
           </View>
 
           <View style={styles.playersGrid}>
-            {players.map((player, idx) => (
-              <View key={player.id} style={styles.playerRow}>
-                <TextInput
-                  style={styles.playerNameInput}
-                  value={player.name}
-                  onChangeText={name => updatePlayer(player.id, name)}
-                  placeholder={`Player ${idx + 1}`}
-                  placeholderTextColor="#888"
-                  maxLength={16}
-                />
-                <TouchableOpacity onPress={() => removePlayer(player.id)} style={styles.removePlayerButton}>
-                  <Text style={styles.removePlayerText}>Remove</Text>
-                </TouchableOpacity>
+            {players.map((player) => (
+              <View key={player.id} style={styles.playerCard}>
+                {editingPlayer === player.id ? (
+                  <View style={styles.editPlayerContainer}>
+                    <TextInput
+                      style={styles.editPlayerInput}
+                      value={editPlayerName}
+                      onChangeText={setEditPlayerName}
+                      onSubmitEditing={handleSavePlayerEdit}
+                      autoFocus
+                    />
+                    <View style={styles.editPlayerActions}>
+                      <TouchableOpacity onPress={handleCancelPlayerEdit} style={styles.editActionButton}>
+                        <Text style={styles.editActionText}>Cancel</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={handleSavePlayerEdit} style={[styles.editActionButton, { backgroundColor: colors.accent }]}>
+                        <Text style={[styles.editActionText, { color: 'white' }]}>Save</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.playerInfo}>
+                    <View style={[styles.playerAvatar, { backgroundColor: colors.accent }]}>
+                      <Text style={styles.playerInitial}>
+                        {player.name.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                    <Text style={styles.playerName}>{player.name}</Text>
+                    <View style={styles.playerActions}>
+                      <TouchableOpacity 
+                        onPress={() => handleEditPlayer(player.id)}
+                        style={styles.playerActionButton}
+                      >
+                        <Edit2 size={16} color={colors.accent} />
+                      </TouchableOpacity>
+                      <TouchableOpacity 
+                        onPress={() => handleRemovePlayer(player.id)}
+                        style={styles.playerActionButton}
+                      >
+                        <Trash2 size={16} color="#FF3B30" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
               </View>
             ))}
           </View>
@@ -118,13 +188,13 @@ export default function CreateGameScreen() {
                 key={option.value}
                 style={[
                   styles.timerOption,
-                  timerDuration === option.value && styles.timerOptionSelected
+                  timerDuration === option.value && { ...styles.timerOptionSelected, borderColor: colors.accent, backgroundColor: colors.surface }
                 ]}
                 onPress={() => setTimerDuration(option.value)}
               >
                 <Text style={[
                   styles.timerOptionText,
-                  timerDuration === option.value && styles.timerOptionTextSelected
+                  timerDuration === option.value && { ...styles.timerOptionTextSelected, color: colors.accent }
                 ]}>
                   {option.label}
                 </Text>
@@ -144,14 +214,14 @@ export default function CreateGameScreen() {
                 key={category.id}
                 style={[
                   styles.categoryCard,
-                  selectedCategory === category.id && styles.categoryCardSelected
+                  selectedCategory === category.id && { ...styles.categoryCardSelected, borderColor: colors.accent, backgroundColor: colors.surface }
                 ]}
                 onPress={() => setSelectedCategory(category.id)}
               >
                 <Text style={styles.categoryIcon}>{category.icon}</Text>
                 <Text style={[
                   styles.categoryName,
-                  selectedCategory === category.id && styles.categoryNameSelected
+                  selectedCategory === category.id && { ...styles.categoryNameSelected, color: colors.accent }
                 ]}>
                   {category.name}
                 </Text>
@@ -169,7 +239,7 @@ export default function CreateGameScreen() {
           disabled={players.length < 3}
         >
           <LinearGradient
-            colors={players.length >= 3 ? ['#007AFF', '#0056CC'] : ['#333333', '#222222']}
+            colors={players.length >= 3 ? [colors.accent, colors.primary] : ['#333333', '#222222']}
             style={styles.startButtonGradient}
           >
             <Play size={24} color="white" />
@@ -254,9 +324,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a1a',
     borderRadius: 12,
     padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   playerInfo: {
     flexDirection: 'row',
@@ -267,7 +334,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#007AFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -280,9 +346,40 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '500',
+    flex: 1,
   },
-  removeButton: {
+  playerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  playerActionButton: {
     padding: 8,
+  },
+  editPlayerContainer: {
+    gap: 12,
+  },
+  editPlayerInput: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: 8,
+    padding: 12,
+    color: 'white',
+    fontSize: 16,
+  },
+  editPlayerActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 12,
+  },
+  editActionButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#2a2a2a',
+  },
+  editActionText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
   },
   timerOptions: {
     flexDirection: 'row',
@@ -364,42 +461,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
-  },
-  playerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  playerNameInput: {
-    flex: 1,
-    backgroundColor: '#222',
-    color: 'white',
-    fontSize: 18,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginRight: 10,
-  },
-  removePlayerButton: {
-    backgroundColor: '#333',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  removePlayerText: {
-    color: '#ff6666',
-    fontSize: 16,
-  },
-  addPlayerButton: {
-    backgroundColor: '#444',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    alignSelf: 'flex-start',
-    marginTop: 8,
-  },
-  addPlayerText: {
-    color: '#66ff99',
-    fontSize: 18,
   },
 });

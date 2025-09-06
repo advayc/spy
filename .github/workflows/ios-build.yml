@@ -41,13 +41,14 @@ jobs:
         run: |
           cd ios
           xcodebuild \
-            -workspace Spy.xcworkspace \
+            -workspace spy.xcworkspace \
             -scheme spy \
             -configuration Release \
             -sdk iphoneos \
             -archivePath $PWD/build/spy.xcarchive \
-            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} archive
-              -allowProvisioningUpdates \
+            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} \
+            -allowProvisioningUpdates \
+            archive
           xcodebuild \
             -exportArchive \
             -archivePath $PWD/build/spy.xcarchive \
