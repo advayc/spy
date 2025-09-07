@@ -23,6 +23,7 @@ interface GameStore {
   players: Player[];
   timerDuration: number;
   selectedCategory: string;
+  numImposters: number | 'random';
   gameState: GameState;
   
   addPlayer: (name: string) => void;
@@ -30,6 +31,7 @@ interface GameStore {
   updatePlayer: (id: string, name: string) => void;
   setTimerDuration: (duration: number) => void;
   setSelectedCategory: (category: string) => void;
+  setNumImposters: (num: number | 'random') => void;
   startGame: () => void;
   resetGame: () => void;
 }
@@ -38,10 +40,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
   players: [],
   timerDuration: 8,
   selectedCategory: 'locations',
+  numImposters: 1,
   gameState: {
     currentTopic: null,
     playerRoles: {},
     spyId: null,
+  },
+  setNumImposters: (num) => {
+    set({ numImposters: num });
   },
 
   addPlayer: (name: string) => {
@@ -77,7 +83,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   startGame: () => {
-    const { players, selectedCategory } = get();
+  const { players, selectedCategory, numImposters } = get();
     const { topics } = useTopicsStore.getState();
     const { getCategory } = useCategoriesStore.getState();
     const { rolesEnabled } = useSettingsStore.getState();
@@ -96,9 +102,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Select random topic
     const randomTopic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
     
-    // Select random spy
-    const spyIndex = Math.floor(Math.random() * players.length);
-    const spyId = players[spyIndex].id;
+    // Determine number of imposters
+    let imposterCount = numImposters === 'random'
+      ? Math.max(1, Math.floor(Math.random() * Math.max(1, players.length - 1)))
+      : Math.min(players.length - 1, typeof numImposters === 'number' ? numImposters : 1);
+    // Select random imposters
+    const shuffled = [...players].sort(() => Math.random() - 0.5);
+    const imposterIds = shuffled.slice(0, imposterCount).map(p => p.id);
     
     // Determine if this category uses roles and if roles are globally enabled
     const catMeta = selectedCategory === 'random' ? undefined : getCategory(selectedCategory);
@@ -106,10 +116,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     // Assign roles to players
     const playerRoles: Record<string, { role: string; isSpy: boolean }> = {};
-    
-    players.forEach((player, index) => {
-      if (player.id === spyId) {
-        playerRoles[player.id] = { role: 'Spy', isSpy: true };
+    players.forEach((player) => {
+      if (imposterIds.includes(player.id)) {
+        playerRoles[player.id] = { role: 'Imposter', isSpy: true };
       } else {
         if (usesRoles && randomTopic.roles.length > 0) {
           // Assign random role from topic
@@ -126,7 +135,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       gameState: {
         currentTopic: randomTopic,
         playerRoles,
-        spyId,
+        spyId: imposterIds.length === 1 ? imposterIds[0] : null,
       },
     });
   },
