@@ -10,8 +10,7 @@ web-build/
 expo-env.d.ts
 certs
 .env
-/website
-website
+
 # Native
 *.orig.*
 *.jks
@@ -38,6 +37,3 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 .vercel
-
-# Ignore website folder (tracked as separate repo)
-website/
