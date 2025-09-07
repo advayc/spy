@@ -138,7 +138,15 @@ export default function GameScreen() {
             {playerRole?.isSpy ? (
               <View style={styles.spyContainer}>
                 <Eye size={48} color={colors.primary} />
-                <Text style={styles.spyText}>You are the spy!</Text>
+                {playerRole.customWord ? (
+                  <View style={styles.customWordContainer}>
+                    <Text style={styles.spyText}>You are the spy!</Text>
+                    <Text style={styles.customWordLabel}>Your word is:</Text>
+                    <Text style={styles.customWordText}>{playerRole.customWord}</Text>
+                  </View>
+                ) : (
+                  <Text style={styles.spyText}>You are the spy!</Text>
+                )}
               </View>
             ) : (
               <View style={styles.roleContainer}>
@@ -327,5 +335,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 100,
+  },
+  customWordContainer: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  customWordLabel: {
+    color: '#666666',
+    fontSize: 16,
+    fontWeight: '400',
+    marginTop: 8,
+  },
+  customWordText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RangeQuestion, getRandomQuestion } from '@/data/range-questions';
+import { RangeQuestion, getRandomQuestion, rangeQuestions } from '@/data/range-questions';
 
 export interface RangePlayer {
   id: string;
@@ -15,6 +15,7 @@ export interface RangeGameState {
   players: RangePlayer[];
   currentQuestion: RangeQuestion | null;
   usedQuestionIds: string[];
+  selectedCategory: string;
   
   // Game state
   gameStarted: boolean;
@@ -35,6 +36,7 @@ export interface RangeGameState {
   
   setTimerDuration: (minutes: number) => void;
   setCurrentTimer: (seconds: number) => void;
+  setSelectedCategory: (category: string) => void;
   
   startGame: () => void;
   nextPhase: () => void;
@@ -42,6 +44,7 @@ export interface RangeGameState {
   resetGame: () => void;
   
   selectNewQuestion: () => void;
+  selectNewQuestionWithCustom: (customQuestions: RangeQuestion[]) => void;
   addVote: (voterId: string, targetId: string) => void;
   clearVotes: () => void;
   
@@ -57,6 +60,7 @@ export const useRangeGameStore = create<RangeGameState>()(
       players: [],
       currentQuestion: null,
       usedQuestionIds: [],
+      selectedCategory: 'random',
       gameStarted: false,
       gamePhase: 'setup',
       timerDuration: 8,
@@ -105,6 +109,10 @@ export const useRangeGameStore = create<RangeGameState>()(
       
       setCurrentTimer: (seconds) => {
         set({ currentTimer: seconds });
+      },
+
+      setSelectedCategory: (category) => {
+        set({ selectedCategory: category });
       },
       
       // Game flow
@@ -178,13 +186,39 @@ export const useRangeGameStore = create<RangeGameState>()(
       // Question management
       selectNewQuestion: () => {
         const state = get();
-        const newQuestion = getRandomQuestion(state.usedQuestionIds);
-        const newUsedIds = [...state.usedQuestionIds, newQuestion.id];
         
-        set({
-          currentQuestion: newQuestion,
-          usedQuestionIds: newUsedIds.length > 350 ? [newQuestion.id] : newUsedIds
-        });
+        // Get all available questions (default + custom)
+        let allQuestions = [...rangeQuestions];
+        
+        // Add custom questions from range topics store
+        // Note: This would require accessing the other store, which we'll handle in the component
+        
+        let availableQuestions = allQuestions;
+        
+        // Filter by category if not random
+        if (state.selectedCategory !== 'random') {
+          availableQuestions = allQuestions.filter((q: RangeQuestion) => q.category === state.selectedCategory);
+        }
+        
+        // Filter out used questions
+        const unusedQuestions = availableQuestions.filter((q: RangeQuestion) => !state.usedQuestionIds.includes(q.id));
+        
+        let newQuestion: RangeQuestion;
+        if (unusedQuestions.length === 0) {
+          // If all questions in category used, reset and use any from category
+          newQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+          set({ usedQuestionIds: [newQuestion.id] }); // Reset used questions
+        } else {
+          newQuestion = unusedQuestions[Math.floor(Math.random() * unusedQuestions.length)];
+          const newUsedIds = [...state.usedQuestionIds, newQuestion.id];
+          set({ 
+            currentQuestion: newQuestion,
+            usedQuestionIds: newUsedIds 
+          });
+          return;
+        }
+        
+        set({ currentQuestion: newQuestion });
       },
       
       // Voting

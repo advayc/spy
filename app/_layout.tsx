@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
@@ -8,8 +7,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 
 SplashScreen.preventAutoHideAsync();
-
-const queryClient = new QueryClient();
 
 function RootLayoutNav() {
   return (
@@ -32,11 +29,11 @@ export default function RootLayout() {
   const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
-    // Show splash screen for the animation duration
+    // Show splash screen for a shorter duration to prevent crashes
     const timer = setTimeout(() => {
       setAppReady(true);
-      SplashScreen.hideAsync();
-    }, 3000); // Increased to 3 seconds to see the full animation
+      SplashScreen.hideAsync().catch(console.error);
+    }, 1000); // Reduced to 1 second to prevent crashes
     return () => clearTimeout(timer);
   }, []);
 
@@ -45,11 +42,9 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar style="light" />
-        <RootLayoutNav />
-      </GestureHandlerRootView>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <StatusBar style="light" />
+      <RootLayoutNav />
+    </GestureHandlerRootView>
   );
 }

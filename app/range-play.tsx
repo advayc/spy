@@ -3,26 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Ale
 import { router } from 'expo-router';
 import { ChevronLeft, Users, Clock, Target, RotateCcw } from 'lucide-react-native';
 import { useRangeGameStore } from '@/stores/range-game-store';
-import { useSettingsStore, redColorScheme } from '@/stores/settings-store';
 import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
 
 export default function RangePlayScreen() {
-  const vibrate = useVibration();
-  const { setColorScheme, colorScheme } = useSettingsStore();
-  
-  // Switch to red theme for range game
-  useEffect(() => {
-    const originalScheme = colorScheme;
-    setColorScheme(redColorScheme);
-    
-    return () => {
-      // Restore original theme when leaving
-      setColorScheme(originalScheme);
-    };
-  }, []);
-
   const { colors } = useTheme();
+  const vibrate = useVibration();
   
   const { 
     players, 

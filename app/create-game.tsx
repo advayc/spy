@@ -9,24 +9,28 @@ import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
 
 export default function CreateGameScreen() {
-  const { numImposters, setNumImposters } = useGameStore();
-  const imposterOptions: { value: number | 'random'; label: string }[] = [
-    ...[1, 2, 3, 4, 5].filter(n => n < players.length).map(n => ({ value: n, label: `${n} Imposter${n > 1 ? 's' : ''}` })),
-    { value: 'random', label: 'Random' }
-  ];
   const { colors } = useTheme();
   const vibrate = useVibration();
   const { 
     players, 
     timerDuration, 
     selectedCategory, 
+    setSelectedCategory,
     addPlayer, 
     removePlayer, 
     updatePlayer, 
     setTimerDuration, 
-    setSelectedCategory,
-    startGame 
+    startGame,
+    numImposters, 
+    setNumImposters,
+    spyMode, 
+    setSpyMode
   } = useGameStore();
+  
+  const imposterOptions: { value: number | 'random'; label: string }[] = [
+    ...[1, 2, 3, 4, 5].filter(n => n < players.length).map(n => ({ value: n, label: `${n} Imposter${n > 1 ? 's' : ''}` })),
+    { value: 'random', label: 'Random' }
+  ];
 
   const [newPlayerName, setNewPlayerName] = useState('');
   const [editingPlayer, setEditingPlayer] = useState<string | null>(null);
@@ -253,6 +257,30 @@ export default function CreateGameScreen() {
                   selectedCategory === category.id && { ...styles.categoryNameSelected, color: colors.accent }
                 ]}>
                   {category.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Spy Mode Selector Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Spy Mode</Text>
+          <View style={styles.timerOptions}>
+            {[{ value: 'normal', label: 'Normal' }, { value: 'role', label: 'Spy Role Mode' }].map((option) => (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.timerOption,
+                  spyMode === option.value && { ...styles.timerOptionSelected, borderColor: colors.accent, backgroundColor: colors.surface }
+                ]}
+                onPress={() => setSpyMode(option.value as 'normal' | 'role')}
+              >
+                <Text style={[
+                  styles.timerOptionText,
+                  spyMode === option.value && { ...styles.timerOptionTextSelected, color: colors.accent }
+                ]}>
+                  {option.label}
                 </Text>
               </TouchableOpacity>
             ))}

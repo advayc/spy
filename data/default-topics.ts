@@ -1180,7 +1180,7 @@ export const defaultTopics: Topic[] = [
   // famous ppl
   {
     id: '186',
-    name: 'Bereket Semagn',
+    name: 'Mark Zuckerberg',
     category: 'famous-people',
     roles: ['Goodie Man', 'Coding', 'Tour Manager', 'Security', 'Fan', 'Publicist', 'Dancer', 'Sound Engineer']
   },

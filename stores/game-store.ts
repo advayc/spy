@@ -15,7 +15,7 @@ export interface GameState {
     category: string;
     roles: string[];
   } | null;
-  playerRoles: Record<string, { role: string; isSpy: boolean }>;
+  playerRoles: Record<string, { role: string; isSpy: boolean; customWord?: string }>;
   spyId: string | null;
 }
 
@@ -24,6 +24,7 @@ interface GameStore {
   timerDuration: number;
   selectedCategory: string;
   numImposters: number | 'random';
+    spyMode: 'normal' | 'role';
   gameState: GameState;
   
   addPlayer: (name: string) => void;
@@ -32,6 +33,7 @@ interface GameStore {
   setTimerDuration: (duration: number) => void;
   setSelectedCategory: (category: string) => void;
   setNumImposters: (num: number | 'random') => void;
+    setSpyMode: (mode: 'normal' | 'role') => void;
   startGame: () => void;
   resetGame: () => void;
 }
@@ -41,6 +43,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   timerDuration: 8,
   selectedCategory: 'locations',
   numImposters: 1,
+    spyMode: 'normal',
   gameState: {
     currentTopic: null,
     playerRoles: {},
@@ -82,8 +85,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ selectedCategory: category });
   },
 
+    setSpyMode: (mode: 'normal' | 'role') => {
+      set({ spyMode: mode });
+    },
+
   startGame: () => {
-  const { players, selectedCategory, numImposters } = get();
+  const { players, selectedCategory, numImposters, spyMode } = get();
     const { topics } = useTopicsStore.getState();
     const { getCategory } = useCategoriesStore.getState();
     const { rolesEnabled } = useSettingsStore.getState();
@@ -115,10 +122,33 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const usesRoles = rolesEnabled && (catMeta ? catMeta.useRoles : true);
 
     // Assign roles to players
-    const playerRoles: Record<string, { role: string; isSpy: boolean }> = {};
+    const playerRoles: Record<string, { role: string; isSpy: boolean; customWord?: string }> = {};
     players.forEach((player) => {
       if (imposterIds.includes(player.id)) {
-        playerRoles[player.id] = { role: 'Imposter', isSpy: true };
+        let customWord: string | undefined = undefined;
+        
+  // If spy mode is 'role', get a different role from the same topic
+  if (spyMode === 'role' && usesRoles && randomTopic.roles.length > 1) {
+          // Get roles from same topic excluding roles that might be assigned to other players
+          const availableRoles = [...randomTopic.roles];
+          
+          // Try to find a role that's not already assigned to non-spy players
+          const assignedRoles = Object.values(playerRoles)
+            .filter(p => !p.isSpy)
+            .map(p => p.role);
+          
+          const unassignedRoles = availableRoles.filter(role => !assignedRoles.includes(role));
+          
+          if (unassignedRoles.length > 0) {
+            // Use an unassigned role if available
+            customWord = unassignedRoles[Math.floor(Math.random() * unassignedRoles.length)];
+          } else {
+            // Fallback to any random role from the topic
+            customWord = availableRoles[Math.floor(Math.random() * availableRoles.length)];
+          }
+        }
+        
+        playerRoles[player.id] = { role: 'Imposter', isSpy: true, customWord };
       } else {
         if (usesRoles && randomTopic.roles.length > 0) {
           // Assign random role from topic
