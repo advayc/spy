@@ -89,7 +89,7 @@ export default function RangeGameScreen() {
     </View>
   );
 
-  if (gameStarted) {
+  if (gameStarted && currentQuestion) {
     router.push('/range-play');
     return null;
   }
