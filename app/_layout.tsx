@@ -22,6 +22,8 @@ function RootLayoutNav() {
       <Stack.Screen name="game" />
       <Stack.Screen name="topics" />
       <Stack.Screen name="settings" />
+      <Stack.Screen name="range-play" />
+      <Stack.Screen name="range-game" />
     </Stack>
   );
 }
