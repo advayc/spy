@@ -2,7 +2,41 @@
 const fs = require('fs');
 const path = require('path');
 try {
-  const target = path.join(__dirname, '..', 'node_modules', 'metro', 'src', 'ModuleGraph', 'worker');
+  // Fix Metro module resolution issues
+  const nodeModulesPath = path.join(__dirname, '..', 'node_modules');
+  
+  // Patch metro package.json exports first
+  const metroPackageJsonPath = path.join(nodeModulesPath, 'metro', 'package.json');
+  if (fs.existsSync(metroPackageJsonPath)) {
+    const metroPackageJson = JSON.parse(fs.readFileSync(metroPackageJsonPath, 'utf8'));
+    
+    // Remove exports to allow unrestricted access to all Metro modules
+    delete metroPackageJson.exports;
+    
+    fs.writeFileSync(metroPackageJsonPath, JSON.stringify(metroPackageJson, null, 2), 'utf8');
+    console.log('removed metro package.json exports for unrestricted access');
+  }
+
+  // Patch Expo Router context files
+  const expoRouterPath = path.join(nodeModulesPath, 'expo-router');
+  const contextFiles = ['_ctx.ios.js', '_ctx.android.js', '_ctx.web.js'];
+  
+  contextFiles.forEach(filename => {
+    const filePath = path.join(expoRouterPath, filename);
+    if (fs.existsSync(filePath)) {
+      let content = fs.readFileSync(filePath, 'utf8');
+      
+      // Replace environment variables with fixed values
+      content = content
+        .replace(/process\.env\.EXPO_ROUTER_APP_ROOT/g, '"./app"')
+        .replace(/process\.env\.EXPO_ROUTER_IMPORT_MODE/g, '"lazy"');
+      
+      fs.writeFileSync(filePath, content, 'utf8');
+      console.log(`patched ${filename} with fixed environment variables`);
+    }
+  });
+
+  const target = path.join(nodeModulesPath, 'metro', 'src', 'ModuleGraph', 'worker');
   if (!fs.existsSync(target)) {
     console.log('metro worker dir not found, skipping patch');
     process.exit(0);
@@ -35,24 +69,6 @@ try {
     console.log('wrote importLocationsPlugin shim to', file);
   }
 
-  // Also patch the TerminalReporter export issue
-  const metroPackageJsonPath = path.join(__dirname, '..', 'node_modules', 'metro', 'package.json');
-  if (fs.existsSync(metroPackageJsonPath)) {
-    const metroPackageJson = JSON.parse(fs.readFileSync(metroPackageJsonPath, 'utf8'));
-    if (!metroPackageJson.exports) {
-      metroPackageJson.exports = {};
-    }
-    
-    // Add wildcard export to allow access to all internal modules
-    if (!metroPackageJson.exports['./src/*']) {
-      metroPackageJson.exports['.'] = './src/index.js';
-      metroPackageJson.exports['./src/*'] = './src/*.js';
-      metroPackageJson.exports['./src/*/'] = './src/*/index.js';
-      
-      fs.writeFileSync(metroPackageJsonPath, JSON.stringify(metroPackageJson, null, 2), 'utf8');
-      console.log('patched metro package.json with wildcard exports');
-    }
-  }
 } catch (e) {
   console.error('failed to write shim', e);
 }
