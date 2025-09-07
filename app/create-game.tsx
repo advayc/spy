@@ -214,19 +214,19 @@ export default function CreateGameScreen() {
         {/* spy Selector Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Number of spies</Text>
-          <View style={styles.timerOptions}>
+          <View style={styles.spyOptionsWrap}>
             {spyOptions.map((option) => (
               <TouchableOpacity
                 key={String(option.value)}
                 style={[
-                  styles.timerOption,
-                  numspies === option.value && { ...styles.timerOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
+                  styles.spyOption,
+                  numspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
                 ]}
                 onPress={() => setNumspies(option.value)}
               >
                 <Text style={[
-                  styles.timerOptionText,
-                  numspies === option.value && { ...styles.timerOptionTextSelected, color: colors.error }
+                  styles.spyOptionText,
+                  numspies === option.value && { ...styles.spyOptionTextSelected, color: colors.error }
                 ]}>
                   {option.label}
                 </Text>
@@ -353,15 +353,15 @@ const styles = StyleSheet.create({
   },
   playersGrid: {
   gap: 12,
-  flexDirection: 'row',
-  flexWrap: 'wrap',
+  flexDirection: 'column',
+  flexWrap: 'nowrap',
   justifyContent: 'flex-start',
   },
   playerCard: {
   backgroundColor: '#1a1a1a',
   borderRadius: 12,
   padding: 12,
-  width: '48%',
+  width: '100%',
   marginBottom: 12,
   },
   playerInfo: {
@@ -423,6 +423,34 @@ const styles = StyleSheet.create({
   timerOptions: {
     flexDirection: 'row',
     gap: 12,
+  },
+  spyOptionsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  spyOption: {
+  width: '24%',
+  paddingVertical: 10,
+  paddingHorizontal: 8,
+    borderRadius: 12,
+    backgroundColor: '#1a1a1a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  spyOptionSelected: {
+    backgroundColor: '#001a33',
+  },
+  spyOptionText: {
+    color: '#666666',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  spyOptionTextSelected: {
+    color: '#FF3B30',
+    fontWeight: '600',
   },
   timerOption: {
     flex: 1,
