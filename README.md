@@ -9,7 +9,7 @@ Social deduction party game for iOS & android where players uncover hidden roles
   <summary>Click to view all demos</summary>
 
   ### Video Demo
-  [Watch Demo Video](https://github.com/user-attachments/assets/33248075-c040-43f1-8be8-3578a567a6c6)
+  [Watch Demo Video](https://github.com/user-attachments/assets/d2c65a0c-1ff4-40a8-90b1-daa892283868)
 
   ### Screenshots
   <details>
