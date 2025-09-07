@@ -335,6 +335,8 @@ export default function TopicsScreen() {
   const [showAddCategory, setShowAddCategory] = useState<boolean>(false);
   const [showAddTopic, setShowAddTopic] = useState<boolean>(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
+  const [useKeyboardEmoji, setUseKeyboardEmoji] = useState<boolean>(false);
+  const [manualEmoji, setManualEmoji] = useState<string>('');
   const [emojiSearch, setEmojiSearch] = useState<string>('');
   const [selectedEmojiCategory, setSelectedEmojiCategory] = useState<EmojiCategoryKey>('Smileys');
   const [newCategoryNumspies, setNewCategoryNumspies] = useState<number>(1);
@@ -667,16 +669,59 @@ export default function TopicsScreen() {
             </TouchableOpacity>
           </View>
           {showEmojiPicker && (
-            <View style={styles.emojiPickerModal}>
-              <Text style={styles.emojiPickerTitle}>Pick an emoji</Text>
-              <FlatList
-                data={filteredEmojis}
-                renderItem={renderEmojiItem}
-                keyExtractor={(item) => item}
-                numColumns={8}
-                contentContainerStyle={styles.emojiGrid}
-                showsVerticalScrollIndicator={false}
-              />
+            <View style={[styles.emojiPickerModal, { height: '60%' }]}> 
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <Text style={styles.emojiPickerTitle}>Pick an emoji</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => setUseKeyboardEmoji(v => !v)} style={{ marginRight: 12 }}>
+                    <Text style={{ color: '#0A84FF', fontSize: 14 }}>{useKeyboardEmoji ? 'Picker' : 'Keyboard'}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setShowEmojiPicker(false)}>
+                    <Text style={{ color: '#0A84FF', fontSize: 18 }}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {useKeyboardEmoji ? (
+                <View>
+                  <Text style={{ color: 'white', marginBottom: 8 }}>Type or paste an emoji and press Use</Text>
+                  <TextInput
+                    value={manualEmoji}
+                    onChangeText={setManualEmoji}
+                    placeholder="😀"
+                    placeholderTextColor="#666"
+                    style={styles.emojiSearchInput}
+                    autoFocus
+                  />
+                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
+                    <TouchableOpacity onPress={() => { setManualEmoji(''); setUseKeyboardEmoji(false); }} style={styles.cancelButton}>
+                      <Text style={styles.cancelButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                      const val = manualEmoji.trim();
+                      if (val) {
+                        const ch = Array.from(val)[0];
+                        setNewCategoryIcon(ch);
+                        setShowEmojiPicker(false);
+                        setManualEmoji('');
+                        setUseKeyboardEmoji(false);
+                      }
+                    }} style={styles.saveButton}>
+                      <Text style={styles.saveButtonText}>Use</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <FlatList
+                  data={filteredEmojis}
+                  renderItem={renderEmojiItem}
+                  keyExtractor={(item) => item}
+                  numColumns={8}
+                  contentContainerStyle={[styles.emojiGrid, { paddingBottom: 20 }]}
+                  showsVerticalScrollIndicator={true}
+                  style={{ flex: 1 }}
+                />
+              )}
             </View>
           )}
           <View style={{ height: 12 }} />
@@ -793,6 +838,12 @@ export default function TopicsScreen() {
             </View>
             {showEmojiPicker && (
               <View style={styles.emojiPickerModal}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <Text style={styles.emojiPickerTitle}>Pick an emoji</Text>
+                  <TouchableOpacity onPress={() => setShowEmojiPicker(false)}>
+                    <Text style={{ color: '#0A84FF', fontSize: 16 }}>✕</Text>
+                  </TouchableOpacity>
+                </View>
                 <TextInput
                   style={styles.emojiSearchInput}
                   placeholder="Search emojis..."
@@ -821,6 +872,7 @@ export default function TopicsScreen() {
                   numColumns={6}
                   contentContainerStyle={styles.emojiGrid}
                   showsVerticalScrollIndicator={false}
+                  style={{ maxHeight: 200 }}
                 />
               </View>
             )}

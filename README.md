@@ -8,9 +8,6 @@ Social deduction party game for iOS & android where players uncover hidden roles
 <details>
   <summary>Click to view all demos</summary>
 
-  ### Gameplay GIF
-  ![demo](https://user-images.githubusercontent.com/33248075/236648792-3a5e2f3c-1f4d-4e7c-8f0e-1a5f3e2e6f3b.gif)
-
   ### Video Demo
   [Watch Demo Video](https://github.com/user-attachments/assets/33248075-c040-43f1-8be8-3578a567a6c6)
 
@@ -43,6 +40,7 @@ Social deduction party game for iOS & android where players uncover hidden roles
     <img src="assets/demos/demo10.png" width="300" />
   </details>
 </details>
+
 ---
 ### Setup
 
@@ -61,10 +59,12 @@ npx expo start
 You can build the app using EAS . Make sure you have EAS CLI installed and configured.
 
 - iOS:
+
   ```bash
   eas build -p ios --profile production
   ```
 - Android:
+
 ```bash
   eas build -p android --profile production
   ```
@@ -80,6 +80,49 @@ npx expo prebuild --clean
   ```
 Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
 
+```bash
+npx expo prebuild --clean
+```
+
+#### 5. Distribute to App Store
+```bash
+  eas build -p android --profile production
+  ```
+Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
+
+```bash
+npx expo prebuild --clean
+```
+
+#### 5. Distribute to App Store
+```bash
+  eas build -p android --profile production
+  ```
+Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
+```bash
+npx expo prebuild --clean
+```
+```bash
+  eas build -p android --profile production
+  ```
+Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
+
+```bash
+npx expo prebuild --clean
+```
+
+```bash
+  eas build -p android --profile production
+  ```
+Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
+
+```bash
+npx expo prebuild --clean
+```
+
+```bash
+  eas build -p android --profile production
+  ```
 ```bash
 npx expo prebuild --clean
 ```
@@ -91,5 +134,4 @@ npx expo prebuild --clean
 
 - Open Xcode → Window → Organizer
 - Select "Distribute App" → App Store Connect
-- Or use Transporter to upload the generated .ipa file
-
+- Or use Transporter to upload a generated .ipa file from the EAS build, note: you have a limited number of uploads on the free expo version

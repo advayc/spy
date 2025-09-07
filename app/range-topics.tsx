@@ -37,6 +37,8 @@ export default function RangeTopicsScreen() {
   // Category form state
   const [categoryName, setCategoryName] = useState('');
   const [categoryIcon, setCategoryIcon] = useState('🎯');
+  const [useKeyboardEmoji, setUseKeyboardEmoji] = useState<boolean>(false);
+  const [manualEmoji, setManualEmoji] = useState<string>('');
 
   // Question form state
   const [questionPrompt, setQuestionPrompt] = useState('');
@@ -291,55 +293,89 @@ export default function RangeTopicsScreen() {
         }}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modal, { backgroundColor: colors.surface }]}> 
-            <Text style={[styles.modalTitle, { color: colors.text }]}> 
-              {editingCategory ? 'Edit Category' : 'Add Category'}
-            </Text>
-            <TextInput
-              style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
-              placeholder="Category name"
-              placeholderTextColor={colors.textSecondary}
-              value={categoryName}
-              onChangeText={setCategoryName}
-              autoFocus
-            />
-            <Text style={styles.emojiPickerTitle}>Pick an emoji</Text>
-            <FlatList
-              data={getAllEmojis()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[styles.iconOption, { backgroundColor: categoryIcon === item ? colors.primary : colors.background }]}
-                  onPress={() => setCategoryIcon(item)}
-                >
-                  <Text style={styles.iconOptionText}>{item}</Text>
-                </TouchableOpacity>
+          <View style={[styles.modal, { backgroundColor: colors.surface, maxHeight: '80%' }]}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}> 
+                {editingCategory ? 'Edit Category' : 'Add Category'}
+              </Text>
+              <TextInput
+                style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                placeholder="Category name"
+                placeholderTextColor={colors.textSecondary}
+                value={categoryName}
+                onChangeText={setCategoryName}
+                autoFocus
+              />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <Text style={styles.emojiPickerTitle}>Pick an emoji</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => setUseKeyboardEmoji(v => !v)} style={{ marginRight: 12 }}>
+                    <Text style={{ color: colors.primary }}>{useKeyboardEmoji ? 'Picker' : 'Keyboard'}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setShowAddCategory(false)}>
+                    <Text style={{ color: colors.primary, fontSize: 18 }}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              {useKeyboardEmoji ? (
+                <View>
+                  <TextInput
+                    style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                    placeholder="Type or paste emoji"
+                    placeholderTextColor={colors.textSecondary}
+                    value={manualEmoji}
+                    onChangeText={setManualEmoji}
+                    autoFocus
+                  />
+                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
+                    <TouchableOpacity onPress={() => { setManualEmoji(''); setUseKeyboardEmoji(false); }} style={[styles.modalButton, { backgroundColor: colors.background }]}>
+                      <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { if (manualEmoji.trim()) { setCategoryIcon(Array.from(manualEmoji.trim())[0]); setManualEmoji(''); setUseKeyboardEmoji(false); } }} style={[styles.modalButton, { backgroundColor: colors.primary }]}>
+                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Use</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <FlatList
+                  data={getAllEmojis()}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={[styles.iconOption, { backgroundColor: categoryIcon === item ? colors.primary : colors.background }]}
+                      onPress={() => setCategoryIcon(item)}
+                    >
+                      <Text style={styles.iconOptionText}>{item}</Text>
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={(item) => item}
+                  numColumns={8}
+                  contentContainerStyle={[styles.emojiGrid, { paddingBottom: 20 }]}
+                  showsVerticalScrollIndicator={true}
+                  style={{ maxHeight: 240 }}
+                />
               )}
-              keyExtractor={(item) => item}
-              numColumns={8}
-              contentContainerStyle={styles.emojiGrid}
-              showsVerticalScrollIndicator={false}
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: colors.background }]}
-                onPress={() => {
-                  setShowAddCategory(false);
-                  setEditingCategory(null);
-                  setCategoryName('');
-                  setCategoryIcon('🎯');
-                }}
-              >
-                <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: colors.primary }]}
-                onPress={editingCategory ? handleUpdateCategory : handleAddCategory}
-              >
-                <Text style={[styles.modalButtonText, { color: 'white' }]}> 
-                  {editingCategory ? 'Update' : 'Add'}
-                </Text>
-              </TouchableOpacity>
-            </View>
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: colors.background }]}
+                  onPress={() => {
+                    setShowAddCategory(false);
+                    setEditingCategory(null);
+                    setCategoryName('');
+                    setCategoryIcon('🎯');
+                  }}
+                >
+                  <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: colors.primary }]}
+                  onPress={editingCategory ? handleUpdateCategory : handleAddCategory}
+                >
+                  <Text style={[styles.modalButtonText, { color: 'white' }]}> 
+                    {editingCategory ? 'Update' : 'Add'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           </View>
         </View>
       </Modal>
