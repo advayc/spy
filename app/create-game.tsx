@@ -9,6 +9,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
 
 export default function CreateGameScreen() {
+  const { numImposters, setNumImposters } = useGameStore();
+  const imposterOptions: { value: number | 'random'; label: string }[] = [
+    ...[1, 2, 3, 4, 5].filter(n => n < players.length).map(n => ({ value: n, label: `${n} Imposter${n > 1 ? 's' : ''}` })),
+    { value: 'random', label: 'Random' }
+  ];
   const { colors } = useTheme();
   const vibrate = useVibration();
   const { 
@@ -104,7 +109,7 @@ export default function CreateGameScreen() {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Players Section */}
+  {/* Players Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Players ({players.length}/15)</Text>
           
@@ -195,6 +200,30 @@ export default function CreateGameScreen() {
                 <Text style={[
                   styles.timerOptionText,
                   timerDuration === option.value && { ...styles.timerOptionTextSelected, color: colors.primary }
+                ]}>
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Imposter Selector Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Number of Imposters</Text>
+          <View style={styles.timerOptions}>
+            {imposterOptions.map((option) => (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.timerOption,
+                  numImposters === option.value && { ...styles.timerOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
+                ]}
+                onPress={() => setNumImposters(option.value)}
+              >
+                <Text style={[
+                  styles.timerOptionText,
+                  numImposters === option.value && { ...styles.timerOptionTextSelected, color: colors.error }
                 ]}>
                   {option.label}
                 </Text>
