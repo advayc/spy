@@ -193,8 +193,6 @@ export default function RangeTopicsScreen() {
         </TouchableOpacity>
       </View>
 
-  {/* Categories list (expand to view/edit questions) */}
-
       {/* Content */}
       <ScrollView style={styles.content}>
         <View style={styles.categoriesGrid}>
@@ -203,7 +201,7 @@ export default function RangeTopicsScreen() {
             const builtinCount = getBuiltinQuestionsFor(category.id).length;
             const customCount = getQuestionsForCategory(category.id).length;
             return (
-              <View key={category.id} style={[styles.categoryCard, { backgroundColor: colors.surface }]}>
+              <View key={category.id} style={[styles.categoryCard, { backgroundColor: colors.surface }]}> 
                 <TouchableOpacity
                   style={styles.categoryHeader}
                   onPress={() => {
@@ -345,7 +343,6 @@ export default function RangeTopicsScreen() {
           </View>
         </View>
       </Modal>
-// Helper to get all emojis (flattened)
 
       {/* Add Question Modal */}
       <Modal
