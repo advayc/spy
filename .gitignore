@@ -10,7 +10,8 @@ web-build/
 expo-env.d.ts
 certs
 .env
-
+/website
+website
 # Native
 *.orig.*
 *.jks
