@@ -1,12 +1,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RangeQuestion as BaseRangeQuestion } from '@/data/range-questions';
 
-export interface RangeQuestion {
-  id: string;
-  question: string;
-  range: string;
-  category: string;
+export interface CustomRangeQuestion extends BaseRangeQuestion {
   isCustom: boolean;
 }
 
@@ -18,14 +15,14 @@ export interface RangeCategory {
 }
 
 interface RangeTopicsState {
-  customQuestions: RangeQuestion[];
+  customQuestions: CustomRangeQuestion[];
   customCategories: RangeCategory[];
   
   // Question management
-  addCustomQuestion: (question: Omit<RangeQuestion, 'id' | 'isCustom'>) => void;
-  updateCustomQuestion: (id: string, updates: Partial<Omit<RangeQuestion, 'id' | 'isCustom'>>) => void;
+  addCustomQuestion: (question: Omit<CustomRangeQuestion, 'id' | 'isCustom'>) => void;
+  updateCustomQuestion: (id: string, updates: Partial<Omit<CustomRangeQuestion, 'id' | 'isCustom'>>) => void;
   removeCustomQuestion: (id: string) => void;
-  getQuestionsForCategory: (categoryId: string) => RangeQuestion[];
+  getQuestionsForCategory: (categoryId: string) => CustomRangeQuestion[];
   
   // Category management
   addCustomCategory: (category: Omit<RangeCategory, 'id' | 'isCustom'>) => void;
@@ -45,7 +42,7 @@ export const useRangeTopicsStore = create<RangeTopicsState>()(
       
       // Question management
       addCustomQuestion: (questionData) => {
-        const newQuestion: RangeQuestion = {
+        const newQuestion: CustomRangeQuestion = {
           id: `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           ...questionData,
           isCustom: true,

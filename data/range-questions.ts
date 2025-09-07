@@ -3,7 +3,7 @@ export interface RangeQuestion {
   id: string;
   category: string;
   prompt: string; // What everyone gets
-  rangePrompt: string; // What the outlier gets
+  rangePrompt: string; // What the spy gets
   expectedRange?: string; // Optional hint about typical answers
 }
 

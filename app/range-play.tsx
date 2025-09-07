@@ -1,329 +1,217 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronLeft, Users, Clock, Target, RotateCcw } from 'lucide-react-native';
+import { ChevronLeft, Clock, RotateCcw, Eye } from 'lucide-react-native';
 import { useRangeGameStore } from '@/stores/range-game-store';
+import { useRangeTopicsStore } from '@/stores/range-topics-store';
 import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
+import { getQuestionCategories } from '@/data/range-questions';
 
-export default function RangePlayScreen() {
+export default function RangeGamePlayScreen() {
   const { colors } = useTheme();
   const vibrate = useVibration();
-  
-  const { 
-    players, 
-    currentQuestion,
-    gamePhase,
+  const {
+    players,
     timerDuration,
-    currentTimer,
-    votes,
-    nextPhase,
-    endGame,
+    selectedCategory,
+    currentQuestion,
     resetGame,
-    setCurrentTimer,
-    addVote,
-    selectNewQuestion,
-    incrementCorrectGuesses,
-    incrementGamesPlayed
+    updatePlayer,
   } = useRangeGameStore();
+  const { getQuestionsForCategory, customCategories } = useRangeTopicsStore();
 
+  const [timeLeft, setTimeLeft] = useState(timerDuration * 60);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
-  const [showAnswers, setShowAnswers] = useState(false);
-  const [timerActive, setTimerActive] = useState(false);
+  const [isTimerRunning, setIsTimerRunning] = useState(true);
 
-  // Timer effect
   useEffect(() => {
-    if (timerActive && currentTimer > 0) {
-      const interval = setInterval(() => {
-        setCurrentTimer(currentTimer - 1);
-      }, 1000);
-      
-      return () => clearInterval(interval);
-    } else if (currentTimer === 0 && timerActive) {
-      setTimerActive(false);
-      vibrate.medium();
-      Alert.alert('Time\'s up!', 'Discussion time is over.');
-    }
-  }, [currentTimer, timerActive, setCurrentTimer, vibrate]);
+    if (!isTimerRunning || timeLeft <= 0) return;
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          setIsTimerRunning(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isTimerRunning, timeLeft]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const outlierPlayer = players.find(p => p.isOutlier);
-  const normalPlayers = players.filter(p => !p.isOutlier);
-
-  const handleStartTimer = () => {
-    setCurrentTimer(timerDuration * 60);
-    setTimerActive(true);
+  const handlePlayerPress = (playerId: string) => {
+    setSelectedPlayer(playerId);
     vibrate.light();
   };
 
-  const handleVote = () => {
-    if (!selectedPlayer) {
-      Alert.alert('No selection', 'Please select who you think has the range prompt.');
-      return;
-    }
-    
-    // Calculate results
-    const voteCount = Object.values(votes).filter(vote => vote === selectedPlayer).length + 1;
-    const correctGuess = selectedPlayer === outlierPlayer?.id;
-    
-    if (correctGuess) {
-      incrementCorrectGuesses();
-    }
-    
-    Alert.alert(
-      'Results',
-      correctGuess 
-        ? `Correct! ${outlierPlayer?.name} had the range prompt: "${currentQuestion?.rangePrompt}"`
-        : `Wrong! ${outlierPlayer?.name} had the range prompt. ${votes[selectedPlayer] || 'No one'} was selected.`,
-      [
-        {
-          text: 'New Game',
-          onPress: () => {
-            selectNewQuestion();
-            resetGame();
-            router.push('/range-game');
-          }
-        },
-        {
-          text: 'Home',
-          onPress: () => {
-            endGame();
-            router.push('/');
-          }
-        }
-      ]
-    );
+  const handleCloseModal = () => {
+    setSelectedPlayer(null);
+    vibrate.light();
   };
 
-  const handleNewGame = () => {
-    Alert.alert(
-      'New Game',
-      'Start a new round with different prompts?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'New Game',
-          onPress: () => {
-            selectNewQuestion();
-            resetGame();
-            router.push('/range-game');
-          }
-        }
-      ]
-    );
+  const handleRestart = () => {
+    resetGame();
+    router.back();
+    vibrate.medium();
   };
 
-  const handleGoHome = () => {
-    Alert.alert(
-      'End Game',
-      'Are you sure you want to end the game?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'End Game',
-          onPress: () => {
-            endGame();
-            router.push('/');
-          }
-        }
-      ]
-    );
+  const getCategoryDisplay = (category: string) => {
+    if (category === 'random') return { name: 'Random Mix', icon: '🎲' };
+    const customCat = customCategories.find(cat => cat.id === category);
+    if (customCat) return { name: customCat.name, icon: customCat.icon || '❓' };
+    return { name: category, icon: getCategoryIcon(category) };
   };
 
-  if (!currentQuestion) {
+  if (!players || !currentQuestion) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={styles.errorContainer}>
-          <Text style={[styles.errorText, { color: colors.text }]}>
-            No question loaded. Please start a new game.
-          </Text>
-          <TouchableOpacity 
-            style={[styles.button, { backgroundColor: colors.primary }]}
-            onPress={() => router.push('/range-game')}
-          >
-            <Text style={styles.buttonText}>Back to Setup</Text>
-          </TouchableOpacity>
-        </View>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.errorText}>Game not properly initialized</Text>
       </SafeAreaView>
     );
   }
 
+  const selectedPlayerData = selectedPlayer ? players.find(p => p.id === selectedPlayer) : null;
+  const playerRole = selectedPlayerData ? selectedPlayerData : null;
+  const categoryInfo = getCategoryDisplay(selectedCategory);
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { borderBottomColor: `${colors.primary}20` }]}>
-        <TouchableOpacity 
-          onPress={handleGoHome} 
-          style={styles.backButton}
-        >
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ChevronLeft size={24} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Range Game</Text>
-        <TouchableOpacity 
-          onPress={handleNewGame}
-          style={styles.actionButton}
-        >
-          <RotateCcw size={20} color={colors.primary} />
+        <Text style={styles.categoryText}>
+          {categoryInfo.name}
+        </Text>
+        <View style={styles.placeholder} />
+      </View>
+
+      <View style={styles.timerContainer}>
+        <Clock size={24} color="white" />
+        <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+      </View>
+
+  <Text style={styles.instructionText}>Tap to see role.</Text>
+
+      <View style={styles.playersContainer}>
+        <View style={styles.playersGrid}>
+          {players.map((player) => (
+            <View key={player.id} style={styles.playerCard}>
+              <TouchableOpacity
+                style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                onPress={() => handlePlayerPress(player.id)}
+              >
+                <View style={[styles.playerAvatar, { backgroundColor: colors.primary }]}>
+                  <Text style={styles.playerInitial}>
+                    {player.name.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <Text style={styles.playerName}>{player.name}</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={handleRestart} style={styles.goBackButton}>
+          <View style={styles.goBackIconContainer}>
+            <RotateCcw size={32} color="#000" />
+          </View>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Game Status */}
-        <View style={[styles.statusCard, { backgroundColor: colors.surface }]}>
-          <View style={styles.statusRow}>
-            <View style={styles.statusItem}>
-              <Users size={20} color={colors.primary} />
-              <Text style={[styles.statusText, { color: colors.text }]}>
-                {players.length} Players
-              </Text>
-            </View>
-            <View style={styles.statusItem}>
-              <Target size={20} color={colors.primary} />
-              <Text style={[styles.statusText, { color: colors.text }]}>
-                {currentQuestion.category}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Prompts */}
-        <View style={[styles.promptsCard, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.promptsTitle, { color: colors.text }]}>Your Prompts</Text>
-          
-          <View style={[styles.promptBox, { borderColor: colors.primary }]}>
-            <Text style={[styles.promptLabel, { color: colors.primary }]}>Most Players Get:</Text>
-            <Text style={[styles.promptText, { color: colors.text }]}>
-              {currentQuestion.prompt}
-            </Text>
-          </View>
-
-          <View style={[styles.promptBox, { borderColor: colors.secondary }]}>
-            <Text style={[styles.promptLabel, { color: colors.secondary }]}>One Player Gets:</Text>
-            <Text style={[styles.promptText, { color: colors.text }]}>
-              {currentQuestion.rangePrompt}
-            </Text>
-            {!showAnswers && (
-              <TouchableOpacity 
-                style={[styles.revealButton, { backgroundColor: `${colors.secondary}20` }]}
-                onPress={() => setShowAnswers(true)}
-              >
-                <Text style={[styles.revealButtonText, { color: colors.secondary }]}>
-                  Tap to reveal after discussion
-                </Text>
-              </TouchableOpacity>
+      <Modal
+        visible={selectedPlayer !== null}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleCloseModal}
+      >
+        <Pressable style={styles.modalOverlay} onPress={handleCloseModal}>
+          <View style={styles.modalContent}>
+            {selectedPlayerData && (
+              <Text style={styles.playerNameInModal}>{selectedPlayerData.name}</Text>
             )}
-          </View>
-
-          {currentQuestion.expectedRange && (
-            <Text style={[styles.hintText, { color: colors.textSecondary }]}>
-              Expected range: {currentQuestion.expectedRange}
-            </Text>
-          )}
-        </View>
-
-        {/* Timer */}
-        <View style={[styles.timerCard, { backgroundColor: colors.surface }]}>
-          <View style={styles.timerHeader}>
-            <Clock size={20} color={colors.primary} />
-            <Text style={[styles.timerTitle, { color: colors.text }]}>Discussion Timer</Text>
-          </View>
-          
-          <Text style={[styles.timerDisplay, { color: colors.primary }]}>
-            {formatTime(currentTimer)}
-          </Text>
-          
-          <View style={styles.timerControls}>
-            <TouchableOpacity 
-              style={[
-                styles.timerButton, 
-                { backgroundColor: timerActive ? colors.error : colors.primary }
-              ]}
-              onPress={() => {
-                if (timerActive) {
-                  setTimerActive(false);
-                } else {
-                  handleStartTimer();
-                }
-              }}
-            >
-              <Text style={styles.timerButtonText}>
-                {timerActive ? 'Pause' : 'Start Timer'}
-              </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.timerButton, { backgroundColor: colors.textSecondary }]}
-              onPress={() => {
-                setCurrentTimer(timerDuration * 60);
-                setTimerActive(false);
-              }}
-            >
-              <Text style={styles.timerButtonText}>Reset</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Voting */}
-        <View style={[styles.votingCard, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.votingTitle, { color: colors.text }]}>
-            Who has the range prompt?
-          </Text>
-          
-          <View style={styles.playerButtons}>
-            {players.map((player) => (
-              <TouchableOpacity
-                key={player.id}
-                style={[
-                  styles.playerButton,
-                  { borderColor: `${colors.primary}40` },
-                  selectedPlayer === player.id && {
-                    borderColor: colors.primary,
-                    backgroundColor: `${colors.primary}20`
-                  }
-                ]}
-                onPress={() => {
-                  setSelectedPlayer(player.id);
-                  vibrate.light();
-                }}
-              >
-                <Text style={[
-                  styles.playerButtonText,
-                  { color: colors.text },
-                  selectedPlayer === player.id && { color: colors.primary }
-                ]}>
-                  {player.name}
+            {playerRole?.isspy ? (
+              <View style={styles.spyContainer}>
+                <Eye size={48} color={colors.primary} />
+                <Text style={styles.spyText}>You're the spy!</Text>
+                <Text style={styles.customWordLabel}>Your range is:</Text>
+                <Text style={styles.customWordText}>
+                  {currentQuestion.rangePrompt} ({currentQuestion.expectedRange || 'N/A'})
                 </Text>
-              </TouchableOpacity>
-            ))}
+              </View>
+            ) : (
+              <View style={styles.roleContainer}>
+                <Text style={styles.topicText}>
+                  {categoryInfo.icon} {categoryInfo.name}: {currentQuestion.prompt}
+                </Text>
+                <Text style={styles.roleText}>
+                  Your question is: {currentQuestion.prompt}
+                </Text>
+              </View>
+            )}
+            <TouchableOpacity 
+              style={[styles.closeButton, { backgroundColor: colors.primary }]} 
+              onPress={handleCloseModal}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
           </View>
-
-          <TouchableOpacity 
-            style={[
-              styles.voteButton,
-              { backgroundColor: selectedPlayer ? colors.primary : colors.textSecondary }
-            ]}
-            onPress={handleVote}
-            disabled={!selectedPlayer}
-          >
-            <Text style={styles.voteButtonText}>
-              {selectedPlayer ? `Vote for ${players.find(p => p.id === selectedPlayer)?.name}` : 'Select a player'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.bottomPadding} />
-      </ScrollView>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
+}
+
+function getCategoryIcon(category: string): string {
+  const iconMap: Record<string, string> = {
+    'Life Events': '🎂',
+    'Food': '🍕',
+    'Money': '💰',
+    'Relationships': '💝',
+    'Work': '💼',
+    'Education': '📚',
+    'Sports': '⚽',
+    'Music': '🎵',
+    'Fashion': '👗',
+    'Home': '🏠',
+    'Miscellaneous': '🔮',
+    'Daily Life': '🕒',
+    'Hobbies': '🎨',
+    'Health': '💊',
+    'Technology': '🧑‍💻',
+    'Entertainment': '🎬',
+    'Preferences': '⭐',
+    'Social': '🫂',
+    'Travel': '✈️',
+    'Physical': '💪',
+    'Skills': '🧠',
+    'Culture': '🏛️',
+    'Family': '👪',
+    'Grooming': '💇',
+    'Chores': '🧺',
+    'Maintenance': '🛠️',
+    'Habits': '🧘',
+    'Knowledge': '📖',
+    'Beliefs': '🕊️',
+    'Experience': '🎟️'
+  };
+  return iconMap[category] || '🔍';
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000000',
   },
   header: {
     flexDirection: 'row',
@@ -331,179 +219,173 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    borderBottomWidth: 1,
   },
   backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  actionButton: {
-    padding: 8,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  statusCard: {
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 20,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statusItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 4,
+    padding: 8,
   },
-  statusText: {
+  placeholder: {
+    width: 32,
+  },
+  categoryText: {
+    color: '#666666',
     fontSize: 16,
     fontWeight: '500',
   },
-  promptsCard: {
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 20,
-  },
-  promptsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  promptBox: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 2,
-    marginBottom: 12,
-  },
-  promptLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  promptText: {
-    fontSize: 16,
-    fontWeight: '500',
-    lineHeight: 22,
-  },
-  revealButton: {
-    marginTop: 12,
-    padding: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  revealButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  hintText: {
-    fontSize: 13,
-    fontStyle: 'italic',
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  timerCard: {
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 20,
-  },
-  timerHeader: {
+  timerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
     gap: 8,
+    marginVertical: 32,
   },
-  timerTitle: {
+  timerText: {
+    color: 'white',
+    fontSize: 32,
+    fontWeight: '300',
+  },
+  instructionText: {
+    color: '#666666',
     fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 32,
+  },
+  playersContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  playersGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+    justifyContent: 'center',
+  },
+  playerCard: {
+    width: 150,
+    height: 120,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playerAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playerInitial: {
+    color: 'white',
+    fontSize: 20,
     fontWeight: '600',
   },
-  timerDisplay: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  timerControls: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  timerButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  timerButtonText: {
+  playerName: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
   },
-  votingCard: {
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 20,
+  footer: {
+    alignItems: 'center',
+    paddingVertical: 32,
   },
-  votingTitle: {
-    fontSize: 18,
+  goBackButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  goBackIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#1a1a1a',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingVertical: 48,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    minHeight: 200,
+  },
+  playerNameInModal: {
+    color: 'white',
+    fontSize: 24,
     fontWeight: '600',
     marginBottom: 16,
-    textAlign: 'center',
   },
-  playerButtons: {
-    gap: 12,
-    marginBottom: 20,
-  },
-  playerButton: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    borderWidth: 2,
+  spyContainer: {
     alignItems: 'center',
+    gap: 24,
   },
-  playerButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  voteButton: {
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  voteButtonText: {
+  spyText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: '600',
   },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  roleContainer: {
     alignItems: 'center',
-    paddingHorizontal: 40,
+    gap: 16,
   },
-  errorText: {
-    fontSize: 16,
+  topicText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '500',
     textAlign: 'center',
-    marginBottom: 20,
   },
-  button: {
+  roleText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  closeButton: {
+    marginTop: 24,
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
   },
-  buttonText: {
+  closeButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '500',
   },
-  bottomPadding: {
-    height: 40,
+  errorText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 100,
+  },
+  customWordContainer: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  customWordLabel: {
+    color: '#666666',
+    fontSize: 16,
+    fontWeight: '400',
+    marginTop: 8,
+  },
+  customWordText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

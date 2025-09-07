@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, Pressable, TextInput } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { ChevronLeft, Clock, RotateCcw, Eye } from 'lucide-react-native';
 import { useGameStore } from '@/stores/game-store';
@@ -44,6 +45,42 @@ export default function GameScreen() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+function getCategoryIcon(category: string): string {
+  const iconMap: Record<string, string> = {
+    'Life Events': '🎂',
+    'Food': '🍕',
+    'Money': '💰',
+    'Relationships': '💝',
+    'Work': '💼',
+    'Education': '📚',
+    'Sports': '⚽',
+    'Music': '🎵',
+    'Fashion': '👗',
+    'Home': '🏠',
+    'Miscellaneous': '🔮',
+    'Daily Life': '🕒',
+    'Hobbies': '🎨',
+    'Health': '💪',
+    'Technology': '💻',
+    'Entertainment': '🎬',
+    'Preferences': '⭐',
+    'Social': '🫂',
+    'Travel': '✈️',
+    'Physical': '🏋️',
+    'Skills': '🧠',
+    'Culture': '🏛️',
+    'Family': '👪',
+    'Grooming': '💇',
+    'Chores': '🧺',
+    'Maintenance': '🛠️',
+    'Habits': '🔁',
+    'Knowledge': '📖',
+    'Beliefs': '🕊️',
+    'Experience': '🎟️'
+  };
+  return iconMap[category] || '❓';
+}
+
   const handlePlayerPress = (playerId: string) => {
     setSelectedPlayer(playerId);
   };
@@ -61,9 +98,9 @@ export default function GameScreen() {
   const playerRole = selectedPlayerData ? gameState.playerRoles[selectedPlayerData.id] : null;
 
   const getCategoryDisplay = (category: string) => {
-    if (category === 'random') return { name: 'Topic', icon: '�' };
-    const c = getCategory(category);
-    return c ? { name: c.name, icon: c.icon } : { name: 'Topic', icon: '🎲' };
+  if (category === 'random') return { name: 'Topic', icon: '🎲' };
+  const c = getCategory(category);
+  return c ? { name: c.name, icon: c.icon || getCategoryIcon(category) } : { name: 'Topic', icon: '🎲' };
   };
 
   if (!gameState.currentTopic) {
@@ -117,9 +154,16 @@ export default function GameScreen() {
 
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => router.back()} style={styles.goBackButton}>
-          <View style={styles.goBackIconContainer}>
-            <ChevronLeft size={32} color="#000" />
-          </View>
+          <LinearGradient
+            colors={[colors.primary, colors.secondary || '#5AC8FA']}
+            start={[0, 0]}
+            end={[1, 1]}
+            style={styles.goBackButton}
+          >
+            <View style={styles.goBackIconContainer}>
+              <ChevronLeft size={32} color="#fff" />
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
 

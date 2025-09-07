@@ -7,29 +7,29 @@ export interface CategoryMeta {
   name: string; // Human name
   icon: string; // Emoji or short icon text
   useRoles: boolean; // Whether topics in this category use roles
-  numImposters?: number; // Number of imposters (spies) for this category
-  randomizeImposters?: boolean; // whether number of imposters is randomized
-  maxRandomImposters?: number; // maximum imposters when randomized
+  numspies?: number; // Number of spies (spies) for this category
+  randomizespies?: boolean; // whether number of spies is randomized
+  maxRandomspies?: number; // maximum spies when randomized
 }
 
 // Built-in categories shipped with the app
-export const builtinCategories: Record<string, { name: string; icon: string; useRoles?: boolean; numImposters?: number; randomizeImposters?: boolean; maxRandomImposters?: number }> = {
-  'locations': { name: 'Locations', icon: '📍', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'movies': { name: 'Movies', icon: '🎬', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'tv-shows': { name: 'TV Shows', icon: '📺', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'pop-culture': { name: 'Pop Culture', icon: '⭐', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'events': { name: 'Events', icon: '🎉', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'sports': { name: 'Sports', icon: '⚽', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'music': { name: 'Music', icon: '🎵', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'science': { name: 'Science', icon: '🔬', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'history': { name: 'History', icon: '📜', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'internet': { name: 'Internet', icon: '🌐', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
-  'famous-people': { name: 'Famous People', icon: '🌟', useRoles: true, numImposters: 1, randomizeImposters: false, maxRandomImposters: 1 },
+export const builtinCategories: Record<string, { name: string; icon: string; useRoles?: boolean; numspies?: number; randomizespies?: boolean; maxRandomspies?: number }> = {
+  'locations': { name: 'Locations', icon: '📍', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'movies': { name: 'Movies', icon: '🎬', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'tv-shows': { name: 'TV Shows', icon: '📺', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'pop-culture': { name: 'Pop Culture', icon: '⭐', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'events': { name: 'Events', icon: '🎉', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'sports': { name: 'Sports', icon: '⚽', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'music': { name: 'Music', icon: '🎵', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'science': { name: 'Science', icon: '🔬', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'history': { name: 'History', icon: '📜', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'internet': { name: 'Internet', icon: '🌐', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'famous-people': { name: 'Famous People', icon: '🌟', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
 };
 
 interface CategoriesStore {
   customCategories: CategoryMeta[];
-  addCategory: (cat: Omit<CategoryMeta, 'id'> & { id?: string; numImposters?: number; randomizeImposters?: boolean; maxRandomImposters?: number }) => void;
+  addCategory: (cat: Omit<CategoryMeta, 'id'> & { id?: string; numspies?: number; randomizespies?: boolean; maxRandomspies?: number }) => void;
   updateCategory: (id: string, updates: Partial<CategoryMeta>) => void;
   removeCategory: (id: string) => void;
   getAllCategories: () => CategoryMeta[]; // Merged view (builtin + custom)
@@ -41,7 +41,7 @@ export const useCategoriesStore = create<CategoriesStore>()(
     (set, get) => ({
       customCategories: [],
 
-      addCategory: ({ id, name, icon, useRoles, numImposters = 1, randomizeImposters = false, maxRandomImposters = 1 }) => {
+      addCategory: ({ id, name, icon, useRoles, numspies = 1, randomizespies = false, maxRandomspies = 1 }) => {
         const makeId = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         const finalId = id && id.trim() ? makeId(id) : makeId(name);
 
@@ -53,7 +53,7 @@ export const useCategoriesStore = create<CategoriesStore>()(
         const exists = get().customCategories.some(c => c.id === finalId);
         if (exists) return;
 
-        const newCat: CategoryMeta = { id: finalId, name, icon, useRoles, numImposters, randomizeImposters, maxRandomImposters };
+        const newCat: CategoryMeta = { id: finalId, name, icon, useRoles, numspies, randomizespies, maxRandomspies };
         set(state => ({ customCategories: [...state.customCategories, newCat] }));
       },
 
@@ -74,9 +74,9 @@ export const useCategoriesStore = create<CategoriesStore>()(
           name: v.name,
           icon: v.icon,
           useRoles: v.useRoles ?? true,
-          numImposters: v.numImposters ?? 1,
-          randomizeImposters: v.randomizeImposters ?? false,
-          maxRandomImposters: v.maxRandomImposters ?? (v.numImposters ?? 1),
+          numspies: v.numspies ?? 1,
+          randomizespies: v.randomizespies ?? false,
+          maxRandomspies: v.maxRandomspies ?? (v.numspies ?? 1),
         }));
         return [...builtins, ...customs];
       },
@@ -85,7 +85,7 @@ export const useCategoriesStore = create<CategoriesStore>()(
         const custom = get().customCategories.find(c => c.id === id);
         if (custom) return custom;
         const builtin = builtinCategories[id];
-        return builtin ? { id, name: builtin.name, icon: builtin.icon, useRoles: builtin.useRoles ?? true, numImposters: builtin.numImposters ?? 1, randomizeImposters: builtin.randomizeImposters ?? false, maxRandomImposters: builtin.maxRandomImposters ?? (builtin.numImposters ?? 1) } : undefined;
+        return builtin ? { id, name: builtin.name, icon: builtin.icon, useRoles: builtin.useRoles ?? true, numspies: builtin.numspies ?? 1, randomizespies: builtin.randomizespies ?? false, maxRandomspies: builtin.maxRandomspies ?? (builtin.numspies ?? 1) } : undefined;
       },
     }),
     {

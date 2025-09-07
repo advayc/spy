@@ -337,14 +337,14 @@ export default function TopicsScreen() {
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
   const [emojiSearch, setEmojiSearch] = useState<string>('');
   const [selectedEmojiCategory, setSelectedEmojiCategory] = useState<EmojiCategoryKey>('Smileys');
-  const [newCategoryNumImposters, setNewCategoryNumImposters] = useState<number>(1);
-  const [editingCategoryNumImposters, setEditingCategoryNumImposters] = useState<number>(1);
-  const [newCategoryRandomizeImposters, setNewCategoryRandomizeImposters] = useState<boolean>(false);
-  const [newCategoryMaxRandomImposters, setNewCategoryMaxRandomImposters] = useState<number>(2);
-  const [editingCategoryRandomizeImposters, setEditingCategoryRandomizeImposters] = useState<boolean>(false);
-  const [editingCategoryMaxRandomImposters, setEditingCategoryMaxRandomImposters] = useState<number>(2);
+  const [newCategoryNumspies, setNewCategoryNumspies] = useState<number>(1);
+  const [editingCategoryNumspies, setEditingCategoryNumspies] = useState<number>(1);
+  const [newCategoryRandomizespies, setNewCategoryRandomizespies] = useState<boolean>(false);
+  const [newCategoryMaxRandomspies, setNewCategoryMaxRandomspies] = useState<number>(2);
+  const [editingCategoryRandomizespies, setEditingCategoryRandomizespies] = useState<boolean>(false);
+  const [editingCategoryMaxRandomspies, setEditingCategoryMaxRandomspies] = useState<number>(2);
 
-  const MAX_IMPOSTERS_CAP = 6;
+  const MAX_spies_CAP = 6;
 
   const categories = getAllCategories();
 
@@ -406,7 +406,7 @@ export default function TopicsScreen() {
   const renderCategoryItem = useCallback(({ item }: { item: { id: string; name: string; icon: string; useRoles: boolean } }) => {
     const topicsCount = getTopicsCountForCategory(item.id);
     const meta = getCategory(item.id);
-    const impostersLabel = meta ? (meta.randomizeImposters ? `Random up to ${meta.maxRandomImposters ?? 1}` : `${meta.numImposters ?? 1} imposters`) : '';
+    const spiesLabel = meta ? (meta.randomizespies ? `Random up to ${meta.maxRandomspies ?? 1}` : `${meta.numspies ?? 1} spies`) : '';
 
     return (
       <TouchableOpacity 
@@ -433,7 +433,7 @@ export default function TopicsScreen() {
             </TouchableOpacity>
           </View>
         </View>
-  <Text style={styles.topicsCount}>{topicsCount} topics • {item.useRoles ? 'Roles on' : 'No roles'}{impostersLabel ? ' • ' + impostersLabel : ''}</Text>
+  <Text style={styles.topicsCount}>{topicsCount} topics • {item.useRoles ? 'Roles on' : 'No roles'}{spiesLabel ? ' • ' + spiesLabel : ''}</Text>
       </TouchableOpacity>
     );
   }, [getTopicsCountForCategory, handleDeleteCategory]);
@@ -484,15 +484,15 @@ export default function TopicsScreen() {
     setEditingCategoryName(cat.name);
     setEditingCategoryIcon(cat.icon);
     setEditingCategoryUseRoles(cat.useRoles ?? true);
-  setEditingCategoryNumImposters(cat.numImposters ?? 1);
-  setEditingCategoryRandomizeImposters(!!cat.randomizeImposters);
-  setEditingCategoryMaxRandomImposters(cat.maxRandomImposters ?? (cat.numImposters ?? 1));
+  setEditingCategoryNumspies(cat.numspies ?? 1);
+  setEditingCategoryRandomizespies(!!cat.randomizespies);
+  setEditingCategoryMaxRandomspies(cat.maxRandomspies ?? (cat.numspies ?? 1));
   };
 
   const saveEditCategory = () => {
     if (!editingCategoryId) return;
     if (!builtinCategories[editingCategoryId]) {
-  updateCategory(editingCategoryId, { name: editingCategoryName.trim(), icon: editingCategoryIcon, useRoles: editingCategoryUseRoles, numImposters: editingCategoryNumImposters, randomizeImposters: editingCategoryRandomizeImposters, maxRandomImposters: editingCategoryRandomizeImposters ? Math.min(editingCategoryMaxRandomImposters, MAX_IMPOSTERS_CAP) : editingCategoryNumImposters });
+  updateCategory(editingCategoryId, { name: editingCategoryName.trim(), icon: editingCategoryIcon, useRoles: editingCategoryUseRoles, numspies: editingCategoryNumspies, randomizespies: editingCategoryRandomizespies, maxRandomspies: editingCategoryRandomizespies ? Math.min(editingCategoryMaxRandomspies, MAX_spies_CAP) : editingCategoryNumspies });
     }
     setEditingCategoryId(null);
     setEmojiSearch('');
@@ -503,22 +503,17 @@ export default function TopicsScreen() {
     setEditingCategoryName('');
     setEditingCategoryIcon('');
     setEditingCategoryUseRoles(true);
-  setEditingCategoryNumImposters(1);
-  setEditingCategoryRandomizeImposters(false);
-  setEditingCategoryMaxRandomImposters(2);
+  setEditingCategoryNumspies(1);
+  setEditingCategoryRandomizespies(false);
+  setEditingCategoryMaxRandomspies(2);
     setEmojiSearch('');
   };
 
   // Emoji picker filtering
+  // Emoji picker: show all emojis at once (flatten all categories)
   const filteredEmojis = useMemo(() => {
-    const emojis = emojiCategories[selectedEmojiCategory as EmojiCategoryKey];
-    if (!emojiSearch.trim()) return emojis.map(item => item.emoji);
-    return emojis
-      .filter(item => 
-        item.keywords.some(keyword => keyword.toLowerCase().includes(emojiSearch.toLowerCase()))
-      )
-      .map(item => item.emoji);
-  }, [emojiSearch, selectedEmojiCategory]);
+    return Object.values(emojiCategories).flat().map(item => item.emoji);
+  }, []);
 
   const renderEmojiItem = useCallback(({ item }: { item: string }) => (
     <TouchableOpacity 
@@ -673,32 +668,12 @@ export default function TopicsScreen() {
           </View>
           {showEmojiPicker && (
             <View style={styles.emojiPickerModal}>
-              <TextInput
-                style={styles.emojiSearchInput}
-                placeholder="Search emojis..."
-                placeholderTextColor="#666"
-                value={emojiSearch}
-                onChangeText={setEmojiSearch}
-              />
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.emojiCategoryTabs}>
-        {Object.keys(emojiCategories).map(category => (
-                  <TouchableOpacity
-                    key={category}
-                    style={[
-                      styles.emojiCategoryTab,
-                      selectedEmojiCategory === category && styles.emojiCategoryTabActive,
-                    ]}
-          onPress={() => setSelectedEmojiCategory(category as EmojiCategoryKey)}
-                  >
-                    <Text style={styles.emojiCategoryTabText}>{category}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+              <Text style={styles.emojiPickerTitle}>Pick an emoji</Text>
               <FlatList
                 data={filteredEmojis}
                 renderItem={renderEmojiItem}
                 keyExtractor={(item) => item}
-                numColumns={6}
+                numColumns={8}
                 contentContainerStyle={styles.emojiGrid}
                 showsVerticalScrollIndicator={false}
               />
@@ -706,13 +681,13 @@ export default function TopicsScreen() {
           )}
           <View style={{ height: 12 }} />
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <Text style={{ color: 'white' }}>Imposters:</Text>
+            <Text style={{ color: 'white' }}>spies:</Text>
             <TextInput
               style={[styles.addCategoryInput, { width: 80 }]}
-              value={String(newCategoryNumImposters)}
+              value={String(newCategoryNumspies)}
               onChangeText={(t) => {
                 const n = parseInt(t || '0', 10);
-                if (!isNaN(n) && n >= 1) setNewCategoryNumImposters(n);
+                if (!isNaN(n) && n >= 1) setNewCategoryNumspies(n);
               }}
               keyboardType="number-pad"
               placeholder="1"
@@ -720,19 +695,19 @@ export default function TopicsScreen() {
             />
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 8 }}>
-            <Text style={{ color: 'white' }}>Randomize imposters</Text>
-            <TouchableOpacity onPress={() => setNewCategoryRandomizeImposters(v => !v)} style={styles.rolesCheckbox}>
-              <Text style={styles.checkboxIcon}>{newCategoryRandomizeImposters ? '✅' : '⬜️'}</Text>
+            <Text style={{ color: 'white' }}>Randomize spies</Text>
+            <TouchableOpacity onPress={() => setNewCategoryRandomizespies(v => !v)} style={styles.rolesCheckbox}>
+              <Text style={styles.checkboxIcon}>{newCategoryRandomizespies ? '✅' : '⬜️'}</Text>
             </TouchableOpacity>
-            {newCategoryRandomizeImposters && (
+            {newCategoryRandomizespies && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <Text style={{ color: 'white' }}>Max:</Text>
                 <TextInput
                   style={[styles.addCategoryInput, { width: 80 }]}
-                  value={String(newCategoryMaxRandomImposters)}
+                  value={String(newCategoryMaxRandomspies)}
                   onChangeText={(t) => {
                     const n = parseInt(t || '0', 10);
-                    if (!isNaN(n) && n >= 1) setNewCategoryMaxRandomImposters(Math.min(n, MAX_IMPOSTERS_CAP));
+                    if (!isNaN(n) && n >= 1) setNewCategoryMaxRandomspies(Math.min(n, MAX_spies_CAP));
                   }}
                   keyboardType="number-pad"
                   placeholder="2"
@@ -749,9 +724,9 @@ export default function TopicsScreen() {
                 setNewCategoryName('');
                 setNewCategoryIcon('⭐');
                 setNewCategoryUseRoles(true);
-        setNewCategoryNumImposters(1);
-        setNewCategoryRandomizeImposters(false);
-        setNewCategoryMaxRandomImposters(2);
+        setNewCategoryNumspies(1);
+        setNewCategoryRandomizespies(false);
+        setNewCategoryMaxRandomspies(2);
                 setEmojiSearch('');
               }}
             >
@@ -762,14 +737,14 @@ export default function TopicsScreen() {
               onPress={() => {
                 const name = newCategoryName.trim();
                 if (!name) return;
-        addCategory({ name, icon: newCategoryIcon || '⭐', useRoles: newCategoryUseRoles, numImposters: newCategoryNumImposters, randomizeImposters: newCategoryRandomizeImposters, maxRandomImposters: newCategoryRandomizeImposters ? Math.min(newCategoryMaxRandomImposters, MAX_IMPOSTERS_CAP) : newCategoryNumImposters });
+        addCategory({ name, icon: newCategoryIcon || '⭐', useRoles: newCategoryUseRoles, numspies: newCategoryNumspies, randomizespies: newCategoryRandomizespies, maxRandomspies: newCategoryRandomizespies ? Math.min(newCategoryMaxRandomspies, MAX_spies_CAP) : newCategoryNumspies });
                 setShowAddCategory(false);
                 setNewCategoryName('');
                 setNewCategoryIcon('⭐');
                 setNewCategoryUseRoles(true);
-        setNewCategoryNumImposters(1);
-        setNewCategoryRandomizeImposters(false);
-        setNewCategoryMaxRandomImposters(2);
+        setNewCategoryNumspies(1);
+        setNewCategoryRandomizespies(false);
+        setNewCategoryMaxRandomspies(2);
                 setEmojiSearch('');
               }}
             >
@@ -850,13 +825,13 @@ export default function TopicsScreen() {
               </View>
             )}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 8 }}>
-              <Text style={{ color: 'white' }}>Imposters:</Text>
+              <Text style={{ color: 'white' }}>spies:</Text>
               <TextInput
                 style={[styles.modalInput, { width: 80 }]}
-                value={String(editingCategoryNumImposters)}
+                value={String(editingCategoryNumspies)}
                 onChangeText={(t) => {
                   const n = parseInt(t || '0', 10);
-                  if (!isNaN(n) && n >= 1) setEditingCategoryNumImposters(n);
+                  if (!isNaN(n) && n >= 1) setEditingCategoryNumspies(n);
                 }}
                 keyboardType="number-pad"
                 placeholder="1"
@@ -1049,23 +1024,31 @@ const styles = StyleSheet.create({
     gap: 16,
     marginTop: 8,
   },
-  emojiPicker: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  emojiPickerModal: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
     backgroundColor: '#222',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginRight: 12,
+    borderRadius: 16,
+    padding: 16,
+    zIndex: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+    maxHeight: 300,
+    marginVertical: 8,
   },
-  emojiLabel: {
-    color: '#aaa',
-    fontSize: 16,
-    marginRight: 6,
+  emojiPickerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+    marginBottom: 12,
+    textAlign: 'center',
   },
-  emojiDisplay: {
-    fontSize: 24,
-  },
+  // Removed stray fontSize: 24 line
   rolesCheckbox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1082,12 +1065,24 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
-  emojiPickerModal: {
-    backgroundColor: '#111',
-    borderRadius: 12,
-    padding: 12,
-    marginVertical: 8,
-    maxHeight: 300,
+  // Removed duplicate emojiPickerModal style
+  emojiPicker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#222',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginRight: 8,
+  },
+  emojiLabel: {
+    color: 'white',
+    fontSize: 16,
+    marginRight: 6,
+  },
+  emojiDisplay: {
+    fontSize: 24,
+    marginRight: 6,
   },
   emojiSearchInput: {
     backgroundColor: '#1a1a1a',

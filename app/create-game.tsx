@@ -21,14 +21,12 @@ export default function CreateGameScreen() {
     updatePlayer, 
     setTimerDuration, 
     startGame,
-    numImposters, 
-    setNumImposters,
     spyMode, 
     setSpyMode
   } = useGameStore();
   
-  const imposterOptions: { value: number | 'random'; label: string }[] = [
-    ...[1, 2, 3, 4, 5].filter(n => n < players.length).map(n => ({ value: n, label: `${n} Imposter${n > 1 ? 's' : ''}` })),
+  const spyOptions: { value: number | 'random'; label: string }[] = [
+    ...[1, 2, 3, 4, 5].filter(n => n < players.length).map(n => ({ value: n, label: `${n} ${n === 1 ? 'Spy' : 'Spies'}` })),
     { value: 'random', label: 'Random' }
   ];
 
@@ -41,6 +39,8 @@ export default function CreateGameScreen() {
     ...getAllCategories().map(c => ({ id: c.id, name: c.name, icon: c.icon })),
     { id: 'random', name: 'Random Mix', icon: '🎲' },
   ];
+
+  const [numspies, setNumspies] = useState<number | 'random'>(1);
 
   const timerOptions = [
     { value: 5, label: '5 min' },
@@ -212,22 +212,22 @@ export default function CreateGameScreen() {
           </View>
         </View>
 
-        {/* Imposter Selector Section */}
+        {/* spy Selector Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Number of Imposters</Text>
+          <Text style={styles.sectionTitle}>Number of spies</Text>
           <View style={styles.timerOptions}>
-            {imposterOptions.map((option) => (
+            {spyOptions.map((option) => (
               <TouchableOpacity
-                key={option.value}
+                key={String(option.value)}
                 style={[
                   styles.timerOption,
-                  numImposters === option.value && { ...styles.timerOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
+                  numspies === option.value && { ...styles.timerOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
                 ]}
-                onPress={() => setNumImposters(option.value)}
+                onPress={() => setNumspies(option.value)}
               >
                 <Text style={[
                   styles.timerOptionText,
-                  numImposters === option.value && { ...styles.timerOptionTextSelected, color: colors.error }
+                  numspies === option.value && { ...styles.timerOptionTextSelected, color: colors.error }
                 ]}>
                   {option.label}
                 </Text>
@@ -247,16 +247,16 @@ export default function CreateGameScreen() {
                 key={category.id}
                 style={[
                   styles.categoryCard,
-                  selectedCategory === category.id && { ...styles.categoryCardSelected, borderColor: colors.accent, backgroundColor: colors.surface }
+                  selectedCategory === category.id && { ...styles.categoryCardSelected, borderColor: colors.primary, backgroundColor: colors.surface }
                 ]}
                 onPress={() => setSelectedCategory(category.id)}
               >
                 <Text style={styles.categoryIcon}>{category.icon}</Text>
                 <Text style={[
                   styles.categoryName,
-                  selectedCategory === category.id && { ...styles.categoryNameSelected, color: colors.accent }
+                  selectedCategory === category.id && { ...styles.categoryNameSelected, color: colors.primary }
                 ]}>
-                  {category.name}
+                  {category?.name ?? 'Unknown'}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -296,7 +296,7 @@ export default function CreateGameScreen() {
           disabled={players.length < 3}
         >
           <LinearGradient
-            colors={players.length >= 3 ? [colors.accent, colors.primary] : ['#333333', '#222222']}
+            colors={players.length >= 3 ? [colors.primary, colors.secondary || '#5AC8FA'] : ['#333333', '#222222']}
             style={styles.startButtonGradient}
           >
             <Play size={24} color="white" />

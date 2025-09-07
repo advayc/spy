@@ -36,6 +36,11 @@ export default function WelcomeScreen() {
     router.push('/topics');
   };
 
+  const handleManageRangeTopics = () => {
+    vibrate.light();
+    router.push('/range-topics');
+  };
+
   const handleSettings = () => {
     vibrate.light();
     router.push('/settings');
@@ -54,7 +59,7 @@ export default function WelcomeScreen() {
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Eye size={120} color={colors.primary} strokeWidth={2} />
-          <Text style={[styles.title, { color: colors.accent }]}>Spy Games</Text>
+          <Text style={[styles.title, { color: colors.secondary }]}>Spy</Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Social Deduction Party Games</Text>
         </View>
 
@@ -65,7 +70,7 @@ export default function WelcomeScreen() {
             onPress={handleQuickStart}
           >
             <LinearGradient
-              colors={[colors.primary, colors.secondary]}
+              colors={[colors.primary, colors.primary]}
               style={styles.gradientButton}
             >
               <Play size={24} color="white" />
@@ -89,7 +94,7 @@ export default function WelcomeScreen() {
               onPress={handleSpyGame}
             >
               <Eye size={20} color={colors.primary} />
-              <Text style={[styles.gameModeButtonText, { color: colors.accent }]}>Guess the Spy</Text>
+              <Text style={[styles.gameModeButtonText, { color: colors.secondary }]}>Guess the Spy</Text>
               <Text style={[styles.gameModeSubtext, { color: colors.textSecondary }]}>
                 Classic deduction game
               </Text>
@@ -104,20 +109,30 @@ export default function WelcomeScreen() {
               onPress={handleRangeGame}
             >
               <Target size={20} color={colors.primary} />
-              <Text style={[styles.gameModeButtonText, { color: colors.accent }]}>Range Game</Text>
+              <Text style={[styles.gameModeButtonText, { color: colors.secondary }]}>Range Game</Text>
               <Text style={[styles.gameModeSubtext, { color: colors.textSecondary }]}>
                 Number guessing variant
               </Text>
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity 
-            style={[styles.secondaryButton, { borderColor: `${colors.primary}40` }]}
-            onPress={handleManageTopics}
-          >
-            <Settings size={20} color={colors.primary} />
-            <Text style={[styles.secondaryButtonText, { color: colors.accent }]}>Manage Topics</Text>
-          </TouchableOpacity>
+          <View style={styles.topicsContainer}>
+            <TouchableOpacity 
+              style={[styles.topicsButton, { borderColor: `${colors.primary}40` }]}
+              onPress={handleManageTopics}
+            >
+              <Eye size={20} color={colors.primary} />
+              <Text style={[styles.topicsButtonText, { color: colors.secondary }]}>Spy Topics</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.topicsButton, { borderColor: `${colors.primary}40` }]}
+              onPress={handleManageRangeTopics}
+            >
+              <Target size={20} color={colors.primary} />
+              <Text style={[styles.topicsButtonText, { color: colors.secondary }]}>Range Topics</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.infoContainer}>
@@ -242,5 +257,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  topicsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  topicsButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    minHeight: 60,
+  },
+  topicsButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 4,
   },
 });

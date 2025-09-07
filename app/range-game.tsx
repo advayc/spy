@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronLeft, Plus, Trash2, Play, Clock, Edit2, Target, Shuffle } from 'lucide-react-native';
+import { ChevronLeft, Plus, Trash2, Play, Clock, Edit2, Target, Shuffle, List } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRangeGameStore } from '@/stores/range-game-store';
 import { useRangeTopicsStore } from '@/stores/range-topics-store';
@@ -12,7 +12,7 @@ import { getQuestionCategories } from '@/data/range-questions';
 export default function RangeGameScreen() {
   const { colors } = useTheme();
   const vibrate = useVibration();
-  const { getAllCategories: getCustomCategories } = useRangeTopicsStore();
+  const { getAllCategories: getCustomCategories, customQuestions } = useRangeTopicsStore();
   const { 
     players, 
     timerDuration, 
@@ -21,7 +21,7 @@ export default function RangeGameScreen() {
     addPlayer, 
     removePlayer, 
     setTimerDuration,
-    startGame,
+    startGameWithCustom,
     gameStarted,
     currentQuestion
   } = useRangeGameStore();
@@ -29,6 +29,7 @@ export default function RangeGameScreen() {
   const [newPlayerName, setNewPlayerName] = useState('');
   const [editingPlayer, setEditingPlayer] = useState<string | null>(null);
   const [editPlayerName, setEditPlayerName] = useState('');
+  const [spyMode, setSpyMode] = useState<'normal' | 'role'>('normal');
 
   // Get range question categories and add random option
   const defaultCategories = getQuestionCategories().map(cat => ({ 
@@ -57,6 +58,13 @@ export default function RangeGameScreen() {
     { value: 10, label: '10 min' },
     { value: 15, label: '15 min' },
   ];
+
+  const spyOptions: { value: number | 'random'; label: string }[] = [
+    ...[1, 2, 3, 4, 5].filter(n => n < players.length).map(n => ({ value: n, label: `${n} ${n === 1 ? 'Spy' : 'Spies'}` })),
+    { value: 'random', label: 'Random' }
+  ];
+
+  const [numspies, setNumspies] = useState<number | 'random'>(1);
 
   const handleAddPlayer = () => {
     if (newPlayerName.trim() && players.length < 15) {
@@ -111,16 +119,22 @@ export default function RangeGameScreen() {
       return;
     }
     
-    startGame();
+    // Convert custom questions to base format
+    const convertedCustomQuestions = customQuestions.map(q => ({
+      id: q.id,
+      category: q.category,
+      prompt: q.prompt,
+      rangePrompt: q.rangePrompt,
+      expectedRange: q.expectedRange
+    }));
+    
+  // set selected spy count in store before starting
+  useRangeGameStore.getState().setNumspies(numspies);
+  startGameWithCustom(convertedCustomQuestions);
     vibrate.success();
     router.push('/range-play');
   };
 
-  // Redirect if game already started
-  if (gameStarted && currentQuestion) {
-    router.push('/range-play');
-    return null;
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -129,37 +143,35 @@ export default function RangeGameScreen() {
           <ChevronLeft size={24} color={colors.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create Range Game</Text>
-        <View style={styles.headerRight} />
+        <TouchableOpacity onPress={() => router.push('/topics')} style={styles.topicsButton}>
+          <List size={24} color={colors.primary} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Info Card */}
-        <View style={[styles.infoCard, { backgroundColor: colors.surface }]}>
+        <View style={styles.infoCard}>
           <View style={styles.infoHeader}>
             <Target size={20} color={colors.primary} />
-            <Text style={[styles.infoTitle, { color: colors.text }]}>How to Play Range Game</Text>
+            <Text style={styles.infoTitle}>How to Play Range Game</Text>
           </View>
-          <Text style={[styles.infoText, { color: colors.textSecondary }]}>
+          <Text style={styles.infoText}>
             Everyone gets the same question except one player who gets a range. Try to figure out who has the range!
           </Text>
-          <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
+          <Text style={styles.exampleText}>
             Example: "Age you learned to drive" vs "Range: 10-25"
           </Text>
         </View>
 
         {/* Players Section */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Players ({players.length}/15)</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Players ({players.length}/15)</Text>
           
           <View style={styles.addPlayerContainer}>
             <TextInput
-              style={[styles.playerInput, { 
-                backgroundColor: colors.background,
-                borderColor: `${colors.primary}20`,
-                color: colors.text
-              }]}
+              style={styles.playerInput}
               placeholder="Enter player name"
-              placeholderTextColor={colors.textSecondary}
+              placeholderTextColor="#666666"
               value={newPlayerName}
               onChangeText={setNewPlayerName}
               onSubmitEditing={handleAddPlayer}
@@ -167,28 +179,20 @@ export default function RangeGameScreen() {
             />
             <TouchableOpacity 
               onPress={handleAddPlayer}
-              style={[
-                styles.addButton, 
-                { backgroundColor: colors.primary },
-                (!newPlayerName.trim() || players.length >= 15) && styles.addButtonDisabled
-              ]}
+              style={[styles.addButton, (!newPlayerName.trim() || players.length >= 15) && styles.addButtonDisabled]}
               disabled={!newPlayerName.trim() || players.length >= 15}
             >
-              <Plus size={20} color="white" />
+              <Plus size={20} color={newPlayerName.trim() && players.length < 15 ? colors.primary : "#666666"} />
             </TouchableOpacity>
           </View>
 
           <View style={styles.playersGrid}>
             {players.map((player) => (
-              <View key={player.id} style={[styles.playerCard, { backgroundColor: colors.background, borderColor: `${colors.primary}20` }]}>
+              <View key={player.id} style={styles.playerCard}>
                 {editingPlayer === player.id ? (
                   <View style={styles.editPlayerContainer}>
                     <TextInput
-                      style={[styles.editPlayerInput, { 
-                        backgroundColor: colors.surface,
-                        borderColor: colors.primary,
-                        color: colors.text
-                      }]}
+                      style={styles.editPlayerInput}
                       value={editPlayerName}
                       onChangeText={setEditPlayerName}
                       onSubmitEditing={handleSavePlayerEdit}
@@ -196,7 +200,7 @@ export default function RangeGameScreen() {
                     />
                     <View style={styles.editPlayerActions}>
                       <TouchableOpacity onPress={handleCancelPlayerEdit} style={styles.editActionButton}>
-                        <Text style={[styles.editActionText, { color: colors.textSecondary }]}>Cancel</Text>
+                        <Text style={styles.editActionText}>Cancel</Text>
                       </TouchableOpacity>
                       <TouchableOpacity onPress={handleSavePlayerEdit} style={[styles.editActionButton, { backgroundColor: colors.primary }]}>
                         <Text style={[styles.editActionText, { color: 'white' }]}>Save</Text>
@@ -210,7 +214,7 @@ export default function RangeGameScreen() {
                         {player.name.charAt(0).toUpperCase()}
                       </Text>
                     </View>
-                    <Text style={[styles.playerName, { color: colors.text }]}>{player.name}</Text>
+                    <Text style={styles.playerName}>{player.name}</Text>
                     <View style={styles.playerActions}>
                       <TouchableOpacity 
                         onPress={() => handleEditPlayer(player.id)}
@@ -233,9 +237,9 @@ export default function RangeGameScreen() {
         </View>
 
         {/* Timer Section */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            <Clock size={20} color={colors.text} /> Game Timer
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            <Clock size={20} color="white" /> Game Timer
           </Text>
           <View style={styles.timerOptions}>
             {timerOptions.map((option) => (
@@ -243,18 +247,61 @@ export default function RangeGameScreen() {
                 key={option.value}
                 style={[
                   styles.timerOption,
-                  { backgroundColor: colors.background, borderColor: `${colors.primary}20` },
-                  timerDuration === option.value && { 
-                    borderColor: colors.primary, 
-                    backgroundColor: colors.surface 
-                  }
+                  timerDuration === option.value && { ...styles.timerOptionSelected, borderColor: colors.primary, backgroundColor: colors.surface }
                 ]}
                 onPress={() => setTimerDuration(option.value)}
               >
                 <Text style={[
                   styles.timerOptionText,
-                  { color: colors.text },
-                  timerDuration === option.value && { color: colors.primary }
+                  timerDuration === option.value && { ...styles.timerOptionTextSelected, color: colors.primary }
+                ]}>
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* spy Selector Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Number of Spies</Text>
+          <View style={styles.timerOptions}>
+            {spyOptions.map((option) => (
+              <TouchableOpacity
+                key={option.value.toString()}
+                style={[
+                  styles.timerOption,
+                  numspies === option.value && { ...styles.timerOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
+                ]}
+                onPress={() => setNumspies(option.value)}
+              >
+                <Text style={[
+                  styles.timerOptionText,
+                  numspies === option.value && { ...styles.timerOptionTextSelected, color: colors.error }
+                ]}>
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Spy Mode Selector Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Spy Mode</Text>
+          <View style={styles.timerOptions}>
+            {[{ value: 'normal', label: 'Normal' }, { value: 'role', label: 'Spy Role Mode' }].map((option) => (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.timerOption,
+                  spyMode === option.value && { ...styles.timerOptionSelected, borderColor: colors.accent, backgroundColor: colors.surface }
+                ]}
+                onPress={() => setSpyMode(option.value as 'normal' | 'role')}
+              >
+                <Text style={[
+                  styles.timerOptionText,
+                  spyMode === option.value && { ...styles.timerOptionTextSelected, color: colors.accent }
                 ]}>
                   {option.label}
                 </Text>
@@ -264,9 +311,9 @@ export default function RangeGameScreen() {
         </View>
 
         {/* Category Section */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            <Shuffle size={20} color={colors.text} /> Question Category
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            <Shuffle size={20} color="white" /> Question Category
           </Text>
           <View style={styles.categoriesGrid}>
             {categories.map((category) => (
@@ -274,21 +321,16 @@ export default function RangeGameScreen() {
                 key={category.id}
                 style={[
                   styles.categoryCard,
-                  { backgroundColor: colors.background, borderColor: `${colors.primary}20` },
-                  selectedCategory === category.id && { 
-                    borderColor: colors.accent, 
-                    backgroundColor: colors.surface 
-                  }
+                  selectedCategory === category.id && { ...styles.categoryCardSelected, borderColor: colors.primary, backgroundColor: colors.surface }
                 ]}
                 onPress={() => setSelectedCategory(category.id)}
               >
                 <Text style={styles.categoryIcon}>{category.icon}</Text>
                 <Text style={[
                   styles.categoryName,
-                  { color: colors.text },
-                  selectedCategory === category.id && { color: colors.accent }
+                  selectedCategory === category.id && { ...styles.categoryNameSelected, color: colors.primary }
                 ]}>
-                  {category.name}
+                  {category?.name ?? 'Unknown'}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -304,11 +346,11 @@ export default function RangeGameScreen() {
           disabled={players.length < 3}
         >
           <LinearGradient
-            colors={players.length >= 3 ? [colors.accent, colors.primary] : ['#333333', '#222222']}
+            colors={players.length >= 3 ? [colors.primary, colors.secondary || '#5AC8FA'] : ['#333333', '#222222']}
             style={styles.startButtonGradient}
           >
-            <Target size={24} color="white" />
-            <Text style={styles.startButtonText}>Start Range Game</Text>
+            <Play size={24} color="white" />
+            <Text style={styles.startButtonText}>Start Game</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -327,12 +369,27 @@ function getCategoryIcon(category: string): string {
     'Entertainment': '🎬',
     'Travel': '✈️',
     'Food': '🍕',
+    'Preferences': '⭐',
+    'Social': '🫂',
+    'Physical': '💪',
     'Money': '💰',
     'Relationships': '💝',
     'Work': '💼',
     'Education': '📚',
     'Sports': '⚽',
     'Music': '🎵',
+    'Communication': '📲',
+    'Grooming': '💇',
+    'Chores': '🧺',
+    'Maintenance': '🛠️',
+    'Fitness': '🏋️',
+    'Family': '👪',
+    'Skills': '🧠',
+    'Culture': '🏛️',
+    'Knowledge': '📖',
+    'Beliefs': '🕊️',
+    'Experience': '🎟️',
+    'Habits': '🧘',
     'Fashion': '👗',
     'Home': '🏠',
     'Miscellaneous': '🔮'
@@ -343,6 +400,7 @@ function getCategoryIcon(category: string): string {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000000',
   },
   header: {
     flexDirection: 'row',
@@ -351,7 +409,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: '#1a1a1a',
   },
   backButton: {
     padding: 8,
@@ -361,18 +419,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'white',
   },
-  headerRight: {
-    width: 40,
+  topicsButton: {
+    padding: 8,
   },
   content: {
     flex: 1,
     paddingHorizontal: 20,
   },
   infoCard: {
+    backgroundColor: '#1a1a1a',
     padding: 20,
     borderRadius: 16,
-    marginTop: 20,
-    marginBottom: 20,
+    marginVertical: 20,
   },
   infoHeader: {
     flexDirection: 'row',
@@ -383,44 +441,50 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 18,
     fontWeight: '600',
+    color: 'white',
   },
   infoText: {
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 8,
+    color: '#666666',
   },
   exampleText: {
     fontSize: 13,
     fontStyle: 'italic',
-    opacity: 0.8,
+    color: '#666666',
   },
   section: {
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 20,
+    marginVertical: 24,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '600',
+    color: 'white',
     marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   addPlayerContainer: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   playerInput: {
     flex: 1,
-    paddingVertical: 12,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
     paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
+    paddingVertical: 14,
+    color: 'white',
     fontSize: 16,
   },
   addButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 8,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    width: 48,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -431,34 +495,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   playerCard: {
+    backgroundColor: '#1a1a1a',
     borderRadius: 12,
-    borderWidth: 1,
     padding: 16,
-  },
-  editPlayerContainer: {
-    gap: 12,
-  },
-  editPlayerInput: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    borderWidth: 1,
-    fontSize: 16,
-  },
-  editPlayerActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  editActionButton: {
-    flex: 1,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-  },
-  editActionText: {
-    fontSize: 14,
-    fontWeight: '500',
   },
   playerInfo: {
     flexDirection: 'row',
@@ -478,9 +517,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   playerName: {
-    flex: 1,
+    color: 'white',
     fontSize: 16,
     fontWeight: '500',
+    flex: 1,
   },
   playerActions: {
     flexDirection: 'row',
@@ -489,21 +529,57 @@ const styles = StyleSheet.create({
   playerActionButton: {
     padding: 8,
   },
+  editPlayerContainer: {
+    gap: 12,
+  },
+  editPlayerInput: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: 8,
+    padding: 12,
+    color: 'white',
+    fontSize: 16,
+  },
+  editPlayerActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 12,
+  },
+  editActionButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#2a2a2a',
+  },
+  editActionText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+  },
   timerOptions: {
     flexDirection: 'row',
     gap: 12,
   },
   timerOption: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  timerOptionSelected: {
+    borderColor: '#007AFF',
+    backgroundColor: '#001a33',
   },
   timerOptionText: {
-    fontSize: 14,
+    color: '#666666',
+    fontSize: 16,
     fontWeight: '500',
+  },
+  timerOptionTextSelected: {
+    color: '#007AFF',
+    fontWeight: '600',
   },
   categoriesGrid: {
     flexDirection: 'row',
@@ -511,23 +587,35 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   categoryCard: {
-    width: '47%',
-    padding: 16,
+    width: '48%',
+    backgroundColor: '#1a1a1a',
     borderRadius: 12,
-    borderWidth: 1,
+    padding: 20,
     alignItems: 'center',
-    gap: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  categoryCardSelected: {
+    borderColor: '#007AFF',
+    backgroundColor: '#001a33',
   },
   categoryIcon: {
-    fontSize: 24,
+    fontSize: 32,
+    marginBottom: 8,
   },
   categoryName: {
+    color: '#666666',
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
   },
+  categoryNameSelected: {
+    color: '#007AFF',
+    fontWeight: '600',
+  },
   footer: {
     padding: 20,
+    paddingBottom: 34,
   },
   startButton: {
     borderRadius: 16,
@@ -541,7 +629,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 18,
-    paddingHorizontal: 32,
     gap: 12,
   },
   startButtonText: {
