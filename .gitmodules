@@ -1,3 +1,4 @@
 [submodule "website"]
 	path = website
 	url = https://github.com/advayc/spy-web.git
+	branch = main
