@@ -5,8 +5,7 @@ Social deduction party game for iOS & android where players uncover hidden roles
 ---
 
 ## Demos
-
-assets/demos/demo.png
+![demo](https://user-images.githubusercontent.com/33248075/236648792-3a5e2f3c-1f4d-4e7c-8f0e-1a5f3e2e6f3b.gif)
 
 https://github.com/user-attachments/assets/33248075-c040-43f1-8be8-3578a567a6c6
 
@@ -24,8 +23,7 @@ or
 ### presetup
 run
 ```bash
-expo prebuild --clean
-```
+npx expo prebuild --clean```
 
 or 
 
