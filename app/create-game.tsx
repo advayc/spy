@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2, Play, Clock, List, Shuffle, Edit2 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,7 +21,12 @@ export default function CreateGameScreen() {
     updatePlayer, 
     setTimerDuration, 
     startGame,
+    setNumspies,
   } = useGameStore();
+  
+  // Get screen width for responsive layout
+  const screenWidth = Dimensions.get('window').width;
+  const isSmallScreen = screenWidth < 390; // iPhone SE and smaller
   
   const spyOptions: { value: number | 'random'; label: string }[] = [
   // include 0 and cap options to 8
@@ -39,7 +44,7 @@ export default function CreateGameScreen() {
     { id: 'random', name: 'Random Mix', icon: '🎲' },
   ];
 
-  const [numspies, setNumspies] = useState<number | 'random'>(1);
+  const [localNumspies, setLocalNumspies] = useState<number | 'random'>(1);
 
   const timerOptions = [
     { value: 5, label: '5 min' },
@@ -94,7 +99,9 @@ export default function CreateGameScreen() {
       Alert.alert('Not Enough Players', 'You need at least 3 players to start the game.');
       return;
     }
-    startGame();
+    // Pass the spy count directly to startGame
+    console.log('Create Game - Starting with spy count:', localNumspies);
+    startGame(localNumspies);
     vibrate.success();
     router.push('/game');
   };
@@ -214,19 +221,20 @@ export default function CreateGameScreen() {
         {/* spy Selector Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Number of spies</Text>
-          <View style={styles.spyOptionsWrap}>
+          <View style={[styles.spyOptionsWrap, isSmallScreen && styles.spyOptionsWrapSmall]}>
             {spyOptions.map((option) => (
               <TouchableOpacity
                 key={String(option.value)}
                 style={[
                   styles.spyOption,
-                  numspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
+                  isSmallScreen && styles.spyOptionSmall,
+                  localNumspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
                 ]}
-                onPress={() => setNumspies(option.value)}
+                onPress={() => setLocalNumspies(option.value)}
               >
                 <Text style={[
                   styles.spyOptionText,
-                  numspies === option.value && { ...styles.spyOptionTextSelected, color: colors.error }
+                  localNumspies === option.value && { ...styles.spyOptionTextSelected, color: colors.error }
                 ]}>
                   {option.label}
                 </Text>
@@ -428,17 +436,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    justifyContent: 'space-between',
+  },
+  spyOptionsWrapSmall: {
+    justifyContent: 'space-around',
   },
   spyOption: {
-  width: '24%',
-  paddingVertical: 10,
-  paddingHorizontal: 8,
+    width: '30%',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
     borderRadius: 12,
     backgroundColor: '#1a1a1a',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: 'transparent',
+    marginBottom: 8,
+  },
+  spyOptionSmall: {
+    width: '22%',
   },
   spyOptionSelected: {
     backgroundColor: '#001a33',

@@ -407,8 +407,7 @@ export default function TopicsScreen() {
 
   const renderCategoryItem = useCallback(({ item }: { item: { id: string; name: string; icon: string; useRoles: boolean } }) => {
     const topicsCount = getTopicsCountForCategory(item.id);
-    const meta = getCategory(item.id);
-    const spiesLabel = meta ? (meta.randomizespies ? `Random up to ${meta.maxRandomspies ?? 1}` : `${meta.numspies ?? 1} spies`) : '';
+  const meta = getCategory(item.id);
 
     return (
       <TouchableOpacity 
@@ -435,7 +434,7 @@ export default function TopicsScreen() {
             </TouchableOpacity>
           </View>
         </View>
-  <Text style={styles.topicsCount}>{topicsCount} topics • {item.useRoles ? 'Roles on' : 'No roles'}{spiesLabel ? ' • ' + spiesLabel : ''}</Text>
+  <Text style={styles.topicsCount}>{topicsCount} topics • {item.useRoles ? 'Roles on' : 'No roles'}</Text>
       </TouchableOpacity>
     );
   }, [getTopicsCountForCategory, handleDeleteCategory]);

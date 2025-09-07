@@ -40,8 +40,8 @@ export interface RangeGameState {
   setSelectedCategory: (category: string) => void;
   setNumspies: (n: number | 'random') => void;
   
-  startGame: () => void;
-  startGameWithCustom: (customQuestions: RangeQuestion[]) => void;
+  startGame: (spyCount?: number | 'random') => void;
+  startGameWithCustom: (customQuestions: RangeQuestion[], spyCount?: number | 'random') => void;
   nextPhase: () => void;
   endGame: () => void;
   resetGame: () => void;
@@ -121,8 +121,9 @@ export const useRangeGameStore = create<RangeGameState>()(
       },
       
       // Game flow
-      startGame: () => {
+      startGame: (spyCount?: number | 'random') => {
         const state = get();
+        const actualSpyCount = spyCount !== undefined ? spyCount : state.numspies;
         if (state.players.length < 3) return;
         
         // Reset all players
@@ -134,16 +135,21 @@ export const useRangeGameStore = create<RangeGameState>()(
         
         // Determine number of spies. Allow random to be 0 and cap at 8.
         const maxAllowedSpies = Math.max(0, Math.min(8, resetPlayers.length - 1));
-          const numSpies = state.numspies === 'random'
-            ? Math.floor(Math.random() * (maxAllowedSpies + 1))
-            : Math.max(0, Math.min(maxAllowedSpies, typeof state.numspies === 'number' ? state.numspies : 0));
+        const numSpies = actualSpyCount === 'random'
+          ? Math.floor(Math.random() * (maxAllowedSpies + 1))
+          : Math.max(0, Math.min(maxAllowedSpies, typeof actualSpyCount === 'number' ? actualSpyCount : 0));
+
+        console.log('Range Game - Spy count:', numSpies, 'from input:', actualSpyCount, 'max allowed:', maxAllowedSpies);
 
         // Randomly select spy(s)
         const shuffledIndexes = Array.from({ length: resetPlayers.length }, (_, i) => i).sort(() => Math.random() - 0.5);
-          const selectedSpyIndexes = shuffledIndexes.slice(0, numSpies);
-          selectedSpyIndexes.forEach((idx: number) => {
-            if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
-          });
+        const selectedSpyIndexes = shuffledIndexes.slice(0, numSpies);
+        selectedSpyIndexes.forEach((idx: number) => {
+          if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
+        });
+
+        console.log('Range Game - Selected spy indexes:', selectedSpyIndexes);
+        console.log('Range Game - Players with spy status:', resetPlayers.map(p => ({ name: p.name, isspy: p.isspy })));
         
         // Select a new question
         const newQuestion = getRandomQuestion(state.usedQuestionIds);
@@ -163,8 +169,9 @@ export const useRangeGameStore = create<RangeGameState>()(
         });
       },
       
-      startGameWithCustom: (customQuestions) => {
+      startGameWithCustom: (customQuestions, spyCount?: number | 'random') => {
         const state = get();
+        const actualSpyCount = spyCount !== undefined ? spyCount : state.numspies;
         if (state.players.length < 3) return;
         
         // Reset all players
@@ -176,16 +183,16 @@ export const useRangeGameStore = create<RangeGameState>()(
         
         // Determine number of spies. Allow random to be 0 and cap at 8.
         const maxAllowedSpies2 = Math.max(0, Math.min(8, resetPlayers.length - 1));
-          const numSpies2 = state.numspies === 'random'
-            ? Math.floor(Math.random() * (maxAllowedSpies2 + 1))
-            : Math.max(0, Math.min(maxAllowedSpies2, typeof state.numspies === 'number' ? state.numspies : 0));
+        const numSpies2 = actualSpyCount === 'random'
+          ? Math.floor(Math.random() * (maxAllowedSpies2 + 1))
+          : Math.max(0, Math.min(maxAllowedSpies2, typeof actualSpyCount === 'number' ? actualSpyCount : 0));
 
         // Randomly select spy(s)
         const shuffledIndexes = Array.from({ length: resetPlayers.length }, (_, i) => i).sort(() => Math.random() - 0.5);
-          const selectedSpyIndexes2 = shuffledIndexes.slice(0, numSpies2);
-          selectedSpyIndexes2.forEach((idx: number) => {
-            if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
-          });
+        const selectedSpyIndexes2 = shuffledIndexes.slice(0, numSpies2);
+        selectedSpyIndexes2.forEach((idx: number) => {
+          if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
+        });
         
         // Select a new question using custom questions
         get().selectNewQuestionWithCustom(customQuestions);

@@ -32,7 +32,7 @@ interface GameStore {
   setTimerDuration: (duration: number) => void;
   setSelectedCategory: (category: string) => void;
   setNumspies: (num: number | 'random') => void;
-  startGame: () => void;
+  startGame: (spyCount?: number | 'random') => void;
   resetGame: () => void;
 }
 
@@ -83,8 +83,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
 
-  startGame: () => {
-  const { players, selectedCategory, numspies } = get();
+  startGame: (spyCount?: number | 'random') => {
+    const { players, selectedCategory, numspies } = get();
+    const actualSpyCount = spyCount !== undefined ? spyCount : numspies;
     const { topics } = useTopicsStore.getState();
     const { getCategory } = useCategoriesStore.getState();
     const { rolesEnabled } = useSettingsStore.getState();
@@ -105,16 +106,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
     
     // Determine number of spies. Allow random to be 0 and cap spies at 8.
     const maxAllowedSpies = Math.max(0, Math.min(8, players.length - 1));
-    let spyCount: number;
-    if (numspies === 'random') {
+    let finalSpyCount: number;
+    if (actualSpyCount === 'random') {
       // random between 0 and maxAllowedSpies inclusive
-      spyCount = Math.floor(Math.random() * (maxAllowedSpies + 1));
+      finalSpyCount = Math.floor(Math.random() * (maxAllowedSpies + 1));
     } else {
-      spyCount = Math.min(maxAllowedSpies, typeof numspies === 'number' ? numspies : 0);
+      finalSpyCount = Math.min(maxAllowedSpies, typeof actualSpyCount === 'number' ? actualSpyCount : 0);
     }
+
+    console.log('Regular Game - Spy count:', finalSpyCount, 'from input:', actualSpyCount, 'max allowed:', maxAllowedSpies);
+    
     // Select random spies
     const shuffled = [...players].sort(() => Math.random() - 0.5);
-    const spyIds = shuffled.slice(0, spyCount).map(p => p.id);
+    const spyIds = shuffled.slice(0, finalSpyCount).map(p => p.id);
+
+    console.log('Regular Game - Selected spy IDs:', spyIds);
     
     // Determine if this category uses roles and if roles are globally enabled
     const catMeta = selectedCategory === 'random' ? undefined : getCategory(selectedCategory);

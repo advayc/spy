@@ -1,18 +1,21 @@
-// Helper to get all emojis (flattened)
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, FlatList, Modal } from 'react-native';
+import { router } from 'expo-router';
+import { ChevronLeft, Plus, Trash2, Edit2 } from 'lucide-react-native';
+import { useRangeTopicsStore, CustomRangeQuestion, RangeCategory } from '@/stores/range-topics-store';
+import { useCategoriesStore } from '@/stores/categories-store';
+import { useTheme } from '@/hooks/useTheme';
+import { getQuestionCategories, getQuestionsByCategory } from '@/data/range-questions';
+
+interface CategoryWithRoles extends RangeCategory {
+  useRoles: boolean;
+}
+
 function getAllEmojis() {
-  // Use a similar emoji list as topics.tsx
   return [
     '🎯','📊','🎲','⚡','🏆','🎮','🎪','🎨','⭐','✨','🔥','🎉','🎈','🎁','🎀','🎊','💎','🔮','🔔','🎶','🎵','🎤','🎧','📣','📢','🔊','🔈','💡','📚','📖','💰','💸','💳','📅','📆','🗓','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌽','🥕','🥔','🍠','🥐','🍞','🥖','🥨','🧀','🥚','🍳','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🥪','🥙','🌮','🌯','🥗','🍲','🍜','🍝','🍣','🍤','🍙','🍚','🍱','🥟','🍥','🍡','🍦','🍨','🍧','🎂','🍰','🧁','🥧','🍫','🍬','🍭','🍮','😀','😃','😄','😊','😍','😘','🥰','😎','🤓','😜','😛','😇','🥳','🤗','🙂','🙃','😉','😌','😋','😻','🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦗','🕷','🦂','🦀','🐍','🐢','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🐠','🐟','🐬','🐳','🦈','🐊','🐅','🐆','🦒','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦙','🐐','🦌','🐕','🐩','🦮','🐈','🐓','🦃','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦫','🦦','🦥'
   ];
 }
-// Helper to get all emojis (flattened)
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, FlatList, Modal } from 'react-native';
-import { router } from 'expo-router';
-import { ChevronLeft, Plus, Trash2, Edit2, Target } from 'lucide-react-native';
-import { useRangeTopicsStore, CustomRangeQuestion, RangeCategory } from '@/stores/range-topics-store';
-import { useTheme } from '@/hooks/useTheme';
-import { getQuestionCategories } from '@/data/range-questions';
 
 export default function RangeTopicsScreen() {
   const { colors } = useTheme();
@@ -22,70 +25,68 @@ export default function RangeTopicsScreen() {
     addCustomQuestion,
     updateCustomQuestion,
     removeCustomQuestion,
+    removeBuiltinQuestion,
     addCustomCategory,
     updateCustomCategory,
     removeCustomCategory,
-    getQuestionsForCategory
+    getQuestionsForCategory,
+    deletedBuiltinQuestionIds
   } = useRangeTopicsStore();
 
-  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [showAddQuestion, setShowAddQuestion] = useState(false);
   const [editingCategory, setEditingCategory] = useState<RangeCategory | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<CustomRangeQuestion | null>(null);
-
-  // Category form state
   const [categoryName, setCategoryName] = useState('');
   const [categoryIcon, setCategoryIcon] = useState('🎯');
   const [useKeyboardEmoji, setUseKeyboardEmoji] = useState<boolean>(false);
   const [manualEmoji, setManualEmoji] = useState<string>('');
-
-  // Question form state
   const [questionPrompt, setQuestionPrompt] = useState('');
   const [questionRange, setQuestionRange] = useState('');
   const [questionCategory, setQuestionCategory] = useState('');
-  const [questionExpectedRange, setQuestionExpectedRange] = useState('');
 
-  // Get all available categories (default + custom)
-  const allCategories = [
-    ...getQuestionCategories().map(cat => ({ 
-      id: cat, 
-      name: cat, 
-      icon: getCategoryIcon(cat), 
-      isCustom: false 
+  const makeId = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const { getCategory: getGlobalCategory } = useCategoriesStore();
+
+  const allCategories: CategoryWithRoles[] = [
+    ...getQuestionCategories().map(cat => {
+      const slug = makeId(cat);
+      const globalCat = getGlobalCategory(slug);
+      return {
+        id: cat,
+        name: cat,
+        icon: getCategoryIcon(cat),
+        isCustom: false,
+        useRoles: globalCat?.useRoles ?? true,
+      };
+    }),
+    ...customCategories.map(cat => ({
+      ...cat,
+      isCustom: true,
+      useRoles: true,
     })),
-    ...customCategories
   ];
 
-  // get built-in questions for a category
-  const getBuiltinQuestionsFor = (catId: string) => {
-    const { rangeQuestions } = require('@/data/range-questions');
-    return rangeQuestions.filter((q: any) => q.category === catId);
-  };
-
-  const getTotalQuestionCount = (catId: string) => {
-    const builtin = getBuiltinQuestionsFor(catId).length;
-    const custom = getQuestionsForCategory(catId).length;
-    return builtin + custom;
+  const getBuiltinQuestionsFor = (categoryId: string) => {
+    return getQuestionsByCategory(categoryId);
   };
 
   const handleAddCategory = () => {
     if (!categoryName.trim()) {
-      Alert.alert('Missing Info', 'Please enter a category name.');
+      Alert.alert('Error', 'Please enter a category name.');
       return;
     }
-
     addCustomCategory({
       name: categoryName.trim(),
       icon: categoryIcon,
     });
-
     setCategoryName('');
     setCategoryIcon('🎯');
     setShowAddCategory(false);
   };
 
-  const handleEditCategory = (category: RangeCategory) => {
+  const handleEditCategory = (category: CategoryWithRoles) => {
     setEditingCategory(category);
     setCategoryName(category.name);
     setCategoryIcon(category.icon);
@@ -94,192 +95,201 @@ export default function RangeTopicsScreen() {
 
   const handleUpdateCategory = () => {
     if (!editingCategory || !categoryName.trim()) return;
-
+    if (!editingCategory.isCustom) {
+      Alert.alert('Built-in category', 'You can’t edit built-in categories.');
+      setEditingCategory(null);
+      setCategoryName('');
+      setCategoryIcon('🎯');
+      setShowAddCategory(false);
+      return;
+    }
     updateCustomCategory(editingCategory.id, {
       name: categoryName.trim(),
       icon: categoryIcon,
     });
-
     setEditingCategory(null);
     setCategoryName('');
     setCategoryIcon('🎯');
     setShowAddCategory(false);
   };
 
-  const handleDeleteCategory = (category: RangeCategory) => {
+  const handleDeleteCategory = (category: CategoryWithRoles) => {
     if (!category.isCustom) {
-      Alert.alert('Cannot Delete', 'Built-in categories cannot be deleted.');
+      Alert.alert('Built-in category', 'You can’t delete built-in categories.');
       return;
     }
-
-    const questionsCount = getQuestionsForCategory(category.id).length;
-    const message = questionsCount > 0 
-      ? `This will delete the category and all ${questionsCount} questions in it. Continue?`
-      : 'Delete this category?';
-
-    Alert.alert('Delete Category', message, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => removeCustomCategory(category.id) },
-    ]);
+    const questions = getQuestionsForCategory(category.id);
+    if (questions.length > 0) {
+      Alert.alert(
+        'Delete Category',
+        `This category has ${questions.length} custom questions. Delete all questions in this category?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: () => {
+              questions.forEach(q => removeCustomQuestion(q.id));
+              removeCustomCategory(category.id);
+            },
+          },
+        ]
+      );
+    } else {
+      removeCustomCategory(category.id);
+    }
   };
 
   const handleAddQuestion = () => {
     if (!questionPrompt.trim() || !questionRange.trim() || !questionCategory) {
-      Alert.alert('Missing Info', 'Please fill in all required fields.');
+      Alert.alert('Error', 'Please fill in all required fields.');
       return;
     }
-
     addCustomQuestion({
       prompt: questionPrompt.trim(),
       rangePrompt: questionRange.trim(),
       category: questionCategory,
-      expectedRange: questionExpectedRange.trim() || undefined,
     });
-
-    setQuestionPrompt('');
-    setQuestionRange('');
-    setQuestionCategory('');
-    setQuestionExpectedRange('');
     setShowAddQuestion(false);
-  };
-
-  const handleEditQuestion = (question: CustomRangeQuestion) => {
-    setEditingQuestion(question);
-    setQuestionPrompt(question.prompt);
-    setQuestionRange(question.rangePrompt);
-    setQuestionCategory(question.category);
-    setQuestionExpectedRange(question.expectedRange || '');
-    setShowAddQuestion(true);
-  };
-
-  const handleUpdateQuestion = () => {
-    if (!editingQuestion || !questionPrompt.trim() || !questionRange.trim() || !questionCategory) return;
-
-    updateCustomQuestion(editingQuestion.id, {
-      prompt: questionPrompt.trim(),
-      rangePrompt: questionRange.trim(),
-      category: questionCategory,
-      expectedRange: questionExpectedRange.trim() || undefined,
-    });
-
     setEditingQuestion(null);
     setQuestionPrompt('');
     setQuestionRange('');
     setQuestionCategory('');
-    setQuestionExpectedRange('');
-    setShowAddQuestion(false);
   };
 
-  const handleDeleteQuestion = (question: CustomRangeQuestion) => {
+  const handleUpdateQuestion = () => {
+    if (!editingQuestion) return;
+    if (!questionPrompt.trim() || !questionRange.trim() || !questionCategory) {
+      Alert.alert('Error', 'Please fill in all required fields.');
+      return;
+    }
+    updateCustomQuestion(editingQuestion.id, {
+      prompt: questionPrompt.trim(),
+      rangePrompt: questionRange.trim(),
+      category: questionCategory,
+    });
+    setShowAddQuestion(false);
+    setEditingQuestion(null);
+    setQuestionPrompt('');
+    setQuestionRange('');
+    setQuestionCategory('');
+  };
+
+  const handleEditQuestion = (q: CustomRangeQuestion) => {
+    setEditingQuestion(q);
+    setQuestionPrompt(q.prompt);
+    setQuestionRange(q.rangePrompt);
+    setQuestionCategory(q.category);
+    setShowAddQuestion(true);
+  };
+
+  const handleDeleteQuestion = (q: CustomRangeQuestion) => {
+    if (!q.isCustom) {
+      Alert.alert('Delete Question', 'Are you sure you want to delete this built-in question?', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => removeBuiltinQuestion(q.id) },
+      ]);
+      return;
+    }
     Alert.alert('Delete Question', 'Are you sure you want to delete this question?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => removeCustomQuestion(question.id) },
+      { text: 'Delete', style: 'destructive', onPress: () => removeCustomQuestion(q.id) },
     ]);
   };
 
-  // (no single selectedCategory mode; categories expand inline)
-
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: `${colors.primary}20` }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <TouchableOpacity 
+          onPress={() => selectedCategory ? setSelectedCategory(null) : router.back()} 
+          style={styles.backButton}
+        >
           <ChevronLeft size={24} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Range Game Topics</Text>
-        <TouchableOpacity 
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          {selectedCategory ? allCategories.find(c => c.id === selectedCategory)?.name || 'Questions' : 'Range Game Topics'}
+        </Text>
+        <TouchableOpacity
           style={styles.addButton}
-          onPress={() => setShowAddCategory(true)}
+          onPress={() => {
+            if (selectedCategory) {
+              setQuestionCategory(selectedCategory);
+              setShowAddQuestion(true);
+            } else {
+              setShowAddCategory(true);
+            }
+          }}
         >
           <Plus size={24} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
-      {/* Content */}
-      <ScrollView style={styles.content}>
-        <View style={styles.categoriesGrid}>
-          {allCategories.map((category) => {
-            const expanded = expandedCategories.includes(category.id);
-            const builtinCount = getBuiltinQuestionsFor(category.id).length;
-            const customCount = getQuestionsForCategory(category.id).length;
+      {selectedCategory ? (
+        <FlatList
+          data={[
+            ...getBuiltinQuestionsFor(selectedCategory)
+              .filter(q => !deletedBuiltinQuestionIds.includes(q.id))
+              .map(q => ({ ...q, isCustom: false })),
+            ...getQuestionsForCategory(selectedCategory).map(q => ({ ...q, isCustom: true })),
+          ]}
+          renderItem={({ item }) => (
+            <View style={[styles.categoryItem, { backgroundColor: colors.surface, borderColor: colors.border }]}> 
+              <View style={styles.categoryHeader}>
+                <View style={styles.categoryInfo}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.categoryName, { color: colors.text }]}>{item.prompt}</Text>
+                    <Text style={[styles.topicsCount, { color: colors.textSecondary, textAlign: 'left' }]}>Range: {item.rangePrompt}</Text>
+                  </View>
+                </View>
+                <View style={styles.categoryActions}>
+                  <TouchableOpacity onPress={() => handleEditQuestion(item)} style={styles.editButton}>
+                    <Edit2 size={16} color={colors.primary} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDeleteQuestion(item)} style={styles.deleteButton}>
+                    <Trash2 size={16} color="#FF3B30" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.questionsList}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <FlatList
+          data={allCategories}
+          renderItem={({ item }) => {
+            const builtinCount = getBuiltinQuestionsFor(item.id).length;
+            const customCount = getQuestionsForCategory(item.id).length;
             return (
-              <View key={category.id} style={[styles.categoryCard, { backgroundColor: colors.surface }]}> 
+              <View style={[styles.categoryItem, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <TouchableOpacity
                   style={styles.categoryHeader}
-                  onPress={() => {
-                    if (expanded) setExpandedCategories(expandedCategories.filter(id => id !== category.id));
-                    else setExpandedCategories([...expandedCategories, category.id]);
-                  }}
+                  onPress={() => setSelectedCategory(item.id)}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <Text style={styles.categoryIcon}>{category.icon}</Text>
-                    <View>
-                      <Text style={[styles.categoryName, { color: colors.text }]}>{category?.name ?? 'Unknown'}</Text>
-                      <Text style={[styles.categoryCount, { color: colors.textSecondary }]}>{builtinCount + customCount} questions</Text>
-                    </View>
+                  <View style={styles.categoryInfo}>
+                    <Text style={[styles.categoryEmoji, { color: colors.text }]}>{item.icon}</Text>
+                    <Text style={[styles.categoryName, { color: colors.text }]}>{item?.name ?? 'Unknown'}</Text>
                   </View>
                   <View style={styles.categoryActions}>
-                    {category.isCustom && (
-                      <>
-                        <TouchableOpacity
-                          onPress={() => handleEditCategory(category)}
-                          style={styles.actionButton}
-                        >
-                          <Edit2 size={16} color={colors.primary} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => handleDeleteCategory(category)}
-                          style={styles.actionButton}
-                        >
-                          <Trash2 size={16} color={colors.error} />
-                        </TouchableOpacity>
-                      </>
-                    )}
+                    <TouchableOpacity onPress={() => handleEditCategory(item)} style={styles.editButton}>
+                      <Edit2 size={16} color={colors.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDeleteCategory(item)} style={styles.deleteButton}>
+                      <Trash2 size={16} color="#FF3B30" />
+                    </TouchableOpacity>
                   </View>
                 </TouchableOpacity>
-
-                {expanded && (
-                  <View style={{ marginTop: 12 }}>
-                    {/* Show built-in questions first (read-only) */}
-                    {getBuiltinQuestionsFor(category.id).map((q: any) => (
-                      <View key={q.id} style={[styles.questionCard, { backgroundColor: colors.surface }]}>
-                        <Text style={[styles.questionPrompt, { color: colors.text }]}>{q.prompt}</Text>
-                        <Text style={[styles.questionRange, { color: colors.accent }]}>{q.rangePrompt}</Text>
-                        {q.expectedRange && <Text style={[styles.questionExpected, { color: colors.textSecondary }]}>{q.expectedRange}</Text>}
-                      </View>
-                    ))}
-
-                    {/* Custom questions (editable) */}
-                    {getQuestionsForCategory(category.id).map((question) => (
-                      <View key={question.id} style={[styles.questionCard, { backgroundColor: colors.surface }]}>
-                        <View style={styles.questionHeader}>
-                          <Text style={[styles.questionPrompt, { color: colors.text }]}>{question.prompt}</Text>
-                          <View style={styles.questionActions}>
-                            <TouchableOpacity onPress={() => handleEditQuestion(question)} style={styles.actionButton}>
-                              <Edit2 size={16} color={colors.primary} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => handleDeleteQuestion(question)} style={styles.actionButton}>
-                              <Trash2 size={16} color={colors.error} />
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                        <Text style={[styles.questionRange, { color: colors.accent }]}>Range: {question.rangePrompt}</Text>
-                        {question.expectedRange && <Text style={[styles.questionExpected, { color: colors.textSecondary }]}>Expected: {question.expectedRange}</Text>}
-                      </View>
-                    ))}
-
-                    <View style={{ marginTop: 8 }}>
-                      <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.primary }]} onPress={() => { setQuestionCategory(category.id); setShowAddQuestion(true); }}>
-                        <Text style={[styles.modalButtonText, { color: 'white' }]}>Add Question</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                )}
+                <Text style={[styles.topicsCount, { color: colors.textSecondary }]}>{builtinCount + customCount} questions • {item.useRoles ? 'Roles on' : 'No roles'}</Text>
               </View>
             );
-          })}
-        </View>
-      </ScrollView>
+          }}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.categoriesList}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
       <Modal
         visible={showAddCategory}
@@ -290,97 +300,118 @@ export default function RangeTopicsScreen() {
           setEditingCategory(null);
           setCategoryName('');
           setCategoryIcon('🎯');
+          setUseKeyboardEmoji(false);
+          setManualEmoji('');
         }}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modal, { backgroundColor: colors.surface, maxHeight: '80%' }]}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}> 
-                {editingCategory ? 'Edit Category' : 'Add Category'}
-              </Text>
-              <TextInput
-                style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
-                placeholder="Category name"
-                placeholderTextColor={colors.textSecondary}
-                value={categoryName}
-                onChangeText={setCategoryName}
-                autoFocus
-              />
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <Text style={styles.emojiPickerTitle}>Pick an emoji</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => setUseKeyboardEmoji(v => !v)} style={{ marginRight: 12 }}>
-                    <Text style={{ color: colors.primary }}>{useKeyboardEmoji ? 'Picker' : 'Keyboard'}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => setShowAddCategory(false)}>
-                    <Text style={{ color: colors.primary, fontSize: 18 }}>✕</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              {useKeyboardEmoji ? (
-                <View>
-                  <TextInput
-                    style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
-                    placeholder="Type or paste emoji"
-                    placeholderTextColor={colors.textSecondary}
-                    value={manualEmoji}
-                    onChangeText={setManualEmoji}
-                    autoFocus
-                  />
-                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
-                    <TouchableOpacity onPress={() => { setManualEmoji(''); setUseKeyboardEmoji(false); }} style={[styles.modalButton, { backgroundColor: colors.background }]}>
-                      <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { if (manualEmoji.trim()) { setCategoryIcon(Array.from(manualEmoji.trim())[0]); setManualEmoji(''); setUseKeyboardEmoji(false); } }} style={[styles.modalButton, { backgroundColor: colors.primary }]}>
-                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Use</Text>
+          <View style={[styles.modalContent, { backgroundColor: '#111' }]}>
+            <Text style={[styles.modalTitle, { color: 'white' }]}> 
+              {editingCategory ? 'Edit Category' : 'Add Category'}
+            </Text>
+            <TextInput
+              style={[styles.modalInput, { backgroundColor: '#1a1a1a', color: 'white', borderColor: '#2a2a2a' }]}
+              placeholder="Category name"
+              placeholderTextColor="#999"
+              value={categoryName}
+              onChangeText={setCategoryName}
+              autoFocus
+            />
+            <View style={styles.emojiAndRolesRow}>
+              <TouchableOpacity
+                style={[styles.emojiPicker, { backgroundColor: '#222' }]}
+                onPress={() => setUseKeyboardEmoji(true)}
+              >
+                <Text style={[styles.emojiLabel, { color: 'white' }]}>Icon:</Text>
+                <Text style={styles.emojiDisplay}>{categoryIcon}</Text>
+              </TouchableOpacity>
+            </View>
+            {useKeyboardEmoji && (
+              <View style={[styles.emojiPickerModal, { backgroundColor: '#222' }]}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <Text style={[styles.emojiPickerTitle, { color: 'white' }]}>Pick an emoji</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => setUseKeyboardEmoji(false)} style={{ marginRight: 12 }}>
+                      <Text style={{ color: '#0A84FF', fontSize: 14 }}>Cancel</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
-              ) : (
+                <TextInput
+                  style={[styles.emojiSearchInput, { backgroundColor: '#1a1a1a', color: 'white', borderColor: '#2a2a2a' }]}
+                  placeholder="Type or paste emoji"
+                  placeholderTextColor="#666"
+                  value={manualEmoji}
+                  onChangeText={setManualEmoji}
+                  autoFocus
+                />
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
+                  <TouchableOpacity
+                    onPress={() => { setManualEmoji(''); setUseKeyboardEmoji(false); }}
+                    style={[styles.cancelButton, { backgroundColor: '#2a2a2a' }]}
+                  >
+                    <Text style={[styles.cancelButtonText, { color: 'white' }]}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (manualEmoji.trim()) {
+                        setCategoryIcon(Array.from(manualEmoji.trim())[0]);
+                        setManualEmoji('');
+                        setUseKeyboardEmoji(false);
+                      }
+                    }}
+                    style={[styles.saveButton, { backgroundColor: '#0A84FF' }]}
+                  >
+                    <Text style={[styles.saveButtonText, { color: 'white' }]}>Use</Text>
+                  </TouchableOpacity>
+                </View>
                 <FlatList
                   data={getAllEmojis()}
                   renderItem={({ item }) => (
                     <TouchableOpacity
-                      style={[styles.iconOption, { backgroundColor: categoryIcon === item ? colors.primary : colors.background }]}
-                      onPress={() => setCategoryIcon(item)}
+                      style={[styles.emojiOption, { backgroundColor: categoryIcon === item ? '#0A84FF' : '#222' }]}
+                      onPress={() => {
+                        setCategoryIcon(item);
+                        setUseKeyboardEmoji(false);
+                      }}
                     >
-                      <Text style={styles.iconOptionText}>{item}</Text>
+                      <Text style={styles.emojiOptionText}>{item}</Text>
                     </TouchableOpacity>
                   )}
                   keyExtractor={(item) => item}
                   numColumns={8}
                   contentContainerStyle={[styles.emojiGrid, { paddingBottom: 20 }]}
                   showsVerticalScrollIndicator={true}
-                  style={{ maxHeight: 240 }}
+                  style={{ maxHeight: 200 }}
                 />
-              )}
-              <View style={styles.modalActions}>
-                <TouchableOpacity
-                  style={[styles.modalButton, { backgroundColor: colors.background }]}
-                  onPress={() => {
-                    setShowAddCategory(false);
-                    setEditingCategory(null);
-                    setCategoryName('');
-                    setCategoryIcon('🎯');
-                  }}
-                >
-                  <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalButton, { backgroundColor: colors.primary }]}
-                  onPress={editingCategory ? handleUpdateCategory : handleAddCategory}
-                >
-                  <Text style={[styles.modalButtonText, { color: 'white' }]}> 
-                    {editingCategory ? 'Update' : 'Add'}
-                  </Text>
-                </TouchableOpacity>
               </View>
-            </ScrollView>
+            )}
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalCancel, { backgroundColor: '#2a2a2a' }]}
+                onPress={() => {
+                  setShowAddCategory(false);
+                  setEditingCategory(null);
+                  setCategoryName('');
+                  setCategoryIcon('🎯');
+                  setUseKeyboardEmoji(false);
+                  setManualEmoji('');
+                }}
+              >
+                <Text style={[styles.modalButtonText, { color: 'white' }]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalSave, { backgroundColor: '#0A84FF' }]}
+                onPress={editingCategory ? handleUpdateCategory : handleAddCategory}
+              >
+                <Text style={[styles.modalButtonText, { color: 'white' }]}> 
+                  {editingCategory ? 'Update' : 'Add'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
 
-      {/* Add Question Modal */}
       <Modal
         visible={showAddQuestion}
         transparent={true}
@@ -391,34 +422,30 @@ export default function RangeTopicsScreen() {
           setQuestionPrompt('');
           setQuestionRange('');
           setQuestionCategory('');
-          setQuestionExpectedRange('');
         }}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modal, { backgroundColor: colors.surface }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
+          <View style={[styles.modalContent, { backgroundColor: '#111' }]}>
+            <Text style={[styles.modalTitle, { color: 'white' }]}>
               {editingQuestion ? 'Edit Question' : 'Add Question'}
             </Text>
-            
             <TextInput
-              style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+              style={[styles.modalInput, { backgroundColor: '#1a1a1a', color: 'white', borderColor: '#2a2a2a' }]}
               placeholder="Question (e.g., 'Age you learned to drive')"
-              placeholderTextColor={colors.textSecondary}
+              placeholderTextColor="#999"
               value={questionPrompt}
               onChangeText={setQuestionPrompt}
               autoFocus
             />
-
             <TextInput
-              style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+              style={[styles.modalInput, { backgroundColor: '#1a1a1a', color: 'white', borderColor: '#2a2a2a' }]}
               placeholder="Range (e.g., 'Range: 10-25')"
-              placeholderTextColor={colors.textSecondary}
+              placeholderTextColor="#999"
               value={questionRange}
               onChangeText={setQuestionRange}
             />
-
             <View style={styles.pickerContainer}>
-              <Text style={[styles.pickerLabel, { color: colors.text }]}>Category:</Text>
+              <Text style={[styles.pickerLabel, { color: 'white' }]}>Category:</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryPicker}>
                 {allCategories.map((category) => (
                   <TouchableOpacity
@@ -426,8 +453,8 @@ export default function RangeTopicsScreen() {
                     style={[
                       styles.categoryPickerOption,
                       { 
-                        backgroundColor: questionCategory === category.id ? colors.primary : colors.background,
-                        borderColor: colors.border
+                        backgroundColor: questionCategory === category.id ? '#0A84FF' : '#1a1a1a',
+                        borderColor: '#2a2a2a'
                       }
                     ]}
                     onPress={() => setQuestionCategory(category.id)}
@@ -435,7 +462,7 @@ export default function RangeTopicsScreen() {
                     <Text style={styles.categoryPickerIcon}>{category.icon}</Text>
                     <Text style={[
                       styles.categoryPickerText,
-                      { color: questionCategory === category.id ? 'white' : colors.text }
+                      { color: questionCategory === category.id ? 'white' : 'white' }
                     ]}>
                       {category?.name ?? 'Unknown'}
                     </Text>
@@ -443,31 +470,21 @@ export default function RangeTopicsScreen() {
                 ))}
               </ScrollView>
             </View>
-
-            <TextInput
-              style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
-              placeholder="Expected range (optional, e.g., '13-16')"
-              placeholderTextColor={colors.textSecondary}
-              value={questionExpectedRange}
-              onChangeText={setQuestionExpectedRange}
-            />
-
-            <View style={styles.modalActions}>
+            <View style={styles.modalButtons}>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: colors.background }]}
+                style={[styles.modalButton, styles.modalCancel, { backgroundColor: '#2a2a2a' }]}
                 onPress={() => {
                   setShowAddQuestion(false);
                   setEditingQuestion(null);
                   setQuestionPrompt('');
                   setQuestionRange('');
                   setQuestionCategory('');
-                  setQuestionExpectedRange('');
                 }}
               >
-                <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
+                <Text style={[styles.modalButtonText, { color: 'white' }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: colors.primary }]}
+                style={[styles.modalButton, styles.modalSave, { backgroundColor: '#0A84FF' }]}
                 onPress={editingQuestion ? handleUpdateQuestion : handleAddQuestion}
               >
                 <Text style={[styles.modalButtonText, { color: 'white' }]}>
@@ -513,32 +530,16 @@ function getCategoryIcon(category: string): string {
     'Habits': '🔁',
     'Knowledge': '📖',
     'Beliefs': '🕊️',
-    'Experience': '🎟️'
+    'Experience': '🎟️',
+    'Communication': '💬'
   };
   return iconMap[category] || '❓';
 }
 
 const styles = StyleSheet.create({
-  emojiPickerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: 'white',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  emojiGrid: {
-    paddingVertical: 8,
-  },
-  iconOption: {
-    width: '12.5%',
-    alignItems: 'center',
-    padding: 6,
-  },
-  iconOptionText: {
-    fontSize: 28,
-  },
   container: {
     flex: 1,
+    backgroundColor: '#000000',
   },
   header: {
     flexDirection: 'row',
@@ -547,6 +548,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
+    borderBottomColor: '#1a1a1a',
   },
   backButton: {
     padding: 8,
@@ -554,162 +556,224 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
+    color: 'white',
   },
   addButton: {
     padding: 8,
   },
-  modeToggle: {
-    flexDirection: 'row',
-    margin: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    padding: 4,
-  },
-  modeButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  modeButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
   content: {
     flex: 1,
+  },
+  categoriesList: {
     paddingHorizontal: 20,
+    paddingTop: 20,
   },
-  categoriesGrid: {
-    gap: 16,
+  questionsList: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
-  categoryCard: {
-    padding: 16,
+  categoryItem: {
+    backgroundColor: '#1a1a1a',
     borderRadius: 12,
+    padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
   categoryHeader: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: 8,
   },
-  categoryIcon: {
-    fontSize: 32,
-  },
-  categoryActions: {
+  categoryInfo: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    flex: 1,
   },
-  actionButton: {
-    padding: 4,
+  categoryEmoji: {
+    fontSize: 20,
+    marginRight: 12,
+    color: 'white',
   },
   categoryName: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 4,
+    color: 'white',
+    flex: 1,
   },
-  categoryCount: {
-    fontSize: 14,
-  },
-  backToCategoriesButton: {
+  categoryActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  backToCategoriesText: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 8,
-  },
-  emptyState: {
-    alignItems: 'center',
-    padding: 40,
-    borderRadius: 12,
-  },
-  emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    fontSize: 14,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  questionsList: {
     gap: 12,
   },
-  questionCard: {
-    padding: 16,
-    borderRadius: 12,
+  editButton: {
+    padding: 8,
   },
-  questionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
+  deleteButton: {
+    padding: 8,
   },
-  questionPrompt: {
-    fontSize: 16,
-    fontWeight: '600',
-    flex: 1,
-    marginRight: 8,
-  },
-  questionActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  questionRange: {
+  topicsCount: {
     fontSize: 14,
-    fontWeight: '500',
+    color: '#666666',
+    textAlign: 'left',
+    marginLeft: 0,
+  },
+  topicItem: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+  },
+  topicHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 4,
   },
-  questionExpected: {
-    fontSize: 12,
+  topicName: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: 'white',
+    flex: 1,
+  },
+  topicActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  editTopicButton: {
+    padding: 8,
+  },
+  deleteTopicButton: {
+    padding: 8,
+  },
+  rolesCount: {
+    fontSize: 14,
+    color: '#666666',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
   },
-  modal: {
-    width: '90%',
-    maxWidth: 400,
-    borderRadius: 16,
-    padding: 24,
+  modalContent: {
+    width: '100%',
+    maxWidth: 520,
+    backgroundColor: '#111',
+    borderRadius: 12,
+    padding: 16,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 20,
-    textAlign: 'center',
+    color: 'white',
+    marginBottom: 12,
   },
-  input: {
-    borderWidth: 1,
+  modalInput: {
+    backgroundColor: '#1a1a1a',
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    padding: 12,
     fontSize: 16,
-    marginBottom: 16,
+    color: 'white',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
-  iconSelector: {
-    marginBottom: 20,
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 12,
+    marginTop: 8,
   },
-  iconSelectorLabel: {
+  modalButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  modalCancel: {
+    backgroundColor: '#2a2a2a',
+  },
+  modalSave: {
+    backgroundColor: '#0A84FF',
+  },
+  modalButtonText: {
+    color: 'white',
     fontSize: 14,
     fontWeight: '500',
+  },
+  emojiAndRolesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 8,
+  },
+  emojiPicker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#222',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginRight: 8,
+  },
+  emojiLabel: {
+    color: 'white',
+    fontSize: 16,
+    marginRight: 6,
+  },
+  emojiDisplay: {
+    fontSize: 24,
+    marginRight: 6,
+  },
+  emojiPickerModal: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    backgroundColor: '#222',
+    borderRadius: 16,
+    padding: 16,
+    zIndex: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+    maxHeight: 300,
+    marginVertical: 8,
+  },
+  emojiPickerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  emojiSearchInput: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    color: 'white',
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
     marginBottom: 8,
   },
-  iconOptions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+  emojiGrid: {
+    paddingVertical: 8,
   },
-  // Removed duplicate iconOption and iconOptionText styles
+  emojiOption: {
+    width: '16.66%',
+    alignItems: 'center',
+    padding: 6,
+  },
+  emojiOptionText: {
+    fontSize: 28,
+  },
   pickerContainer: {
     marginBottom: 16,
   },
@@ -717,6 +781,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 8,
+    color: 'white',
   },
   categoryPicker: {
     flexDirection: 'row',
@@ -729,6 +794,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 8,
     borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
   categoryPickerIcon: {
     fontSize: 16,
@@ -737,20 +803,28 @@ const styles = StyleSheet.create({
   categoryPickerText: {
     fontSize: 12,
     fontWeight: '500',
+    color: 'white',
   },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  modalButton: {
-    flex: 1,
-    paddingVertical: 12,
+  cancelButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 8,
-    alignItems: 'center',
+    backgroundColor: '#2a2a2a',
   },
-  modalButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+  cancelButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  saveButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#0A84FF',
+  },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

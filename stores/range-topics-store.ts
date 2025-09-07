@@ -17,11 +17,13 @@ export interface RangeCategory {
 interface RangeTopicsState {
   customQuestions: CustomRangeQuestion[];
   customCategories: RangeCategory[];
+  deletedBuiltinQuestionIds: string[];
   
   // Question management
   addCustomQuestion: (question: Omit<CustomRangeQuestion, 'id' | 'isCustom'>) => void;
   updateCustomQuestion: (id: string, updates: Partial<Omit<CustomRangeQuestion, 'id' | 'isCustom'>>) => void;
   removeCustomQuestion: (id: string) => void;
+  removeBuiltinQuestion: (id: string) => void;
   getQuestionsForCategory: (categoryId: string) => CustomRangeQuestion[];
   
   // Category management
@@ -39,6 +41,7 @@ export const useRangeTopicsStore = create<RangeTopicsState>()(
     (set, get) => ({
       customQuestions: [],
       customCategories: [],
+      deletedBuiltinQuestionIds: [],
       
       // Question management
       addCustomQuestion: (questionData) => {
@@ -64,6 +67,12 @@ export const useRangeTopicsStore = create<RangeTopicsState>()(
       removeCustomQuestion: (id) => {
         set((state) => ({
           customQuestions: state.customQuestions.filter((q) => q.id !== id),
+        }));
+      },
+      
+      removeBuiltinQuestion: (id) => {
+        set((state) => ({
+          deletedBuiltinQuestionIds: [...state.deletedBuiltinQuestionIds, id],
         }));
       },
       
@@ -114,6 +123,7 @@ export const useRangeTopicsStore = create<RangeTopicsState>()(
         set({
           customQuestions: [],
           customCategories: [],
+          deletedBuiltinQuestionIds: [],
         });
       },
     }),

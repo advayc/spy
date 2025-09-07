@@ -97,6 +97,11 @@ function getCategoryIcon(category: string): string {
   const selectedPlayerData = selectedPlayer ? players.find(p => p.id === selectedPlayer) : null;
   const playerRole = selectedPlayerData ? gameState.playerRoles[selectedPlayerData.id] : null;
 
+  // Calculate actual number of spies in the current game
+  const spyCount = Object.values(gameState.playerRoles).filter(role => role.isSpy).length;
+
+  console.log('[GAME SCREEN] Spy count calculated:', spyCount, 'from roles:', gameState.playerRoles);
+
   const getCategoryDisplay = (category: string) => {
   if (category === 'random') return { name: 'Topic', icon: '🎲' };
   const c = getCategory(category);

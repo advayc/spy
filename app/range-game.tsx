@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2, Play, Clock, Edit2, Target, Shuffle, List } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -29,6 +29,10 @@ export default function RangeGameScreen() {
   const [newPlayerName, setNewPlayerName] = useState('');
   const [editingPlayer, setEditingPlayer] = useState<string | null>(null);
   const [editPlayerName, setEditPlayerName] = useState('');
+
+  // Get screen width for responsive layout
+  const screenWidth = Dimensions.get('window').width;
+  const isSmallScreen = screenWidth < 390; // iPhone SE and smaller
 
 
   // Get range question categories and add random option
@@ -64,7 +68,16 @@ export default function RangeGameScreen() {
     { value: 'random', label: 'Random' }
   ];
 
-  const [numspies, setNumspies] = useState<number | 'random'>(1);
+  const [localNumspies, setLocalNumspies] = useState<number | 'random'>(1);
+
+  // Determine how many spy option tiles to show per row based on screen width.
+  // Aim: ~4 on wider phones (e.g., iPhone XR ~414), ~3 on medium (iPhone 16 ~390), fewer on small screens.
+  const itemsPerRow = screenWidth >= 414 ? 4 : screenWidth >= 390 ? 3 : 2;
+  // Calculate pixel width for each option so we can reliably set numeric width (TypeScript friendly)
+  // Reserve horizontal padding present in container (20*2) and an approximation of gaps/margins.
+  const containerHorizontalPadding = 40; // content paddingHorizontal: 20 on styles.content
+  const approxGapPerItem = 12; // approximation for gap + margin per item
+  const optionWidth = Math.floor((screenWidth - containerHorizontalPadding - (approxGapPerItem * itemsPerRow)) / itemsPerRow);
 
   const handleAddPlayer = () => {
     if (newPlayerName.trim() && players.length < 15) {
@@ -125,12 +138,11 @@ export default function RangeGameScreen() {
       category: q.category,
       prompt: q.prompt,
       rangePrompt: q.rangePrompt,
-      expectedRange: q.expectedRange
     }));
     
-  // set selected spy count in store before starting
-  useRangeGameStore.getState().setNumspies(numspies);
-  startGameWithCustom(convertedCustomQuestions);
+    // Pass the spy count directly to startGameWithCustom
+    console.log('Range Game - Starting with spy count:', localNumspies);
+    startGameWithCustom(convertedCustomQuestions, localNumspies);
     vibrate.success();
     router.push('/range-play');
   };
@@ -265,19 +277,22 @@ export default function RangeGameScreen() {
         {/* spy Selector Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Number of Spies</Text>
-          <View style={styles.spyOptionsWrap}>
+          <View style={[styles.spyOptionsWrap, isSmallScreen && styles.spyOptionsWrapSmall]}>
             {spyOptions.map((option) => (
               <TouchableOpacity
                 key={option.value.toString()}
                 style={[
+                  // inline width to make rows responsive across device sizes
+                  { width: optionWidth },
                   styles.spyOption,
-                  numspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
+                  isSmallScreen && styles.spyOptionSmall,
+                  localNumspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
                 ]}
-                onPress={() => setNumspies(option.value)}
+                onPress={() => setLocalNumspies(option.value)}
               >
                 <Text style={[
                   styles.spyOptionText,
-                  numspies === option.value && { ...styles.spyOptionTextSelected, color: colors.error }
+                  localNumspies === option.value && { ...styles.spyOptionTextSelected, color: colors.error }
                 ]}>
                   {option.label}
                 </Text>
@@ -543,20 +558,28 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   spyOptionsWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  gap: 6,
+  justifyContent: 'center',
+  },
+  spyOptionsWrapSmall: {
+  justifyContent: 'center',
   },
   spyOption: {
-  width: '24%',
-  paddingVertical: 10,
-  paddingHorizontal: 8,
+    width: '30%',
+    paddingVertical: 10,
+    paddingHorizontal: 6,
     borderRadius: 12,
     backgroundColor: '#1a1a1a',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: 'transparent',
+    marginBottom: 8,
+  },
+  spyOptionSmall: {
+    width: '22%',
   },
   spyOptionSelected: {
     backgroundColor: '#001a33',

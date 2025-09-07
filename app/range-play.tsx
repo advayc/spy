@@ -146,16 +146,16 @@ export default function RangeGamePlayScreen() {
                 <Text style={styles.spyText}>You're the spy!</Text>
                 <Text style={styles.customWordLabel}>Your range is:</Text>
                 <Text style={styles.customWordText}>
-                  {currentQuestion.rangePrompt} ({currentQuestion.expectedRange || 'N/A'})
+                  {currentQuestion.rangePrompt}
                 </Text>
               </View>
             ) : (
               <View style={styles.roleContainer}>
                 <Text style={styles.topicText}>
-                  {categoryInfo.icon} {categoryInfo.name}: {currentQuestion.prompt}
+                  {categoryInfo.icon} {categoryInfo.name}
                 </Text>
                 <Text style={styles.roleText}>
-                  Your question is: {currentQuestion.prompt}
+                  {currentQuestion.prompt}
                 </Text>
               </View>
             )}

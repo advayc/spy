@@ -108,7 +108,6 @@ export default function SettingsScreen() {
     { type: 'list', items: [ 'Settings → Game Settings → Spy count limits: configure Minimum and Maximum spies used when Random is selected. Maximum is capped at 8.', 'Disable Roles turns off spy/civilian roles for party variations.' ] },
     { type: 'heading', text: 'Tips' },
     { type: 'list', items: [ 'For small groups (4-6), 1 spy is usually best.', 'For larger groups, increase spies but keep balance in mind.', 'Use roles and timers to control pacing.' ] },
-    { type: 'heading', text: 'Credits' },
   ];
 
   const applyMinSpies = () => {
