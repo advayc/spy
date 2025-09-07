@@ -21,12 +21,11 @@ export default function CreateGameScreen() {
     updatePlayer, 
     setTimerDuration, 
     startGame,
-    spyMode, 
-    setSpyMode
   } = useGameStore();
   
   const spyOptions: { value: number | 'random'; label: string }[] = [
-    ...[1, 2, 3, 4, 5].filter(n => n < players.length).map(n => ({ value: n, label: `${n} ${n === 1 ? 'Spy' : 'Spies'}` })),
+  // include 0 and cap options to 8
+  ...[0,1,2,3,4,5,6,7,8].filter(n => n < players.length && n <= 8).map(n => ({ value: n, label: `${n} ${n === 1 ? 'Spy' : 'Spies'}` })),
     { value: 'random', label: 'Random' }
   ];
 
@@ -263,29 +262,7 @@ export default function CreateGameScreen() {
           </View>
         </View>
 
-        {/* Spy Mode Selector Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Spy Mode</Text>
-          <View style={styles.timerOptions}>
-            {[{ value: 'normal', label: 'Normal' }, { value: 'role', label: 'Spy Role Mode' }].map((option) => (
-              <TouchableOpacity
-                key={option.value}
-                style={[
-                  styles.timerOption,
-                  spyMode === option.value && { ...styles.timerOptionSelected, borderColor: colors.accent, backgroundColor: colors.surface }
-                ]}
-                onPress={() => setSpyMode(option.value as 'normal' | 'role')}
-              >
-                <Text style={[
-                  styles.timerOptionText,
-                  spyMode === option.value && { ...styles.timerOptionTextSelected, color: colors.accent }
-                ]}>
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+  {/* Spy Mode removed */}
       </ScrollView>
 
       {/* Start Game Button */}
@@ -375,12 +352,17 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   playersGrid: {
-    gap: 12,
+  gap: 12,
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'flex-start',
   },
   playerCard: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 12,
-    padding: 16,
+  backgroundColor: '#1a1a1a',
+  borderRadius: 12,
+  padding: 12,
+  width: '48%',
+  marginBottom: 12,
   },
   playerInfo: {
     flexDirection: 'row',

@@ -114,7 +114,7 @@ export default function RangeGamePlayScreen() {
                     {player.name.charAt(0).toUpperCase()}
                   </Text>
                 </View>
-                <Text style={styles.playerName}>{player.name}</Text>
+                <Text style={styles.playerName} numberOfLines={1} ellipsizeMode="tail">{player.name}</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -138,7 +138,7 @@ export default function RangeGamePlayScreen() {
         <Pressable style={styles.modalOverlay} onPress={handleCloseModal}>
           <View style={styles.modalContent}>
             {selectedPlayerData && (
-              <Text style={styles.playerNameInModal}>{selectedPlayerData.name}</Text>
+              <Text style={styles.playerNameInModal} numberOfLines={1} ellipsizeMode="tail">{selectedPlayerData.name}</Text>
             )}
             {playerRole?.isspy ? (
               <View style={styles.spyContainer}>

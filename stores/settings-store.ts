@@ -39,6 +39,11 @@ interface SettingsState {
   
   // Actions
   resetAllSettings: () => void;
+  // Spy settings
+  minSpies: number;
+  setMinSpies: (n: number) => void;
+  maxSpies: number;
+  setMaxSpies: (n: number) => void;
 }
 
 const defaultColorScheme: ColorScheme = {
@@ -65,6 +70,8 @@ const defaultSettings = {
   vibrationsEnabled: true,
   notificationsEnabled: true,
   darkMode: true,
+  minSpies: 0,
+  maxSpies: 8,
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -80,6 +87,20 @@ export const useSettingsStore = create<SettingsState>()(
       setVibrationsEnabled: (enabled) => set({ vibrationsEnabled: enabled }),
       setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
       setDarkMode: (enabled) => set({ darkMode: enabled }),
+      // Spy count settings with simple validation/clamping
+      minSpies: defaultSettings.minSpies,
+      maxSpies: defaultSettings.maxSpies,
+      setMinSpies: (n: number) => {
+        const max = get().maxSpies ?? 8;
+        const clamped = Math.max(0, Math.min(Math.floor(n || 0), max));
+        set({ minSpies: clamped });
+      },
+      setMaxSpies: (n: number) => {
+        const min = get().minSpies ?? 0;
+        // cap global maximum at 8
+        const clamped = Math.max(min, Math.min(Math.floor(n || 0), 8));
+        set({ maxSpies: clamped });
+      },
       
       addCustomScheme: (scheme) => {
         const current = get().customSchemes;
@@ -104,7 +125,7 @@ export const useSettingsStore = create<SettingsState>()(
         }
       },
       
-      resetAllSettings: () => set(defaultSettings),
+  resetAllSettings: () => set(defaultSettings),
     }),
     {
       name: 'settings-storage',

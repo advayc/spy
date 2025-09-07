@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Alert, Linking, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Alert, Linking, TextInput, Modal, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { ArrowLeft, Palette, RotateCcw, Heart, Volume2, VolumeX, Moon, Sun, Vibrate, Bell, Info, ExternalLink, Eye, Target } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -40,6 +40,10 @@ export default function SettingsScreen() {
     autoStartTimer,
     setAutoStartTimer,
     resetAllSettings,
+  minSpies,
+  setMinSpies,
+  maxSpies,
+  setMaxSpies,
   } = useSettingsStore();
 
   const { colors } = useTheme();
@@ -81,6 +85,59 @@ export default function SettingsScreen() {
     Linking.openURL('https://advay.ca').catch(() => {
       Alert.alert('Error', 'Could not open the website. Please visit advay.ca manually.');
     });
+  };
+
+  // Local inputs for min/max spies
+  const [localMinSpies, setLocalMinSpies] = useState(String(minSpies ?? 0));
+  const [localMaxSpies, setLocalMaxSpies] = useState(String(maxSpies ?? 8));
+
+  // Docs modal
+  const [showDocsModal, setShowDocsModal] = useState(false);
+
+  const docs = [
+    { type: 'title', text: 'How to play — Spy' },
+    { type: 'heading', text: 'Objective' },
+    { type: 'paragraph', text: "One or more players are spies who don't know the secret word. The other players know the word and must identify the spies by asking questions." },
+    { type: 'heading', text: 'Setup' },
+    { type: 'list', items: [ 'Enter player names on the Create Game screen.', 'Choose a topic or word list.', 'Choose number of spies or select Random (the app will pick between the configured min and max spies).' ] },
+    { type: 'heading', text: 'Gameplay' },
+    { type: 'list', items: [ 'Start the round. Each player will be privately shown their role and the secret word (except spies).', 'Players take turns asking questions to figure out who the spies are.', 'After discussion or a timer, players vote on who they think the spy is.', 'Reveal roles and repeat as desired.' ] },
+    { type: 'heading', text: 'Range Game (alternate mode)' },
+    { type: 'paragraph', text: "In Range Game, all players receive the same question except one player who receives a numeric range as their 'answer'. Players try to identify who has the range by asking questions and comparing answers. Example: Question: 'Age you learned to drive' — civilians answer with a single value, the range player sees something like '10-25'." },
+    { type: 'heading', text: 'Settings' },
+    { type: 'list', items: [ 'Settings → Game Settings → Spy count limits: configure Minimum and Maximum spies used when Random is selected. Maximum is capped at 8.', 'Disable Roles turns off spy/civilian roles for party variations.' ] },
+    { type: 'heading', text: 'Tips' },
+    { type: 'list', items: [ 'For small groups (4-6), 1 spy is usually best.', 'For larger groups, increase spies but keep balance in mind.', 'Use roles and timers to control pacing.' ] },
+    { type: 'heading', text: 'Credits' },
+  ];
+
+  const applyMinSpies = () => {
+    const n = parseInt(localMinSpies || '0', 10);
+    if (isNaN(n) || n < 0) {
+      Alert.alert('Invalid', 'Minimum spies must be 0 or more.');
+      setLocalMinSpies(String(minSpies ?? 0));
+      return;
+    }
+    setMinSpies(n);
+    vibrate.success();
+  };
+
+  const applyMaxSpies = () => {
+    const n = parseInt(localMaxSpies || '0', 10);
+    if (isNaN(n) || n < 0) {
+      Alert.alert('Invalid', 'Maximum spies must be 0 or more.');
+      setLocalMaxSpies(String(maxSpies ?? 8));
+      return;
+    }
+    if (n > 8) {
+      Alert.alert('Limited', 'Maximum spies are capped at 8. It has been reduced to 8.');
+      setLocalMaxSpies('8');
+      setMaxSpies(8);
+      vibrate.success();
+      return;
+    }
+    setMaxSpies(n);
+    vibrate.success();
   };
 
   const SettingItem = ({ icon: Icon, title, subtitle, rightComponent, onPress }: any) => (
@@ -318,6 +375,36 @@ export default function SettingsScreen() {
               />
             }
           />
+
+          {/* Min / Max Spies */}
+          <View style={{ marginTop: 12 }}>
+            <Text style={[styles.settingTitle, { marginLeft: 4 }]}>Spy count limits</Text>
+            <Text style={[styles.settingSubtitle, { marginLeft: 4, marginBottom: 8 }]}>Set the minimum and maximum number of spies allowed when using random spy selection. Maximum is capped at 8.</Text>
+
+            <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.settingSubtitle, { marginBottom: 6 }]}>Minimum spies</Text>
+                <TextInput
+                  keyboardType="number-pad"
+                  value={localMinSpies}
+                  onChangeText={setLocalMinSpies}
+                  onEndEditing={applyMinSpies}
+                  style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
+                />
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.settingSubtitle, { marginBottom: 6 }]}>Maximum spies</Text>
+                <TextInput
+                  keyboardType="number-pad"
+                  value={localMaxSpies}
+                  onChangeText={setLocalMaxSpies}
+                  onEndEditing={applyMaxSpies}
+                  style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
+                />
+              </View>
+            </View>
+          </View>
         </View>
 
         {/* Audio & Feedback */}
@@ -370,7 +457,14 @@ export default function SettingsScreen() {
         {/* Support & Info */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Support & Information</Text>
-          
+          <SettingItem
+            icon={Info}
+            title="Help / How to play"
+            subtitle="Open the in-app guide and gameplay tips"
+            onPress={() => setShowDocsModal(true)}
+            rightComponent={<ExternalLink size={20} color="#888" />}
+          />
+
           <SettingItem
             icon={Heart}
             title="Support Developer"
@@ -394,6 +488,48 @@ export default function SettingsScreen() {
             <Text style={styles.resetButtonText}>Reset All Settings</Text>
           </TouchableOpacity>
         </View>
+
+      {/* Docs Modal */}
+      <Modal
+        visible={showDocsModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowDocsModal(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.docsContainer}>
+            <View style={styles.docsHeader}>
+              <Text style={styles.docsTitle}>Help & How to play</Text>
+              <Pressable onPress={() => setShowDocsModal(false)} style={styles.docsCloseBtn}>
+                <Text style={{ color: '#fff', fontWeight: '600' }}>Close</Text>
+              </Pressable>
+            </View>
+            <ScrollView style={{ padding: 12 }}>
+              {docs.map((block, i) => {
+                if (block.type === 'title') {
+                  return <Text key={i} style={[styles.docsTitle, { fontSize: 20 }]}>{block.text}</Text>;
+                }
+                if (block.type === 'heading') {
+                  return <Text key={i} style={styles.docsHeading}>{block.text}</Text>;
+                }
+                if (block.type === 'paragraph') {
+                  return <Text key={i} style={styles.docsText}>{block.text}</Text>;
+                }
+                if (block.type === 'list') {
+                  return (
+                    <View key={i} style={{ marginBottom: 8 }}>
+                      {(block.items || []).map((it: string, j: number) => (
+                        <Text key={j} style={styles.docsListItem}>• {it}</Text>
+                      ))}
+                    </View>
+                  );
+                }
+                return null;
+              })}
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      </Modal>
 
         <View style={styles.bottomPadding} />
       </ScrollView>
@@ -629,5 +765,55 @@ const styles = StyleSheet.create({
   gameModeOptionText: {
     fontSize: 12,
     fontWeight: '500',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+  },
+  docsContainer: {
+    marginHorizontal: 16,
+    backgroundColor: '#0f0f0f',
+    borderRadius: 12,
+    overflow: 'hidden',
+    maxHeight: '80%'
+  },
+  docsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#222'
+  },
+  docsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white'
+  },
+  docsCloseBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    backgroundColor: '#222',
+    borderRadius: 8,
+  },
+  docsText: {
+    color: '#ddd',
+    marginBottom: 12,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  docsHeading: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    marginTop: 8,
+    marginBottom: 6,
+  },
+  docsListItem: {
+    color: '#ddd',
+    fontSize: 14,
+    marginBottom: 6,
+    marginLeft: 6,
   },
 });

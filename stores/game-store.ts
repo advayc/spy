@@ -24,7 +24,6 @@ interface GameStore {
   timerDuration: number;
   selectedCategory: string;
   numspies: number | 'random';
-    spyMode: 'normal' | 'role';
   gameState: GameState;
   
   addPlayer: (name: string) => void;
@@ -33,7 +32,6 @@ interface GameStore {
   setTimerDuration: (duration: number) => void;
   setSelectedCategory: (category: string) => void;
   setNumspies: (num: number | 'random') => void;
-    setSpyMode: (mode: 'normal' | 'role') => void;
   startGame: () => void;
   resetGame: () => void;
 }
@@ -43,7 +41,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
   timerDuration: 8,
   selectedCategory: 'locations',
   numspies: 1,
-    spyMode: 'normal',
   gameState: {
     currentTopic: null,
     playerRoles: {},
@@ -85,12 +82,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ selectedCategory: category });
   },
 
-    setSpyMode: (mode: 'normal' | 'role') => {
-      set({ spyMode: mode });
-    },
 
   startGame: () => {
-  const { players, selectedCategory, numspies, spyMode } = get();
+  const { players, selectedCategory, numspies } = get();
     const { topics } = useTopicsStore.getState();
     const { getCategory } = useCategoriesStore.getState();
     const { rolesEnabled } = useSettingsStore.getState();
@@ -109,10 +103,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Select random topic
     const randomTopic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
     
-    // Determine number of spies
-    let spyCount = numspies === 'random'
-      ? Math.max(1, Math.floor(Math.random() * Math.max(1, players.length - 1)))
-      : Math.min(players.length - 1, typeof numspies === 'number' ? numspies : 1);
+    // Determine number of spies. Allow random to be 0 and cap spies at 8.
+    const maxAllowedSpies = Math.max(0, Math.min(8, players.length - 1));
+    let spyCount: number;
+    if (numspies === 'random') {
+      // random between 0 and maxAllowedSpies inclusive
+      spyCount = Math.floor(Math.random() * (maxAllowedSpies + 1));
+    } else {
+      spyCount = Math.min(maxAllowedSpies, typeof numspies === 'number' ? numspies : 0);
+    }
     // Select random spies
     const shuffled = [...players].sort(() => Math.random() - 0.5);
     const spyIds = shuffled.slice(0, spyCount).map(p => p.id);
@@ -127,23 +126,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       if (spyIds.includes(player.id)) {
         let customWord: string | undefined = undefined;
         
-  // If spy mode is 'role', get a different role from the same topic
-  if (spyMode === 'role' && usesRoles && randomTopic.roles.length > 1) {
-          // Get roles from same topic excluding roles that might be assigned to other players
+        // If roles are enabled and topic has multiple roles, pick a role for spies from topic roles
+        if (usesRoles && randomTopic.roles.length > 1) {
           const availableRoles = [...randomTopic.roles];
-          
-          // Try to find a role that's not already assigned to non-spy players
           const assignedRoles = Object.values(playerRoles)
             .filter(p => !p.isSpy)
             .map(p => p.role);
-          
           const unassignedRoles = availableRoles.filter(role => !assignedRoles.includes(role));
-          
           if (unassignedRoles.length > 0) {
-            // Use an unassigned role if available
             customWord = unassignedRoles[Math.floor(Math.random() * unassignedRoles.length)];
           } else {
-            // Fallback to any random role from the topic
             customWord = availableRoles[Math.floor(Math.random() * availableRoles.length)];
           }
         }

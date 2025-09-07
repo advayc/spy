@@ -23,190 +23,277 @@
       <goal>Optimize performance for mobile and web environments.</goal>
     </goals>
   </section>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Extended Copilot Instructions for the "spy" repository.
+  Purpose: Provide a comprehensive, machine-readable guide for automated AI coding agents
+  (Copilot-like assistants) that must analyze, modify, test, and document the codebase.
+  This document is intentionally verbose and prescriptive to cover many edge-cases and
+  workflows across mobile (Expo), web (Next.js), native projects, and supporting scripts.
+  Keep this file in the repository at `.github/copilot-instructions.md` so agents and maintainers
+  can reference a single canonical source of decision-making rules.
+-->
+<copilotInstructions>
+  <meta>
+    <title>Spy — Copilot / AI Agent Instructions</title>
+    <version>2.0</version>
+    <author>Repository Maintainers</author>
+    <lastUpdated>2025-09-07</lastUpdated>
+    <contact>See repository owner and commits</contact>
+  </meta>
 
-  <section name="Architecture &amp; Key Directories">
-    <description>
-      The project uses a monorepo structure with React/Next.js for web and Expo for mobile. Directories are modular to streamline development and maintenance.
-    </description>
-    <directories>
-      <directory name="app/">
-        <desc>Next.js/React pages and layouts. Each file (e.g., game.tsx, create-game.tsx) defines a route using file-based routing.</desc>
-      </directory>
-      <directory name="components/">
-        <desc>Reusable React components for UI (e.g., buttons, modals, game boards).</desc>
-      </directory>
-      <directory name="data/">
-        <desc>Static data, such as default-topics.ts for predefined game topics and word lists.</desc>
-      </directory>
-      <directory name="stores/">
-        <desc>State management with Zustand or similar. Examples: game-store.ts (game state), topics-store.ts (topic management).</desc>
-      </directory>
-      <directory name="assets/">
-        <desc>Images, icons, and demo assets. Subfolders: images/ (UI graphics), demos/ (marketing or tutorial content).</desc>
-      </directory>
-      <directory name="ios/">
-        <desc>Native iOS project files for Expo/React Native builds.</desc>
-      </directory>
-      <directory name="android/">
-        <desc>Native Android project files for Expo/React Native builds.</desc>
-      </directory>
-      <directory name="scripts/">
-        <desc>Utility scripts for automation (e.g., data generation, build helpers).</desc>
-      </directory>
-      <directory name="tests/">
-        <desc>Unit/integration tests (use Jest/React Testing Library in __tests__ folders if implemented).</desc>
-      </directory>
-    </directories>
-  </section>
+  <summary>
+    These instructions tell an automated coding assistant how to safely and effectively work on
+    the `spy` repository. They prioritize correctness, non-destructive changes, test-backed edits,
+    and clear commit messages. Follow the validation and quality-gates section before finalizing
+    changes. When uncertain, prefer to ask maintainers or leave an explicit TODO comment.
+  </summary>
 
-  <section name="Developer Workflows">
-    <description>
-      Standardized workflows for setup, development, building, testing, and deployment to ensure consistency.
-    </description>
-    <workflows>
-      <workflow name="Pre-Setup">
-        <desc>Prepare the project environment for mobile builds.</desc>
-        <steps>
-          <step>Run `expo prebuild --clean` to generate native project files.</step>
-          <step>Alternatively, use `eas build -p ios --profile production` for production iOS builds or `eas build -p android --profile production` for Android.</step>
-        </steps>
-      </workflow>
-      <workflow name="Local Development">
-        <steps>
-          <step>Install dependencies: `yarn install` or `npm install`.</step>
-          <step>Start web app: `yarn dev` or `npm run dev`.</step>
-          <step>Start mobile app: `expo start`.</step>
-        </steps>
-      </workflow>
-      <workflow name="Build (Mobile)">
-        <desc>Build and distribute mobile apps for iOS and Android.</desc>
-        <steps>
-          <step>Build iOS: `eas build -p ios --profile development` for development or `--profile production` for production.</step>
-          <step>Build Android: `eas build -p android --profile development` or `--profile production`.</step>
-          <step>Manage credentials in eas.json.</step>
-          <step>For iOS App Store distribution:
-            <substep>Open Xcode → Window → Organizer.</substep>
-            <substep>Select "Distribute App" → App Store Connect.</substep>
-            <substep>Alternatively, run the workflow to generate .ipa, upload via Transporter, and wait for build processing.</substep>
-          </step>
-        </steps>
-      </workflow>
-      <workflow name="TypeScript">
-        <desc>Use TypeScript (tsconfig.json) with strict typing. Avoid `any` types and ensure type safety.</desc>
-      </workflow>
-      <workflow name="Linting &amp; Formatting">
-        <desc>Use ESLint (eslint.config.js, rork-eslint.config.js) and Prettier. Run `yarn lint` or `npm run lint`.</desc>
-      </workflow>
-      <workflow name="Testing">
-        <desc>No test setup detected; implement with Jest/React Testing Library in __tests__ folders. Run `yarn test` or `npm test`.</desc>
-        <best-practices>Cover components, stores, and critical logic with unit and integration tests.</best-practices>
-      </workflow>
-      <workflow name="Deployment">
-        <desc>Web: Deploy via Vercel/Netlify with Next.js. Mobile: Use EAS for app store submissions.</desc>
-      </workflow>
-    </workflows>
-  </section>
+  <highLevelGuidelines>
+    <guideline id="safety">Always work on a feature branch or ensure a safe revert path exists.</guideline>
+    <guideline id="minimalEdits">Prefer the smallest set of edits needed to achieve the request.</guideline>
+    <guideline id="typeSafety">Preserve TypeScript types and avoid adding untyped any where possible.</guideline>
+    <guideline id="noSecrets">Do not add or expose secrets (API keys, tokens, credentials) in commits or code.</guideline>
+    <guideline id="tests">Add or update tests for non-trivial logic changes when possible.</guideline>
+    <guideline id="lint">Run linters and formatters; keep code style consistent with existing files.</guideline>
+    <guideline id="explain">Include a concise commit message and a short PR description for each change.</guideline>
+  </highLevelGuidelines>
 
-  <section name="Patterns &amp; Conventions">
+  <projectScope>
     <description>
-      Adhere to these conventions for code consistency, scalability, and maintainability.
+      The codebase contains an Expo-managed React Native mobile app and a Next.js web front-end.
+      Key areas to inspect when making changes include `app/` (routes/screens), `components/`,
+      `stores/` (Zustand-based state), `data/` (default topics/questions), `assets/`, and native
+      folders `ios/` and `android/` created by `expo prebuild`.
     </description>
-    <patterns>
-      <pattern name="Routing">
-        <desc>Use file-based routing in app/. Dynamic routes (e.g., [id].tsx) for game IDs or user-specific pages.</desc>
-      </pattern>
-      <pattern name="State Management">
-        <desc>Use hooks from stores/ (e.g., game-store.ts) for global state. Avoid prop drilling.</desc>
-      </pattern>
-      <pattern name="Topics &amp; Data">
-        <desc>Load default topics from data/default-topics.ts. Support user overrides via localStorage or topics-store.ts.</desc>
-      </pattern>
-      <pattern name="Assets">
-        <desc>Import from assets/images/ or assets/demos/. Optimize images for web/mobile (e.g., use WebP, compress assets).</desc>
-      </pattern>
-      <pattern name="Components">
-        <desc>Use functional components with hooks. Style with Tailwind CSS or CSS Modules.</desc>
-      </pattern>
-      <pattern name="Error Handling">
-        <desc>Implement try-catch for async operations. Display user-friendly error messages.</desc>
-      </pattern>
-      <pattern name="Accessibility">
-        <desc>Ensure WCAG compliance (e.g., ARIA labels, keyboard navigation, sufficient color contrast).</desc>
-      </pattern>
-      <pattern name="Performance">
-        <desc>Optimize renders with memoization (React.memo, useMemo, useCallback). Lazy-load non-critical assets.</desc>
-      </pattern>
-    </patterns>
-  </section>
 
-  <section name="Integration Points">
-    <description>
-      Key technologies and services integrated into the project.
-    </description>
-    <integrations>
-      <integration name="Expo/EAS">
-        <desc>Manages mobile builds and deployment for iOS and Android.</desc>
-      </integration>
-      <integration name="React/Next.js">
-        <desc>Powers web app structure, routing, and server-side rendering.</desc>
-      </integration>
-      <integration name="Client-Side Logic">
-        <desc>No backend detected; all logic is client-side using React and state management.</desc>
-      </integration>
-    </integrations>
-  </section>
+    <importantFiles>
+      <file path="app/">App routes and screens (React/TSX).</file>
+      <file path="components/">Shared UI components.</file>
+      <file path="stores/">State management (Zustand stores).</file>
+      <file path="data/">Topic and question data; static lists.</file>
+      <file path="assets/">Images and demo assets.</file>
+      <file path="package.json">Project scripts and dependencies.</file>
+      <file path="tsconfig.json">TypeScript configuration; respect project options.</file>
+      <file path="eas.json">EAS build profiles and credentials locations.</file>
+      <file path="README.md">Primary documentation for developers.</file>
+      <file path=".github/workflows/">CI workflows; inspect before changing build steps.</file>
+    </importantFiles>
+  </projectScope>
 
-  <section name="Example Tasks">
-    <description>
-      Practical examples for common development tasks to guide implementation.
-    </description>
-    <tasks>
-      <task name="Adding a New Game Topic">
-        <steps>
-          <step>Add the topic to data/default-topics.ts with a unique ID and word list.</step>
-          <step>Update app/topics.tsx or related components to display the new topic.</step>
-          <step>If persistent, update stores/topics-store.ts to handle user selections.</step>
-          <step>Test UI and state integration locally with `yarn dev` or `expo start`.</step>
-        </steps>
-      </task>
-      <task name="Creating a New Route">
-        <steps>
-          <step>Add a new file in app/ (e.g., new-game.tsx) for the route.</step>
-          <step>Define the page component with necessary logic and state from stores/.</step>
-          <step>Update navigation components (e.g., in components/) to link to the new route.</step>
-          <step>Test routing with `yarn dev`.</step>
-        </steps>
-      </task>
-      <task name="Adding Unit Tests">
-        <steps>
-          <step>Create a __tests__ folder in the relevant directory (e.g., components/__tests__).</step>
-          <step>Write tests using Jest/React Testing Library for components or stores.</step>
-          <step>Run tests with `yarn test` or `npm test`.</step>
-        </steps>
-      </task>
-    </tasks>
-  </section>
+  <analysisStrategy>
+    <overview>
+      When an agent is asked to implement a feature or fix a bug, follow this step-by-step analysis strategy:
+    </overview>
+    <steps>
+      <step id="scan">Perform a repository-wide search for relevant symbols, filenames, and keywords.
+        Use exact matches when known (e.g., `spyMode`, `players`, `startGame`, `rangeQuestions`).
+      </step>
+      <step id="read">Read full files that are directly implicated by the search results — prefer larger
+        contiguous reads (150–400 lines) to avoid missing context.</step>
+      <step id="trace">Trace key symbols to definitions and their usages across stores, components, and helpers.</step>
+      <step id="plan">Draft a minimal change plan listing files to edit and the nature of edits (add/remove/modify).</step>
+      <step id="tests">Identify or create minimal unit tests covering the changed logic (happy path + 1 edge case).</step>
+      <step id="edit">Apply changes with focused, small patches.
+        Keep unrelated files unchanged and avoid broad reformatting.
+      </step>
+      <step id="validate">Run build/lint/tests locally (or emulate via CI) and fix errors until green.</step>
+      <step id="commit">Commit with a clear message and include a short changelog in PR description.</step>
+    </steps>
+  </analysisStrategy>
 
-  <section name="Troubleshooting">
-    <description>
-      Common issues and solutions for development and deployment.
-    </description>
-    <issues>
-      <issue name="Build Failures">
-        <desc>Check eas.json for correct profiles. Ensure credentials are valid. Run `expo prebuild --clean` to resolve native build issues.</desc>
-      </issue>
-      <issue name="Linting Errors">
-        <desc>Run `yarn lint` to identify issues. Check eslint.config.js and rork-eslint.config.js for rules.</desc>
-      </issue>
-      <issue name="State Inconsistencies">
-        <desc>Verify store hooks (e.g., game-store.ts) and ensure state updates are synchronous where required.</desc>
-      </issue>
-    </issues>
-  </section>
+  <codingConventions>
+    <typescript>
+      <rule>Use strict type annotations where the project uses them; prefer union types over `any`.</rule>
+      <rule>When modifying public interfaces (stores, props), update all usages found via global grep.</rule>
+    </typescript>
+    <react>
+      <rule>Prefer functional components and hooks. Avoid class components unless existing code requires them.</rule>
+      <rule>Keep components small; extract repeated logic into utilities under `lib/` or `utils/`.</rule>
+    </react>
+    <ui>
+      <rule>Use existing design tokens from `useTheme` hook; maintain color contrast and sizing conventions.</rule>
+      <rule>When updating layouts for many players/items, ensure responsive behavior with flex-wrap and truncation (numberOfLines / ellipsizeMode for Text).</rule>
+    </ui>
+  </codingConventions>
 
-  <section name="Feedback">
-    <description>
-      To improve these instructions, report unclear sections, missing details, or suggested additions. Include specific examples or questions to refine workflows, patterns, or examples.
-    </description>
-  </section>
-</copilot-instructions>
+  <stateManagement>
+    <desc>The project uses Zustand stores located under `stores/` for app and range game states.</desc>
+    <rules>
+      <rule>When removing or renaming a store property (e.g., `spyMode`), update all callers and types in one change.
+        Use repository grep to find all references before editing.</rule>
+      <rule>Prefer to preserve backwards compatibility where feasible (e.g., keep default values for removed fields for one release cycle).</rule>
+      <rule>When a store change affects persisted state, update migration logic or add a migration comment for maintainers.</rule>
+    </rules>
+  </stateManagement>
+
+  <uiUxGuidelines>
+    <desc>UX changes must be predictable and accessible. Small layout changes are acceptable without major design reviews.</desc>
+    <rules>
+      <rule>For player lists and grids, use wrapping behavior and set each player card to a percentage width so lists don't overflow on small screens.</rule>
+      <rule>Truncate long names with ellipsizeMode="tail" and set numberOfLines=1 to prevent layout shift.</rule>
+      <rule>When adding new options (e.g., spy counts), ensure labels and selection behavior stay consistent across Create Game and Range screens.</rule>
+    </rules>
+  </uiUxGuidelines>
+
+  <securityPrivacy>
+    <desc>Respect user privacy and do not transmit or log player names externally. Keep all gameplay data local unless an opt-in backend exists.</desc>
+    <rules>
+      <rule>Never commit secrets or credentials. If credentials are required for CI, reference environment variables instead.</rule>
+      <rule>Sanitize user-provided strings before showing in logs. Avoid writing PII to debug logs.</rule>
+    </rules>
+  </securityPrivacy>
+
+  <testingAndValidation>
+    <desc>Before finalizing changes, run these checks.</desc>
+    <checks>
+      <check>Type check (tsc) — ensure no new TypeScript errors are introduced.</check>
+      <check>Lint (eslint) — make code conform to rules used by the project.</check>
+      <check>Unit tests — run existing tests and any new tests added for changed logic.</check>
+      <check>Quick smoke test — run the app in the simulator or on device if a UI change was made.</check>
+      <check>Manual UX check — verify layouts on small (iPhone SE) and large devices for responsive changes.</check>
+    </checks>
+  </testingAndValidation>
+
+  <commitMessages>
+    <format>
+      <rule>Use a short summary line (<= 72 chars) and an optional body describing reasoning.</rule>
+      <example>Fix: remove spyMode and preserve players when cancelling game start</example>
+      <example>Refactor: responsive player grid; truncate long names to avoid overflow</example>
+    </format>
+  </commitMessages>
+
+  <pullRequestGuidelines>
+    <desc>When opening a PR, include these items in the description.</desc>
+    <items>
+      <item>Summary of change and why it was made.</item>
+      <item>Files changed and the high-level rationale for each change.</item>
+      <item>How to test locally (commands and quick steps).</item>
+      <item>Any follow-ups or TODOs for future work.</item>
+    </items>
+  </pullRequestGuidelines>
+
+  <debuggingChecklist>
+    <step>Reproduce the bug locally with a minimal set of steps.</step>
+    <step>Use repository search to find involved state, props, and UI elements.</step>
+    <step>Insert non-invasive logs (console.debug) when necessary; remove before committing or gate behind a debug flag.</step>
+    <step>Add a unit test replicating the bug when possible.</step>
+    <step>Run the full test suite and linters after the fix.</step>
+  </debuggingChecklist>
+
+  <ciCd>
+    <desc>Before merging, ensure the CI pipeline passes. If CI is missing checks, add a small pipeline step to run TypeScript and ESLint at minimum.</desc>
+    <rules>
+      <rule>CI should run `npm ci` (or `yarn install --frozen-lockfile`), `npm run lint`, `npm run test`, and `npm run build` where applicable.</rule>
+    </rules>
+  </ciCd>
+
+  <fileChangePolicy>
+    <desc>Guidelines for safe file edits by automated agents.</desc>
+    <rules>
+      <rule>Do not modify `android/` or `ios/` native code except when the change is small, necessary, and tested locally.</rule>
+      <rule>Avoid large refactors in a single commit; break into small, reviewable PRs.</rule>
+      <rule>When changing persisted state shapes, provide migration notes in PR and a version bump if needed.</rule>
+    </rules>
+  </fileChangePolicy>
+
+  <howToGatherFullCodebaseInfo>
+    <desc>Recommended programmatic steps an agent should perform to gather a project snapshot and analyze the entire codebase before making changes.</desc>
+    <steps>
+      <step id="listFiles">List all top-level files and directories (e.g., `ls -la`).</step>
+      <step id="packageInfo">Open `package.json` and record scripts and dependencies.</step>
+      <step id="tsConfig">Open `tsconfig.json` and ESLint configs to detect strictness and rules.</step>
+      <step id="searchSymbols">Search for domain-specific symbols (e.g., `spyMode`, `players`, `startGame`, `range`) and collect hit files.</step>
+      <step id="readBigFiles">Read full contents of store files in `stores/` and main screens under `app/` to trace data flows.</step>
+      <step id="diagram">Optionally produce a small diagram or mapping of stores -> screens -> components for complex changes.</step>
+    </steps>
+  </howToGatherFullCodebaseInfo>
+
+  <examples>
+    <example id="removeSpyMode">
+      <title>Remove `spyMode` globally</title>
+      <steps>
+        <step>Search repo for `spyMode` and `setSpyMode`.</step>
+        <step>Update store types to remove `spyMode`; keep a default behavior if needed.</step>
+        <step>Update all UIs that read/write `spyMode` to remove selectors and logic branches.</step>
+        <step>Adjust role assignment logic to use a consistent rule (e.g., rolesEnabled + category roles).</step>
+        <step>Run type check, lint, and tests; run the app to verify no runtime errors.</step>
+      </steps>
+    </example>
+
+    <example id="preservePlayersOnCancel">
+      <title>Fix: players cleared when cancelling start</title>
+      <steps>
+        <step>Locate `startGame` and any `resetGame` functions in stores.</step>
+        <step>Ensure `resetGame` clears gameplay state but does not clear `players` unless `clearPlayers` is explicitly called.</step>
+        <step>Update UI navigation flows to `router.back()` without calling a destructive reset.</step>
+        <step>Add a unit/integration test verifying players remain after a cancelled start attempt.</step>
+      </steps>
+    </example>
+  </examples>
+
+  <performanceHints>
+    <hint>Memoize derived data from stores with useMemo to avoid expensive recalculations during rendering.</hint>
+    <hint>For long lists (topics, emojis), use FlatList/VirtualizedList on React Native for constant memory usage.</hint>
+    <hint>Avoid large synchronous work on UI thread; move heavy operations to web workers or native modules where applicable.</hint>
+  </performanceHints>
+
+  <accessibility>
+    <desc>Accessibility must be considered for all public screens.</desc>
+    <checks>
+      <check>All interactive elements should be reachable by keyboard and have accessible labels.</check>
+      <check>Check color contrast ratios for readability.</check>
+      <check>Provide alternative text for images used in documentation and marketing assets.</check>
+    </checks>
+  </accessibility>
+
+  <localization>
+    <desc>If adding or changing user-facing text, consider externalizing strings for i18n framework in the project.</desc>
+    <rule>Use existing localization utilities if present; otherwise centralize strings under `i18n/` or `locales/`.</rule>
+  </localization>
+
+  <maintenanceAndDocumentation>
+    <desc>Keep README and in-code comments up-to-date when changing public behavior or major UX flows.</desc>
+    <items>
+      <item>Update `README.md` with new setup or build instructions when relevant.</item>
+      <item>Add short docblocks for complex store functions explaining inputs/outputs and side-effects.</item>
+    </items>
+  </maintenanceAndDocumentation>
+
+  <operationalPlaybook>
+    <intro>Quick commands and checks for a developer or agent working locally.</intro>
+    <commands>
+      <cmd desc="Install deps">npm ci (or yarn install)</cmd>
+      <cmd desc="Run web dev server">npm run dev</cmd>
+      <cmd desc="Run mobile dev server">expo start</cmd>
+      <cmd desc="Typecheck">npx tsc --noEmit</cmd>
+      <cmd desc="Lint">npx eslint . --ext .ts,.tsx,.js,.jsx</cmd>
+      <cmd desc="Run tests">npm test</cmd>
+    </commands>
+  </operationalPlaybook>
+
+  <escalationAndQuestions>
+    <desc>If the agent encounters ambiguous requirements or a risky change, escalate with these details:</desc>
+    <items>
+      <item>Files likely affected and reason for uncertainty.</item>
+      <item>Suggested minimal change and potential consequences.</item>
+      <item>Request for human review, ideally pointing to a specific maintainer or team.</item>
+    </items>
+  </escalationAndQuestions>
+
+  <appendix>
+    <faq>
+      <q id="why-kept-long">Why so verbose?</q>
+      <a>Automated agents benefit from explicit, machine-parsable rules. The length ensures corner cases and step sequences are available without repeated human questions.</a>
+      <q id="how-to-update">How to update this file?</q>
+      <a>Submit a PR with clear rationale for changes. Keep changes incremental and document the reason in the PR body.</a>
+    </faq>
+
+    <glossary>
+      <term id="store">A Zustand store managing application state, usually under `stores/`.</term>
+      <term id="topic">A game topic (word list) used to generate player roles or questions.</term>
+      <term id="range-game">An alternate game mode where one player receives a range instead of a role.</term>
+    </glossary>
+  </appendix>
+
+</copilotInstructions>

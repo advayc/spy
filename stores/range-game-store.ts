@@ -103,7 +103,8 @@ export const useRangeGameStore = create<RangeGameState>()(
       },
       
       clearPlayers: () => {
-        set({ players: [] });
+  // Explicit action to clear players when the user explicitly removes them or starts a fresh setup
+  set({ players: [] });
       },
       
       // Timer management
@@ -131,17 +132,18 @@ export const useRangeGameStore = create<RangeGameState>()(
           hasRevealed: false
         }));
         
-        // Determine number of spies
-        const spyCount = state.numspies === 'random'
-          ? 1
-          : Math.max(1, Math.min(resetPlayers.length - 1, typeof state.numspies === 'number' ? state.numspies : 1));
+        // Determine number of spies. Allow random to be 0 and cap at 8.
+        const maxAllowedSpies = Math.max(0, Math.min(8, resetPlayers.length - 1));
+          const numSpies = state.numspies === 'random'
+            ? Math.floor(Math.random() * (maxAllowedSpies + 1))
+            : Math.max(0, Math.min(maxAllowedSpies, typeof state.numspies === 'number' ? state.numspies : 0));
 
         // Randomly select spy(s)
         const shuffledIndexes = Array.from({ length: resetPlayers.length }, (_, i) => i).sort(() => Math.random() - 0.5);
-        const selectedspyIndexes = shuffledIndexes.slice(0, spyCount);
-        selectedspyIndexes.forEach(idx => {
-          if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
-        });
+          const selectedSpyIndexes = shuffledIndexes.slice(0, numSpies);
+          selectedSpyIndexes.forEach((idx: number) => {
+            if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
+          });
         
         // Select a new question
         const newQuestion = getRandomQuestion(state.usedQuestionIds);
@@ -172,17 +174,18 @@ export const useRangeGameStore = create<RangeGameState>()(
           hasRevealed: false
         }));
         
-        // Determine number of spies
-        const spyCount = state.numspies === 'random'
-          ? 1
-          : Math.max(1, Math.min(resetPlayers.length - 1, typeof state.numspies === 'number' ? state.numspies : 1));
+        // Determine number of spies. Allow random to be 0 and cap at 8.
+        const maxAllowedSpies2 = Math.max(0, Math.min(8, resetPlayers.length - 1));
+          const numSpies2 = state.numspies === 'random'
+            ? Math.floor(Math.random() * (maxAllowedSpies2 + 1))
+            : Math.max(0, Math.min(maxAllowedSpies2, typeof state.numspies === 'number' ? state.numspies : 0));
 
         // Randomly select spy(s)
         const shuffledIndexes = Array.from({ length: resetPlayers.length }, (_, i) => i).sort(() => Math.random() - 0.5);
-        const selectedspyIndexes = shuffledIndexes.slice(0, spyCount);
-        selectedspyIndexes.forEach(idx => {
-          if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
-        });
+          const selectedSpyIndexes2 = shuffledIndexes.slice(0, numSpies2);
+          selectedSpyIndexes2.forEach((idx: number) => {
+            if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
+          });
         
         // Select a new question using custom questions
         get().selectNewQuestionWithCustom(customQuestions);
@@ -220,8 +223,8 @@ export const useRangeGameStore = create<RangeGameState>()(
       },
       
       resetGame: () => {
+        // Preserve players when resetting game state so cancelling a start preserves entered players.
         set({
-          players: [],
           currentQuestion: null,
           gameStarted: false,
           gamePhase: 'setup',

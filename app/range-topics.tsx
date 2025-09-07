@@ -57,7 +57,7 @@ export default function RangeTopicsScreen() {
     ...customCategories
   ];
 
-  // Helper to get built-in questions for a category
+  // get built-in questions for a category
   const getBuiltinQuestionsFor = (catId: string) => {
     const { rangeQuestions } = require('@/data/range-questions');
     return rangeQuestions.filter((q: any) => q.category === catId);
