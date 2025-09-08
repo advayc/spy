@@ -141,7 +141,7 @@ export default function RangeGameScreen() {
     }));
     
     // Pass the spy count directly to startGameWithCustom
-    console.log('Range Game - Starting with spy count:', localNumspies);
+  // console.log('Range Game - Starting with spy count:', localNumspies);
     startGameWithCustom(convertedCustomQuestions, localNumspies);
     vibrate.success();
     router.push('/range-play');

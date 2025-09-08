@@ -114,13 +114,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
       finalSpyCount = Math.min(maxAllowedSpies, typeof actualSpyCount === 'number' ? actualSpyCount : 0);
     }
 
-    console.log('Regular Game - Spy count:', finalSpyCount, 'from input:', actualSpyCount, 'max allowed:', maxAllowedSpies);
+  // console.log('Regular Game - Spy count:', finalSpyCount, 'from input:', actualSpyCount, 'max allowed:', maxAllowedSpies);
     
     // Select random spies
     const shuffled = [...players].sort(() => Math.random() - 0.5);
     const spyIds = shuffled.slice(0, finalSpyCount).map(p => p.id);
 
-    console.log('Regular Game - Selected spy IDs:', spyIds);
+    // console.log('Regular Game - Selected spy IDs:', spyIds);
     
     // Determine if this category uses roles and if roles are globally enabled
     const catMeta = selectedCategory === 'random' ? undefined : getCategory(selectedCategory);
@@ -130,23 +130,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const playerRoles: Record<string, { role: string; isSpy: boolean; customWord?: string }> = {};
     players.forEach((player) => {
       if (spyIds.includes(player.id)) {
-        let customWord: string | undefined = undefined;
-        
-        // If roles are enabled and topic has multiple roles, pick a role for spies from topic roles
-        if (usesRoles && randomTopic.roles.length > 1) {
-          const availableRoles = [...randomTopic.roles];
-          const assignedRoles = Object.values(playerRoles)
-            .filter(p => !p.isSpy)
-            .map(p => p.role);
-          const unassignedRoles = availableRoles.filter(role => !assignedRoles.includes(role));
-          if (unassignedRoles.length > 0) {
-            customWord = unassignedRoles[Math.floor(Math.random() * unassignedRoles.length)];
-          } else {
-            customWord = availableRoles[Math.floor(Math.random() * availableRoles.length)];
-          }
-        }
-        
-        playerRoles[player.id] = { role: 'spy', isSpy: true, customWord };
+        // Spies should never receive a word. Keep isSpy true; role label depends on usesRoles.
+        playerRoles[player.id] = { role: usesRoles ? 'spy' : 'Participant', isSpy: true };
       } else {
         if (usesRoles && randomTopic.roles.length > 0) {
           // Assign random role from topic

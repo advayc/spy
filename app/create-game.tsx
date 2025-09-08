@@ -100,7 +100,7 @@ export default function CreateGameScreen() {
       return;
     }
     // Pass the spy count directly to startGame
-    console.log('Create Game - Starting with spy count:', localNumspies);
+  // console.log('Create Game - Starting with spy count:', localNumspies);
     startGame(localNumspies);
     vibrate.success();
     router.push('/game');

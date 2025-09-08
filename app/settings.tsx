@@ -44,6 +44,8 @@ export default function SettingsScreen() {
   setMinSpies,
   maxSpies,
   setMaxSpies,
+  allowMaxSpies,
+  setAllowMaxSpies,
   } = useSettingsStore();
 
   const { colors } = useTheme();
@@ -90,6 +92,7 @@ export default function SettingsScreen() {
   // Local inputs for min/max spies
   const [localMinSpies, setLocalMinSpies] = useState(String(minSpies ?? 0));
   const [localMaxSpies, setLocalMaxSpies] = useState(String(maxSpies ?? 8));
+  const [localAllowMaxSpies, setLocalAllowMaxSpies] = useState<boolean>(Boolean(allowMaxSpies));
 
   // Docs modal
   const [showDocsModal, setShowDocsModal] = useState(false);
@@ -378,7 +381,7 @@ export default function SettingsScreen() {
           {/* Min / Max Spies */}
           <View style={{ marginTop: 12 }}>
             <Text style={[styles.settingTitle, { marginLeft: 4 }]}>Spy count limits</Text>
-            <Text style={[styles.settingSubtitle, { marginLeft: 4, marginBottom: 8 }]}>Set the minimum and maximum number of spies allowed when using random spy selection. Maximum is capped at 8.</Text>
+            <Text style={[styles.settingSubtitle, { marginLeft: 4, marginBottom: 8 }]}>Set the minimum and maximum number of spies allowed when using random spy selection. Toggle "Allow max spies" to allow up to the number of players.</Text>
 
             <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
               <View style={{ flex: 1 }}>
@@ -402,6 +405,22 @@ export default function SettingsScreen() {
                   style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
                 />
               </View>
+            </View>
+            <View style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.settingTitle, { marginLeft: 4, fontSize: 14 }]}>Allow max spies = players</Text>
+                <Text style={[styles.settingSubtitle, { marginLeft: 4 }]}>When enabled, the maximum spies equals the current number of players (inclusive).</Text>
+              </View>
+              <Switch
+                value={localAllowMaxSpies}
+                onValueChange={(v) => {
+                  setLocalAllowMaxSpies(v);
+                  setAllowMaxSpies(v);
+                  vibrate.medium();
+                }}
+                trackColor={{ false: '#767577', true: colorScheme.primary }}
+                thumbColor={localAllowMaxSpies ? '#f4f3f4' : '#f4f3f4'}
+              />
             </View>
           </View>
         </View>

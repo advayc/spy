@@ -6,6 +6,7 @@ import { ChevronLeft, Clock, RotateCcw, Eye } from 'lucide-react-native';
 import { useGameStore } from '@/stores/game-store';
 import { useCategoriesStore } from '@/stores/categories-store';
 import { useTheme } from '@/hooks/useTheme';
+import { useSettingsStore } from '@/stores/settings-store';
 
 export default function GameScreen() {
   const { colors } = useTheme();
@@ -18,10 +19,12 @@ export default function GameScreen() {
     updatePlayer 
   } = useGameStore();
   const { getCategory } = useCategoriesStore();
+  const { rolesEnabled } = useSettingsStore();
 
   const [timeLeft, setTimeLeft] = useState(timerDuration * 60);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     if (!isTimerRunning || timeLeft <= 0) return;
@@ -83,10 +86,12 @@ function getCategoryIcon(category: string): string {
 
   const handlePlayerPress = (playerId: string) => {
     setSelectedPlayer(playerId);
+    setModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setSelectedPlayer(null);
+    // start modal close animation, clear selection on dismiss to avoid content flash
+    setModalOpen(false);
   };
 
   const handleRestart = () => {
@@ -100,7 +105,7 @@ function getCategoryIcon(category: string): string {
   // Calculate actual number of spies in the current game
   const spyCount = Object.values(gameState.playerRoles).filter(role => role.isSpy).length;
 
-  console.log('[GAME SCREEN] Spy count calculated:', spyCount, 'from roles:', gameState.playerRoles);
+  // console.log('[GAME SCREEN] Spy count calculated:', spyCount, 'from roles:', gameState.playerRoles);
 
   const getCategoryDisplay = (category: string) => {
   if (category === 'random') return { name: 'Topic', icon: '🎲' };
@@ -174,10 +179,11 @@ function getCategoryIcon(category: string): string {
 
       {/* Role Modal */}
       <Modal
-        visible={selectedPlayer !== null}
+        visible={modalOpen}
         transparent={true}
         animationType="slide"
-        onRequestClose={handleCloseModal}
+        onRequestClose={() => setModalOpen(false)}
+        onDismiss={() => setSelectedPlayer(null)}
       >
         <Pressable style={styles.modalOverlay} onPress={handleCloseModal}>
           <View style={styles.modalContent}>
@@ -187,25 +193,28 @@ function getCategoryIcon(category: string): string {
             {playerRole?.isSpy ? (
               <View style={styles.spyContainer}>
                 <Eye size={48} color={colors.primary} />
-                {playerRole.customWord ? (
-                  <View style={styles.customWordContainer}>
-                    <Text style={styles.spyText}>You are the spy!</Text>
-                    <Text style={styles.customWordLabel}>Your word is:</Text>
-                    <Text style={styles.customWordText}>{playerRole.customWord}</Text>
-                  </View>
-                ) : (
-                  <Text style={styles.spyText}>You are the spy!</Text>
-                )}
+                <Text style={styles.spyText}>You are the spy!</Text>
               </View>
             ) : (
-              <View style={styles.roleContainer}>
-                <Text style={styles.topicText}>
-                  {categoryInfo.icon} {categoryInfo.name}: {gameState.currentTopic.name}
-                </Text>
-                <Text style={styles.roleText}>
-                  Your role is: {playerRole?.role}
-                </Text>
-              </View>
+              rolesEnabled ? (
+                <View style={styles.roleContainer}>
+                  <Text style={styles.topicText}>
+                    {categoryInfo.icon} {categoryInfo.name}: {gameState.currentTopic.name}
+                  </Text>
+                  <Text style={styles.roleText}>
+                    Your role is: {playerRole?.role}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.roleContainer}>
+                  <Text style={styles.topicText}>
+                    {categoryInfo.icon} {categoryInfo.name}: {gameState.currentTopic.name}
+                  </Text>
+                  <Text style={styles.roleText}>
+                    Your word is: {gameState.currentTopic?.name ?? ''}
+                  </Text>
+                </View>
+              )
             )}
             <TouchableOpacity style={[styles.closeButton, { backgroundColor: colors.primary }]} onPress={handleCloseModal}>
               <Text style={styles.closeButtonText}>Close</Text>

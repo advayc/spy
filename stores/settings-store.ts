@@ -131,7 +131,7 @@ export const useSettingsStore = create<SettingsState>()(
       name: 'settings-storage',
       storage: createJSONStorage(() => AsyncStorage),
       onRehydrateStorage: () => (state) => {
-        console.log('Settings store rehydrated:', state);
+        // console.log('Settings store rehydrated:', state);
       },
       skipHydration: false,
     }

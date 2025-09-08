@@ -139,7 +139,7 @@ export const useRangeGameStore = create<RangeGameState>()(
           ? Math.floor(Math.random() * (maxAllowedSpies + 1))
           : Math.max(0, Math.min(maxAllowedSpies, typeof actualSpyCount === 'number' ? actualSpyCount : 0));
 
-        console.log('Range Game - Spy count:', numSpies, 'from input:', actualSpyCount, 'max allowed:', maxAllowedSpies);
+  // console.log('Range Game - Spy count:', numSpies, 'from input:', actualSpyCount, 'max allowed:', maxAllowedSpies);
 
         // Randomly select spy(s)
         const shuffledIndexes = Array.from({ length: resetPlayers.length }, (_, i) => i).sort(() => Math.random() - 0.5);
@@ -148,8 +148,8 @@ export const useRangeGameStore = create<RangeGameState>()(
           if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
         });
 
-        console.log('Range Game - Selected spy indexes:', selectedSpyIndexes);
-        console.log('Range Game - Players with spy status:', resetPlayers.map(p => ({ name: p.name, isspy: p.isspy })));
+  // console.log('Range Game - Selected spy indexes:', selectedSpyIndexes);
+  // console.log('Range Game - Players with spy status:', resetPlayers.map(p => ({ name: p.name, isspy: p.isspy })));
         
         // Select a new question
         const newQuestion = getRandomQuestion(state.usedQuestionIds);
