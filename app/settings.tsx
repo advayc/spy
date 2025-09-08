@@ -40,14 +40,11 @@ export default function SettingsScreen() {
     autoStartTimer,
     setAutoStartTimer,
     resetAllSettings,
-  minSpies,
-  setMinSpies,
-  maxSpies,
-  setMaxSpies,
-  allowMaxSpies,
-  setAllowMaxSpies,
+    minSpies, 
+    setMinSpies, 
+    maxSpies, 
+    setMaxSpies,
   } = useSettingsStore();
-
   const { colors } = useTheme();
   const vibrate = useVibration();
 
@@ -91,8 +88,7 @@ export default function SettingsScreen() {
 
   // Local inputs for min/max spies
   const [localMinSpies, setLocalMinSpies] = useState(String(minSpies ?? 0));
-  const [localMaxSpies, setLocalMaxSpies] = useState(String(maxSpies ?? 8));
-  const [localAllowMaxSpies, setLocalAllowMaxSpies] = useState<boolean>(Boolean(allowMaxSpies));
+  const [localMaxSpies, setLocalMaxSpies] = useState(String(maxSpies ?? 15));
 
   // Docs modal
   const [showDocsModal, setShowDocsModal] = useState(false);
@@ -108,7 +104,7 @@ export default function SettingsScreen() {
     { type: 'heading', text: 'Range Game (alternate mode)' },
     { type: 'paragraph', text: "In Range Game, all players receive the same question except one player who receives a numeric range as their 'answer'. Players try to identify who has the range by asking questions and comparing answers. Example: Question: 'Age you learned to drive' — civilians answer with a single value, the range player sees something like '10-25'." },
     { type: 'heading', text: 'Settings' },
-    { type: 'list', items: [ 'Settings → Game Settings → Spy count limits: configure Minimum and Maximum spies used when Random is selected. Maximum is capped at 8.', 'Disable Roles turns off spy/civilian roles for party variations.' ] },
+  { type: 'list', items: [ 'Settings → Game Settings → Spy count limits: configure Minimum and Maximum spies used when Random is selected. Maximum is capped at 15.', 'Disable Roles turns off spy/civilian roles for party variations.' ] },
     { type: 'heading', text: 'Tips' },
     { type: 'list', items: [ 'For small groups (4-6), 1 spy is usually best.', 'For larger groups, increase spies but keep balance in mind.', 'Use roles and timers to control pacing.' ] },
   ];
@@ -131,10 +127,10 @@ export default function SettingsScreen() {
       setLocalMaxSpies(String(maxSpies ?? 8));
       return;
     }
-    if (n > 8) {
-      Alert.alert('Limited', 'Maximum spies are capped at 8. It has been reduced to 8.');
-      setLocalMaxSpies('8');
-      setMaxSpies(8);
+  if (n > 15) {
+      Alert.alert('Limited', 'Maximum spies are capped at 15. It has been reduced to 15.');
+      setLocalMaxSpies('15');
+      setMaxSpies(15);
       vibrate.success();
       return;
     }
@@ -381,7 +377,7 @@ export default function SettingsScreen() {
           {/* Min / Max Spies */}
           <View style={{ marginTop: 12 }}>
             <Text style={[styles.settingTitle, { marginLeft: 4 }]}>Spy count limits</Text>
-            <Text style={[styles.settingSubtitle, { marginLeft: 4, marginBottom: 8 }]}>Set the minimum and maximum number of spies allowed when using random spy selection. Toggle "Allow max spies" to allow up to the number of players.</Text>
+            <Text style={[styles.settingSubtitle, { marginLeft: 4, marginBottom: 8 }]}>Set minimum and maximum spies used when Random is selected. Random will pick inclusively between them. Max capped at 15 and also limited by player count.</Text>
 
             <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
               <View style={{ flex: 1 }}>
@@ -406,22 +402,7 @@ export default function SettingsScreen() {
                 />
               </View>
             </View>
-            <View style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.settingTitle, { marginLeft: 4, fontSize: 14 }]}>Allow max spies = players</Text>
-                <Text style={[styles.settingSubtitle, { marginLeft: 4 }]}>When enabled, the maximum spies equals the current number of players (inclusive).</Text>
-              </View>
-              <Switch
-                value={localAllowMaxSpies}
-                onValueChange={(v) => {
-                  setLocalAllowMaxSpies(v);
-                  setAllowMaxSpies(v);
-                  vibrate.medium();
-                }}
-                trackColor={{ false: '#767577', true: colorScheme.primary }}
-                thumbColor={localAllowMaxSpies ? '#f4f3f4' : '#f4f3f4'}
-              />
-            </View>
+            {/* Removed allowMaxSpies toggle placeholder */}
           </View>
         </View>
 

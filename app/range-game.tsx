@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2, Play, Clock, Edit2, Target, Shuffle, List } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRangeGameStore } from '@/stores/range-game-store';
+import { useSettingsStore } from '@/stores/settings-store';
 import { useRangeTopicsStore } from '@/stores/range-topics-store';
 import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
@@ -63,10 +64,16 @@ export default function RangeGameScreen() {
     { value: 15, label: '15 min' },
   ];
 
-  const spyOptions: { value: number | 'random'; label: string }[] = [
-  ...[0,1,2,3,4,5,6,7,8].filter(n => n < players.length && n <= 8).map(n => ({ value: n, label: `${n} ${n === 1 ? 'Spy' : 'Spies'}` })),
-    { value: 'random', label: 'Random' }
-  ];
+  const { minSpies, maxSpies } = useSettingsStore();
+  const spyOptions = React.useMemo(() => {
+    const maxAllowed = Math.min(15, maxSpies, players.length);
+    const minAllowed = Math.max(0, Math.min(minSpies, maxAllowed));
+    return [
+      ...Array.from({ length: maxAllowed - minAllowed + 1 }, (_, i) => i + minAllowed)
+        .map(n => ({ value: n, label: `${n} ${n === 1 ? 'Spy' : 'Spies'}` })),
+      { value: 'random', label: `Random` }
+    ];
+  }, [players.length, minSpies, maxSpies]);
 
   const [localNumspies, setLocalNumspies] = useState<number | 'random'>(1);
 
@@ -142,7 +149,13 @@ export default function RangeGameScreen() {
     
     // Pass the spy count directly to startGameWithCustom
   // console.log('Range Game - Starting with spy count:', localNumspies);
-    startGameWithCustom(convertedCustomQuestions, localNumspies);
+    // Recalculate min/max for current player count
+    const maxAllowed = Math.min(15, maxSpies, players.length);
+    const minAllowed = Math.max(0, Math.min(minSpies, maxAllowed));
+    const chosen = localNumspies === 'random'
+      ? 'random'
+      : Math.min(maxAllowed, Math.max(minAllowed, localNumspies));
+    startGameWithCustom(convertedCustomQuestions, chosen);
     vibrate.success();
     router.push('/range-play');
   };
@@ -288,7 +301,7 @@ export default function RangeGameScreen() {
                   isSmallScreen && styles.spyOptionSmall,
                   localNumspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
                 ]}
-                onPress={() => setLocalNumspies(option.value)}
+                onPress={() => setLocalNumspies(option.value as number | 'random')}
               >
                 <Text style={[
                   styles.spyOptionText,
@@ -404,6 +417,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#1a1a1a',
   },
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  infoCard: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 16,
+    padding: 20,
+    marginVertical: 16,
+    marginBottom: 8,
+  },
   backButton: {
     padding: 8,
   },
@@ -418,18 +444,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
-  },
-  infoCard: {
-    backgroundColor: '#1a1a1a',
-    padding: 20,
-    borderRadius: 16,
-    marginVertical: 20,
-  },
-  infoHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    gap: 8,
   },
   infoTitle: {
     fontSize: 18,
@@ -485,17 +499,17 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   playersGrid: {
-  gap: 12,
-  flexDirection: 'column',
-  flexWrap: 'nowrap',
-  justifyContent: 'flex-start',
+    gap: 12,
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+    justifyContent: 'flex-start',
   },
   playerCard: {
-  backgroundColor: '#1a1a1a',
-  borderRadius: 12,
-  padding: 12,
-  width: '100%',
-  marginBottom: 12,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    padding: 12,
+    width: '100%',
+    marginBottom: 12,
   },
   playerInfo: {
     flexDirection: 'row',
@@ -539,59 +553,21 @@ const styles = StyleSheet.create({
   },
   editPlayerActions: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 12,
+    justifyContent: 'space-between',
   },
   editActionButton: {
-    paddingHorizontal: 16,
     paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#333',
   },
   editActionText: {
     color: 'white',
     fontSize: 14,
-    fontWeight: '500',
   },
   timerOptions: {
     flexDirection: 'row',
     gap: 12,
-  },
-  spyOptionsWrap: {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  gap: 6,
-  justifyContent: 'center',
-  },
-  spyOptionsWrapSmall: {
-  justifyContent: 'center',
-  },
-  spyOption: {
-    width: '30%',
-    paddingVertical: 10,
-    paddingHorizontal: 6,
-    borderRadius: 12,
-    backgroundColor: '#1a1a1a',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    marginBottom: 8,
-  },
-  spyOptionSmall: {
-    width: '22%',
-  },
-  spyOptionSelected: {
-    backgroundColor: '#001a33',
-  },
-  spyOptionText: {
-    color: '#666666',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  spyOptionTextSelected: {
-    color: '#FF3B30',
-    fontWeight: '600',
   },
   timerOption: {
     flex: 1,
@@ -613,6 +589,44 @@ const styles = StyleSheet.create({
   },
   timerOptionTextSelected: {
     color: '#007AFF',
+    fontWeight: '600',
+  },
+  spyOptionsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  spyOptionsWrapSmall: {
+    justifyContent: 'center',
+  },
+  spyOption: {
+    width: 100,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: '#181818',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  spyOptionSmall: {
+    width: '22%',
+  },
+  spyOptionSelected: {
+    backgroundColor: '#001a33',
+  },
+  spyOptionText: {
+    color: '#666666',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  spyOptionTextSelected: {
+    color: '#FF3B30',
     fontWeight: '600',
   },
   categoriesGrid: {

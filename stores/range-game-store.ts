@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RangeQuestion, getRandomQuestion, rangeQuestions } from '@/data/range-questions';
+import { useSettingsStore } from './settings-store';
 
 export interface RangePlayer {
   id: string;
@@ -133,11 +134,13 @@ export const useRangeGameStore = create<RangeGameState>()(
           hasRevealed: false
         }));
         
-        // Determine number of spies. Allow random to be 0 and cap at 8.
-        const maxAllowedSpies = Math.max(0, Math.min(8, resetPlayers.length - 1));
+        // Determine number of spies. Random uses global min/max settings and clamps to player count - 1.
+        const { minSpies, maxSpies } = useSettingsStore.getState();
+        const dynamicMax = Math.max(0, Math.min(maxSpies, resetPlayers.length - 1, 15));
+        const dynamicMin = Math.max(0, Math.min(minSpies, dynamicMax));
         const numSpies = actualSpyCount === 'random'
-          ? Math.floor(Math.random() * (maxAllowedSpies + 1))
-          : Math.max(0, Math.min(maxAllowedSpies, typeof actualSpyCount === 'number' ? actualSpyCount : 0));
+          ? (dynamicMin + Math.floor(Math.random() * (dynamicMax - dynamicMin + 1)))
+          : Math.max(0, Math.min(dynamicMax, typeof actualSpyCount === 'number' ? actualSpyCount : 0));
 
   // console.log('Range Game - Spy count:', numSpies, 'from input:', actualSpyCount, 'max allowed:', maxAllowedSpies);
 
@@ -181,11 +184,13 @@ export const useRangeGameStore = create<RangeGameState>()(
           hasRevealed: false
         }));
         
-        // Determine number of spies. Allow random to be 0 and cap at 8.
-        const maxAllowedSpies2 = Math.max(0, Math.min(8, resetPlayers.length - 1));
+        // Determine number of spies (custom questions variant) using global min/max.
+        const { minSpies: rMin, maxSpies: rMax } = useSettingsStore.getState();
+        const dynamicMax2 = Math.max(0, Math.min(rMax, resetPlayers.length - 1, 15));
+        const dynamicMin2 = Math.max(0, Math.min(rMin, dynamicMax2));
         const numSpies2 = actualSpyCount === 'random'
-          ? Math.floor(Math.random() * (maxAllowedSpies2 + 1))
-          : Math.max(0, Math.min(maxAllowedSpies2, typeof actualSpyCount === 'number' ? actualSpyCount : 0));
+          ? (dynamicMin2 + Math.floor(Math.random() * (dynamicMax2 - dynamicMin2 + 1)))
+          : Math.max(0, Math.min(dynamicMax2, typeof actualSpyCount === 'number' ? actualSpyCount : 0));
 
         // Randomly select spy(s)
         const shuffledIndexes = Array.from({ length: resetPlayers.length }, (_, i) => i).sort(() => Math.random() - 0.5);

@@ -44,9 +44,6 @@ interface SettingsState {
   setMinSpies: (n: number) => void;
   maxSpies: number;
   setMaxSpies: (n: number) => void;
-  // Allow using number of players as the max spies
-  allowMaxSpies: boolean;
-  setAllowMaxSpies: (v: boolean) => void;
 }
 
 const defaultColorScheme: ColorScheme = {
@@ -68,14 +65,13 @@ const defaultSettings = {
   customSchemes: [] as ColorScheme[],
   defaultGameMode: 'spy' as 'spy' | 'range',
   rolesEnabled: true,
-  allowMaxSpies: false,
   autoStartTimer: false,
   soundEnabled: true,
   vibrationsEnabled: true,
   notificationsEnabled: true,
   darkMode: true,
   minSpies: 0,
-  maxSpies: 8,
+  maxSpies: 15,
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -95,19 +91,17 @@ export const useSettingsStore = create<SettingsState>()(
       minSpies: defaultSettings.minSpies,
       maxSpies: defaultSettings.maxSpies,
       setMinSpies: (n: number) => {
-        const max = get().maxSpies ?? 8;
+        const max = get().maxSpies ?? 15;
         const clamped = Math.max(0, Math.min(Math.floor(n || 0), max));
         set({ minSpies: clamped });
       },
       setMaxSpies: (n: number) => {
         const min = get().minSpies ?? 0;
-        // cap global maximum at 8
-        const clamped = Math.max(min, Math.min(Math.floor(n || 0), 8));
+        // cap global maximum at 15 (runtime will also clamp by player count)
+        const clamped = Math.max(min, Math.min(Math.floor(n || 0), 15));
         set({ maxSpies: clamped });
       },
-  // Allow using player count as the max spy limit
-  allowMaxSpies: defaultSettings.allowMaxSpies,
-  setAllowMaxSpies: (v: boolean) => set({ allowMaxSpies: !!v }),
+      // removed allowMaxSpies toggle
       
       addCustomScheme: (scheme) => {
         const current = get().customSchemes;

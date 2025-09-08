@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2, Play, Clock, List, Shuffle, Edit2 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useGameStore } from '@/stores/game-store';
+import { useSettingsStore } from '@/stores/settings-store';
 import { useCategoriesStore } from '@/stores/categories-store';
 import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
@@ -28,11 +29,16 @@ export default function CreateGameScreen() {
   const screenWidth = Dimensions.get('window').width;
   const isSmallScreen = screenWidth < 390; // iPhone SE and smaller
   
-  const spyOptions: { value: number | 'random'; label: string }[] = [
-  // include 0 and cap options to 8
-  ...[0,1,2,3,4,5,6,7,8].filter(n => n < players.length && n <= 8).map(n => ({ value: n, label: `${n} ${n === 1 ? 'Spy' : 'Spies'}` })),
-    { value: 'random', label: 'Random' }
-  ];
+  const { minSpies, maxSpies } = useSettingsStore();
+  const spyOptions = React.useMemo(() => {
+    const maxAllowed = Math.min(15, maxSpies, players.length);
+    const minAllowed = Math.max(0, Math.min(minSpies, maxAllowed));
+    return [
+      ...Array.from({ length: maxAllowed - minAllowed + 1 }, (_, i) => i + minAllowed)
+        .map(n => ({ value: n, label: `${n} ${n === 1 ? 'Spy' : 'Spies'}` })),
+      { value: 'random', label: `Random` }
+    ];
+  }, [players.length, minSpies, maxSpies]);
 
   const [newPlayerName, setNewPlayerName] = useState('');
   const [editingPlayer, setEditingPlayer] = useState<string | null>(null);
@@ -99,9 +105,13 @@ export default function CreateGameScreen() {
       Alert.alert('Not Enough Players', 'You need at least 3 players to start the game.');
       return;
     }
-    // Pass the spy count directly to startGame
-  // console.log('Create Game - Starting with spy count:', localNumspies);
-    startGame(localNumspies);
+    // Recalculate min/max for current player count
+    const maxAllowed = Math.min(15, maxSpies, players.length);
+    const minAllowed = Math.max(0, Math.min(minSpies, maxAllowed));
+    const chosen = localNumspies === 'random'
+      ? 'random'
+      : Math.min(maxAllowed, Math.max(minAllowed, localNumspies));
+    startGame(chosen);
     vibrate.success();
     router.push('/game');
   };
@@ -230,7 +240,7 @@ export default function CreateGameScreen() {
                   isSmallScreen && styles.spyOptionSmall,
                   localNumspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
                 ]}
-                onPress={() => setLocalNumspies(option.value)}
+                onPress={() => setLocalNumspies(option.value as number | 'random')}
               >
                 <Text style={[
                   styles.spyOptionText,
@@ -433,25 +443,27 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   spyOptionsWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    justifyContent: 'space-between',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  marginTop: 8,
+  marginBottom: 8,
   },
   spyOptionsWrapSmall: {
-    justifyContent: 'space-around',
+    justifyContent: 'center',
   },
   spyOption: {
-    width: '30%',
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    borderRadius: 12,
-    backgroundColor: '#1a1a1a',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    marginBottom: 8,
+  width: 100,
+  paddingVertical: 12,
+  paddingHorizontal: 16,
+  borderRadius: 12,
+  backgroundColor: '#181818',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderWidth: 2,
+  borderColor: 'transparent',
+  marginRight: 8,
+  marginBottom: 8,
   },
   spyOptionSmall: {
     width: '22%',

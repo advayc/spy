@@ -104,14 +104,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Select random topic
     const randomTopic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
     
-    // Determine number of spies. Allow random to be 0 and cap spies at 8.
-    const maxAllowedSpies = Math.max(0, Math.min(8, players.length - 1));
+    // Determine number of spies. Random uses global min/max settings and clamps to player count - 1.
+    const { minSpies, maxSpies } = useSettingsStore.getState();
+    const dynamicMax = Math.max(0, Math.min(maxSpies, players.length - 1, 15));
+    const dynamicMin = Math.max(0, Math.min(minSpies, dynamicMax));
     let finalSpyCount: number;
     if (actualSpyCount === 'random') {
-      // random between 0 and maxAllowedSpies inclusive
-      finalSpyCount = Math.floor(Math.random() * (maxAllowedSpies + 1));
+      // inclusive range [dynamicMin, dynamicMax]
+      const span = dynamicMax - dynamicMin + 1;
+      finalSpyCount = dynamicMin + Math.floor(Math.random() * span);
     } else {
-      finalSpyCount = Math.min(maxAllowedSpies, typeof actualSpyCount === 'number' ? actualSpyCount : 0);
+      finalSpyCount = Math.min(dynamicMax, Math.max(0, typeof actualSpyCount === 'number' ? actualSpyCount : 0));
     }
 
   // console.log('Regular Game - Spy count:', finalSpyCount, 'from input:', actualSpyCount, 'max allowed:', maxAllowedSpies);
