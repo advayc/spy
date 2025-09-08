@@ -44,6 +44,9 @@ interface SettingsState {
   setMinSpies: (n: number) => void;
   maxSpies: number;
   setMaxSpies: (n: number) => void;
+  // Allow using number of players as the max spies
+  allowMaxSpies: boolean;
+  setAllowMaxSpies: (v: boolean) => void;
 }
 
 const defaultColorScheme: ColorScheme = {
@@ -65,6 +68,7 @@ const defaultSettings = {
   customSchemes: [] as ColorScheme[],
   defaultGameMode: 'spy' as 'spy' | 'range',
   rolesEnabled: true,
+  allowMaxSpies: false,
   autoStartTimer: false,
   soundEnabled: true,
   vibrationsEnabled: true,
@@ -101,6 +105,9 @@ export const useSettingsStore = create<SettingsState>()(
         const clamped = Math.max(min, Math.min(Math.floor(n || 0), 8));
         set({ maxSpies: clamped });
       },
+  // Allow using player count as the max spy limit
+  allowMaxSpies: defaultSettings.allowMaxSpies,
+  setAllowMaxSpies: (v: boolean) => set({ allowMaxSpies: !!v }),
       
       addCustomScheme: (scheme) => {
         const current = get().customSchemes;
