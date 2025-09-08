@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, Pressable, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, Pressable, TextInput, ScrollView, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { ChevronLeft, Clock, RotateCcw, Eye } from 'lucide-react-native';
@@ -25,6 +25,13 @@ export default function GameScreen() {
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+
+  // responsive player card sizing
+  const screenWidth = Dimensions.get('window').width;
+  const playersPerRow = 3; // always show 3 per row
+  const containerHorizontalPadding = 40; // content paddingHorizontal: 20 on styles.playersContainer
+  const gap = 16; // matches styles.playersGrid gap
+  const playerCardWidth = Math.floor((screenWidth - containerHorizontalPadding - (playersPerRow - 1) * gap) / playersPerRow);
 
   useEffect(() => {
     if (!isTimerRunning || timeLeft <= 0) return;
@@ -143,9 +150,9 @@ function getCategoryIcon(category: string): string {
       <Text style={styles.instructionText}>Tap to see role.</Text>
 
       <View style={styles.playersContainer}>
-        <View style={styles.playersGrid}>
+  <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.playersGrid, { paddingBottom: 140 }]} showsVerticalScrollIndicator={true} keyboardShouldPersistTaps="handled">
           {players.map((player) => (
-            <View key={player.id} style={styles.playerCard}>
+            <View key={player.id} style={[styles.playerCard, { width: playerCardWidth }]}>
               <TouchableOpacity
                 style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 onPress={() => handlePlayerPress(player.id)}
@@ -159,7 +166,7 @@ function getCategoryIcon(category: string): string {
               </TouchableOpacity>
             </View>
           ))}
-        </View>
+        </ScrollView>
       </View>
 
       <View style={styles.footer}>
@@ -260,8 +267,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    marginVertical: 32,
+  gap: 6,
   },
   timerText: {
     color: 'white',
@@ -271,8 +277,8 @@ const styles = StyleSheet.create({
   instructionText: {
     color: '#666666',
     fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 32,
+  textAlign: 'center',
+  marginBottom: 16,
   },
   playersContainer: {
     flex: 1,
@@ -282,15 +288,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 16,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    paddingBottom: 20,
   },
   playerCard: {
-    width: 150,
-    height: 120,
+    // width is calculated inline to make a 3-column responsive grid
+    height: 104,
     backgroundColor: '#1a1a1a',
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 12,
   },
   playerAvatar: {
     width: 48,
@@ -337,13 +346,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#1a1a1a',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingVertical: 48,
-    paddingHorizontal: 32,
-    alignItems: 'center',
-    minHeight: 200,
+  backgroundColor: '#1a1a1a',
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+  paddingVertical: 28,
+  paddingHorizontal: 24,
+  alignItems: 'center',
+  minHeight: 160,
   },
   playerNameInModal: {
     color: 'white',

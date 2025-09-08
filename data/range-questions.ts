@@ -519,7 +519,6 @@ export const rangeQuestions: RangeQuestion[] = [
     prompt: 'Preferred music volume level (1-10)',
     rangePrompt: 'Range: 1-10'
   },
-  // Additional Music questions
   {
     id: 'songs-in-library',
     category: 'Music',
