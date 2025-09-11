@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, Pressable, ScrollView, Dimensions } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, Pressable, ScrollView, Dimensions, Animated } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft, Clock, RotateCcw, Eye } from 'lucide-react-native';
 import { useRangeGameStore } from '@/stores/range-game-store';
@@ -20,6 +20,10 @@ export default function RangeGamePlayScreen() {
     updatePlayer,
   } = useRangeGameStore();
   const { getQuestionsForCategory, customCategories } = useRangeTopicsStore();
+
+  const [questionModalVisible, setQuestionModalVisible] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(300)).current; // offscreen start
 
   const [timeLeft, setTimeLeft] = useState(timerDuration * 60);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
@@ -68,6 +72,29 @@ export default function RangeGamePlayScreen() {
     resetGame();
     router.back();
     vibrate.medium();
+  };
+
+  const handleShowQuestion = () => {
+    // brief pop animation then open modal
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 0.9, duration: 100, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1.05, duration: 120, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 80, useNativeDriver: true }),
+    ]).start(() => {
+      setQuestionModalVisible(true);
+      // slide in
+      slideAnim.setValue(300);
+      Animated.timing(slideAnim, { toValue: 0, duration: 300, useNativeDriver: true }).start();
+    });
+    vibrate.light();
+  };
+
+  const handleCloseQuestion = () => {
+    // slide out then hide
+    Animated.timing(slideAnim, { toValue: 300, duration: 240, useNativeDriver: true }).start(() => {
+      setQuestionModalVisible(false);
+    });
+    vibrate.light();
   };
 
   const getCategoryDisplay = (category: string) => {
@@ -135,6 +162,31 @@ export default function RangeGamePlayScreen() {
           </View>
         </TouchableOpacity>
       </View>
+
+      {/* Animated Show Question Button */}
+      <Animated.View style={[styles.showButtonWrap, { transform: [{ scale: scaleAnim }] }]}>
+        <TouchableOpacity onPress={handleShowQuestion} style={[styles.showButton, { backgroundColor: colors.primary }]}>
+          <Text style={styles.showButtonText}>Show Question</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
+      {/* Question Modal (animated slide up) */}
+      <Modal
+        visible={questionModalVisible}
+        transparent
+        animationType="none"
+        onRequestClose={handleCloseQuestion}
+      >
+        <Pressable style={styles.modalOverlay} onPress={handleCloseQuestion}>
+          <Animated.View style={[styles.questionModalContent, { transform: [{ translateY: slideAnim }] }]}>
+            <Text style={styles.questionTitle}>Question</Text>
+            <Text style={styles.questionText}>{currentQuestion?.prompt}</Text>
+            <TouchableOpacity onPress={handleCloseQuestion} style={[styles.closeButton, { backgroundColor: colors.primary }]}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </Pressable>
+      </Modal>
 
       <Modal
         visible={selectedPlayer !== null}
@@ -397,5 +449,45 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  showButtonWrap: {
+    position: 'absolute',
+    right: 20,
+    bottom: 120,
+    zIndex: 50,
+  },
+  showButton: {
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  showButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  questionModalContent: {
+    backgroundColor: '#1a1a1a',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  questionTitle: {
+    color: '#666666',
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  questionText: {
+    color: 'white',
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 12,
   },
 });
