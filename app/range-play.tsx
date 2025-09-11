@@ -77,21 +77,21 @@ export default function RangeGamePlayScreen() {
   const handleShowQuestion = () => {
     // brief pop animation then open modal
     Animated.sequence([
-      Animated.timing(scaleAnim, { toValue: 0.9, duration: 100, useNativeDriver: true }),
-      Animated.timing(scaleAnim, { toValue: 1.05, duration: 120, useNativeDriver: true }),
-      Animated.timing(scaleAnim, { toValue: 1, duration: 80, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 0.93, duration: 80, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1.04, duration: 100, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 60, useNativeDriver: true }),
     ]).start(() => {
       setQuestionModalVisible(true);
       // slide in
-      slideAnim.setValue(300);
-      Animated.timing(slideAnim, { toValue: 0, duration: 300, useNativeDriver: true }).start();
+      slideAnim.setValue(220);
+      Animated.timing(slideAnim, { toValue: 0, duration: 240, useNativeDriver: true }).start();
     });
     vibrate.light();
   };
 
   const handleCloseQuestion = () => {
     // slide out then hide
-    Animated.timing(slideAnim, { toValue: 300, duration: 240, useNativeDriver: true }).start(() => {
+  Animated.timing(slideAnim, { toValue: 220, duration: 200, useNativeDriver: true }).start(() => {
       setQuestionModalVisible(false);
     });
     vibrate.light();
@@ -128,6 +128,13 @@ export default function RangeGamePlayScreen() {
         <View style={styles.placeholder} />
       </View>
 
+      {/* Small Show Question button under topic */}
+      <Animated.View style={[styles.showButtonInline, { transform: [{ scale: scaleAnim }] }]}>
+        <TouchableOpacity onPress={handleShowQuestion} style={[styles.showButtonSmall, { backgroundColor: colors.primary }]}>
+          <Text style={styles.showButtonSmallText}>Show Question</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
       <View style={styles.timerContainer}>
         <Clock size={24} color="white" />
         <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
@@ -163,12 +170,7 @@ export default function RangeGamePlayScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Animated Show Question Button */}
-      <Animated.View style={[styles.showButtonWrap, { transform: [{ scale: scaleAnim }] }]}>
-        <TouchableOpacity onPress={handleShowQuestion} style={[styles.showButton, { backgroundColor: colors.primary }]}>
-          <Text style={styles.showButtonText}>Show Question</Text>
-        </TouchableOpacity>
-      </Animated.View>
+  {/* removed previous floating button (moved inline) */}
 
       {/* Question Modal (animated slide up) */}
       <Modal
@@ -489,5 +491,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     marginBottom: 12,
+  },
+  showButtonInline: {
+    alignSelf: 'center',
+  },
+  showButtonSmall: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  showButtonSmallText: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

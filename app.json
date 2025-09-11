@@ -2,7 +2,7 @@
   "expo": {
     "name": "spy",
     "slug": "spy-social-deduction-party-game",
-    "version": "1.1.0",
+  "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -51,7 +51,7 @@
         "projectId": "b8231e8f-73bb-40f6-aa55-11c9dd2fb3ea"
       }
     },
-    "runtimeVersion": "1.1.0",
+  "runtimeVersion": "1.2.0",
     "updates": {
       "url": "https://u.expo.dev/b8231e8f-73bb-40f6-aa55-11c9dd2fb3ea"
     }

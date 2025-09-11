@@ -1,4 +1,4 @@
-# App Store Metadata (v1.1.0)
+# App Store Metadata (v1.2.0)
 
 - Name: Spy – Party Game
 - Subtitle: Guess the spy. Or stay in range.
