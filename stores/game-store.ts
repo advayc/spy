@@ -31,6 +31,7 @@ interface GameStore {
   addPlayer: (name: string) => void;
   removePlayer: (id: string) => void;
   updatePlayer: (id: string, name: string) => void;
+  setPlayers: (players: Player[]) => void;
   setTimerDuration: (duration: number) => void;
   setSelectedCategory: (category: string) => void;
   setNumspies: (num: number | 'random') => void;
@@ -79,6 +80,10 @@ export const useGameStore = create<GameStore>()(
         }));
       },
 
+      setPlayers: (players: Player[]) => {
+        set({ players });
+      },
+
       setTimerDuration: (duration: number) => {
         set({ timerDuration: duration });
       },
@@ -108,9 +113,9 @@ export const useGameStore = create<GameStore>()(
         // Select random topic
         const randomTopic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
 
-        // Determine number of spies. Random uses global min/max settings and clamps to player count - 1.
+        // Determine number of spies. Random uses global min/max settings and clamps to player count.
         const { minSpies, maxSpies } = useSettingsStore.getState();
-        const dynamicMax = Math.max(0, Math.min(maxSpies, players.length - 1, 15));
+        const dynamicMax = Math.max(0, Math.min(maxSpies, players.length, 15));
         const dynamicMin = Math.max(0, Math.min(minSpies, dynamicMax));
         let finalSpyCount: number;
         if (actualSpyCount === 'random') {

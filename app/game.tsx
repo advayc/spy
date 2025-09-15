@@ -7,8 +7,10 @@ import { useGameStore } from '@/stores/game-store';
 import { useCategoriesStore } from '@/stores/categories-store';
 import { useTheme } from '@/hooks/useTheme';
 import { useSettingsStore } from '@/stores/settings-store';
+import { formatSpyReveal } from '@/utils/spyReveal';
 
 export default function GameScreen() {
+  const { rolesEnabled, revealOtherSpies } = useSettingsStore();
   const { colors } = useTheme();
   const { 
     players, 
@@ -19,7 +21,6 @@ export default function GameScreen() {
     updatePlayer 
   } = useGameStore();
   const { getCategory } = useCategoriesStore();
-  const { rolesEnabled } = useSettingsStore();
 
   const [timeLeft, setTimeLeft] = useState(timerDuration * 60);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
@@ -109,8 +110,7 @@ function getCategoryIcon(category: string): string {
   const selectedPlayerData = selectedPlayer ? players.find(p => p.id === selectedPlayer) : null;
   const playerRole = selectedPlayerData ? gameState.playerRoles[selectedPlayerData.id] : null;
 
-  // Calculate actual number of spies in the current game
-  const spyCount = Object.values(gameState.playerRoles).filter(role => role.isSpy).length;
+  // (spyCount & otherSpies removed - now computed inline only when needed)
 
   // console.log('[GAME SCREEN] Spy count calculated:', spyCount, 'from roles:', gameState.playerRoles);
 
@@ -200,7 +200,22 @@ function getCategoryIcon(category: string): string {
             {playerRole?.isSpy ? (
               <View style={styles.spyContainer}>
                 <Eye size={48} color={colors.primary} />
-                <Text style={styles.spyText}>You are the spy!</Text>
+                {(() => {
+                  if (!selectedPlayerData) return null;
+                  const spyNames = Object.entries(gameState.playerRoles || {})
+                    .filter(([pid, info]) => info.isSpy && pid !== selectedPlayerData.id)
+                    .map(([pid]) => players.find(p => p.id === pid)?.name)
+                    .filter(Boolean) as string[];
+                  const revealLine = revealOtherSpies ? formatSpyReveal(spyNames) : null;
+                  return (
+                    <>
+                      <Text style={styles.spyText}>You are the spy!</Text>
+                      {revealLine && (
+                        <Text style={styles.spyRevealText}>{revealLine}</Text>
+                      )}
+                    </>
+                  );
+                })()}
               </View>
             ) : (
               rolesEnabled ? (
@@ -368,6 +383,19 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 24,
     fontWeight: '600',
+  },
+  spyRevealText: {
+    color: '#999999',
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
   roleContainer: {
     alignItems: 'center',

@@ -7,9 +7,12 @@ import { useRangeTopicsStore } from '@/stores/range-topics-store';
 import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
 import { getQuestionCategories } from '@/data/range-questions';
+import { useSettingsStore } from '@/stores/settings-store';
+import { formatSpyReveal } from '@/utils/spyReveal';
 
 export default function RangeGamePlayScreen() {
   const { colors } = useTheme();
+  const { revealOtherSpies } = useSettingsStore();
   const vibrate = useVibration();
   const {
     players,
@@ -202,14 +205,27 @@ export default function RangeGamePlayScreen() {
               <Text style={styles.playerNameInModal} numberOfLines={1} ellipsizeMode="tail">{selectedPlayerData.name}</Text>
             )}
             {playerRole?.isspy ? (
-              <View style={styles.spyContainer}>
-                <Eye size={48} color={colors.primary} />
-                <Text style={styles.spyText}>You're the spy!</Text>
-                <Text style={styles.customWordLabel}>Your range is:</Text>
-                <Text style={styles.customWordText}>
-                  {currentQuestion.rangePrompt}
-                </Text>
-              </View>
+              (() => {
+                const current = selectedPlayerData;
+                if (!current) return null;
+                const spyNames = players
+                  .filter(p => p.isspy && p.id !== current.id)
+                  .map(p => p.name);
+                const revealLine = revealOtherSpies ? formatSpyReveal(spyNames) : null;
+                return (
+                  <View style={styles.spyContainer}>
+                    <Eye size={48} color={colors.primary} />
+                    <Text style={styles.spyText}>You're the spy!</Text>
+                    {revealLine && (
+                      <Text style={styles.spyRevealText}>{revealLine}</Text>
+                    )}
+                    <Text style={styles.customWordLabel}>Your range is:</Text>
+                    <Text style={styles.customWordText}>
+                      {currentQuestion.rangePrompt}
+                    </Text>
+                  </View>
+                );
+              })()
             ) : (
               <View style={styles.roleContainer}>
                 <Text style={styles.topicText}>
@@ -401,6 +417,19 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 24,
     fontWeight: '600',
+  },
+  spyRevealText: {
+    color: '#999999',
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
   roleContainer: {
     alignItems: 'center',

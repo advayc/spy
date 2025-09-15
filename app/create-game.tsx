@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, Dimensions } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronLeft, Plus, Trash2, Play, Clock, List, Shuffle, Edit2 } from 'lucide-react-native';
+import { ChevronLeft, Plus, Trash2, Play, Clock, List, Shuffle, Edit2, Save, ChevronDown, ChevronUp, Users, BookOpen, Star, Check } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useGameStore } from '@/stores/game-store';
 import { useSettingsStore } from '@/stores/settings-store';
+import { usePlayerPresetsStore } from '@/stores/player-presets-store';
 import { useCategoriesStore } from '@/stores/categories-store';
 import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
@@ -16,10 +17,12 @@ export default function CreateGameScreen() {
     players, 
     timerDuration, 
     selectedCategory, 
+    numspies,
     setSelectedCategory,
     addPlayer, 
     removePlayer, 
     updatePlayer, 
+    setPlayers,
     setTimerDuration, 
     startGame,
     setNumspies,
@@ -29,7 +32,8 @@ export default function CreateGameScreen() {
   const screenWidth = Dimensions.get('window').width;
   const isSmallScreen = screenWidth < 390; // iPhone SE and smaller
   
-  const { minSpies, maxSpies } = useSettingsStore();
+  const { minSpies, maxSpies, playerPresetsEnabled } = useSettingsStore();
+  const { presets, addPreset, deletePreset } = usePlayerPresetsStore();
   const spyOptions = React.useMemo(() => {
     const maxAllowed = Math.min(15, maxSpies, players.length);
     const minAllowed = Math.max(0, Math.min(minSpies, maxAllowed));
@@ -43,6 +47,11 @@ export default function CreateGameScreen() {
   const [newPlayerName, setNewPlayerName] = useState('');
   const [editingPlayer, setEditingPlayer] = useState<string | null>(null);
   const [editPlayerName, setEditPlayerName] = useState('');
+  
+  // Preset states
+  const [showPresets, setShowPresets] = useState(false);
+  const [newPresetName, setNewPresetName] = useState('');
+  const [showSavePreset, setShowSavePreset] = useState(false);
 
   const { getAllCategories } = useCategoriesStore();
   const categories = [
@@ -50,7 +59,7 @@ export default function CreateGameScreen() {
     { id: 'random', name: 'Random Mix', icon: '🎲' },
   ];
 
-  const [localNumspies, setLocalNumspies] = useState<number | 'random'>(1);
+  // Remove local state - use store state instead
 
   const timerOptions = [
     { value: 5, label: '5 min' },
@@ -99,6 +108,61 @@ export default function CreateGameScreen() {
     setEditPlayerName('');
   };
 
+  const handleLoadPreset = (presetId: string) => {
+    const preset = presets.find(p => p.id === presetId);
+    if (preset) {
+      setPlayers(preset.players);
+      setShowPresets(false);
+      vibrate.light();
+    }
+  };
+
+  // Helper function to check if current players match a preset
+  const getSelectedPresetId = () => {
+    if (players.length === 0) return null;
+
+    for (const preset of presets) {
+      if (preset.players.length !== players.length) continue;
+
+      // Check if all players in the preset match current players (by name)
+      const presetNames = preset.players.map(p => p.name).sort();
+      const currentNames = players.map(p => p.name).sort();
+
+      if (presetNames.length === currentNames.length &&
+          presetNames.every((name, index) => name === currentNames[index])) {
+        return preset.id;
+      }
+    }
+    return null;
+  };
+
+  const handleSavePreset = () => {
+    if (newPresetName.trim() && players.length > 0) {
+      addPreset(newPresetName.trim(), players);
+      setNewPresetName('');
+      setShowSavePreset(false);
+      vibrate.success();
+    }
+  };
+
+  const handleDeletePreset = (presetId: string) => {
+    Alert.alert(
+      'Delete Preset',
+      'Are you sure you want to delete this preset?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: () => {
+            deletePreset(presetId);
+            vibrate.medium();
+          }
+        }
+      ]
+    );
+  };
+
   const handleStartGame = () => {
     if (players.length < 3) {
       vibrate.error();
@@ -108,9 +172,9 @@ export default function CreateGameScreen() {
     // Recalculate min/max for current player count
     const maxAllowed = Math.min(15, maxSpies, players.length);
     const minAllowed = Math.max(0, Math.min(minSpies, maxAllowed));
-    const chosen = localNumspies === 'random'
+    const chosen = numspies === 'random'
       ? 'random'
-      : Math.min(maxAllowed, Math.max(minAllowed, localNumspies));
+      : Math.min(maxAllowed, Math.max(minAllowed, numspies));
     startGame(chosen);
     vibrate.success();
     router.push('/game');
@@ -200,6 +264,96 @@ export default function CreateGameScreen() {
               </View>
             ))}
           </View>
+
+          {/* Player Presets */}
+          {playerPresetsEnabled && (
+            <View style={styles.presetsContainer}>
+              <View style={styles.presetsHeader}>
+                <TouchableOpacity 
+                  onPress={() => setShowPresets(!showPresets)}
+                  style={styles.presetsToggle}
+                >
+                  <BookOpen size={18} color={colors.primary} />
+                  <Text style={styles.presetsTitle}>Player Presets</Text>
+                  {showPresets ? <ChevronUp size={18} color={colors.primary} /> : <ChevronDown size={18} color={colors.primary} />}
+                </TouchableOpacity>
+                {players.length > 0 && (
+                  <TouchableOpacity 
+                    onPress={() => setShowSavePreset(!showSavePreset)}
+                    style={[styles.savePresetButton, { backgroundColor: showSavePreset ? colors.primary + '20' : '#2a2a2a' }]}
+                  >
+                    <Save size={14} color={colors.primary} />
+                    <Text style={[styles.savePresetText, { color: colors.primary }]}>Save</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {showSavePreset && (
+                <View style={styles.savePresetContainer}>
+                  <TextInput
+                    style={styles.presetNameInput}
+                    placeholder="Preset name"
+                    placeholderTextColor="#666666"
+                    value={newPresetName}
+                    onChangeText={setNewPresetName}
+                    onSubmitEditing={handleSavePreset}
+                  />
+                  <TouchableOpacity 
+                    onPress={handleSavePreset}
+                    style={[styles.savePresetConfirmButton, { backgroundColor: colors.primary }]}
+                    disabled={!newPresetName.trim()}
+                  >
+                    <Text style={styles.savePresetConfirmText}>Save Preset</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {showPresets && (
+                <View style={styles.presetsList}>
+                  {presets.length === 0 ? (
+                    <View style={styles.emptyState}>
+                      <Star size={24} color="#666666" />
+                      <Text style={styles.noPresetsText}>No presets saved yet</Text>
+                      <Text style={styles.emptyStateSubtext}>Save your favorite player groups for quick setup</Text>
+                    </View>
+                  ) : (
+                    presets.map((preset) => {
+                      const isSelected = getSelectedPresetId() === preset.id;
+                      return (
+                        <View key={preset.id} style={styles.presetItem}>
+                          <TouchableOpacity 
+                            onPress={() => handleLoadPreset(preset.id)}
+                            style={styles.presetInfo}
+                          >
+                            <View style={styles.presetIconWrapper}>
+                              <Users size={14} color={colors.primary} />
+                            </View>
+                            <View style={styles.presetDetails}>
+                              <Text style={styles.presetName}>{preset.name}</Text>
+                              <Text style={styles.presetPlayerCount}>
+                                {preset.players.length} player{preset.players.length !== 1 ? 's' : ''} • Tap to load
+                              </Text>
+                            </View>
+                            {isSelected && (
+                              <View style={styles.selectedIndicator}>
+                                <Check size={16} color={colors.primary} />
+                              </View>
+                            )}
+                          </TouchableOpacity>
+                          <TouchableOpacity 
+                            onPress={() => handleDeletePreset(preset.id)}
+                            style={styles.presetDeleteButton}
+                          >
+                            <Trash2 size={16} color="#FF3B30" />
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    })
+                  )}
+                </View>
+              )}
+            </View>
+          )}
         </View>
 
         {/* Timer Section */}
@@ -238,13 +392,13 @@ export default function CreateGameScreen() {
                 style={[
                   styles.spyOption,
                   isSmallScreen && styles.spyOptionSmall,
-                  localNumspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
+                  numspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
                 ]}
-                onPress={() => setLocalNumspies(option.value as number | 'random')}
+                onPress={() => setNumspies(option.value as number | 'random')}
               >
                 <Text style={[
                   styles.spyOptionText,
-                  localNumspies === option.value && { ...styles.spyOptionTextSelected, color: colors.error }
+                  numspies === option.value && { ...styles.spyOptionTextSelected, color: colors.error }
                 ]}>
                   {option.label}
                 </Text>
@@ -556,5 +710,138 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+  },
+  // Presets styles
+  presetsContainer: {
+    marginTop: 16,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+  },
+  presetsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  presetsToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 4,
+  },
+  presetsTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  savePresetButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+  },
+  savePresetText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  savePresetContainer: {
+    marginTop: 12,
+    gap: 12,
+  },
+  presetNameInput: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    color: 'white',
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+  },
+  savePresetConfirmButton: {
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  savePresetConfirmText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  presetsList: {
+    marginTop: 12,
+    gap: 8,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    gap: 8,
+  },
+  noPresetsText: {
+    color: '#888888',
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  emptyStateSubtext: {
+    color: '#666666',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  presetItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#242424',
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+  },
+  presetInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  presetIconWrapper: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#2a2a2a',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  presetDetails: {
+    flex: 1,
+  },
+  presetName: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  presetPlayerCount: {
+    color: '#888888',
+    fontSize: 11,
+    marginTop: 2,
+  },
+  presetDeleteButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#FF3B3020',
+  },
+  selectedIndicator: {
+    marginLeft: 'auto',
+    marginRight: 8,
   },
 });

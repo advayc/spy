@@ -35,6 +35,7 @@ export interface RangeGameState {
   removePlayer: (id: string) => void;
   updatePlayer: (id: string, updates: Partial<RangePlayer>) => void;
   clearPlayers: () => void;
+  setPlayers: (players: { id: string; name: string }[]) => void;
   
   setTimerDuration: (minutes: number) => void;
   setCurrentTimer: (seconds: number) => void;
@@ -107,6 +108,17 @@ export const useRangeGameStore = create<RangeGameState>()(
   // Explicit action to clear players when the user explicitly removes them or starts a fresh setup
   set({ players: [] });
       },
+
+      setPlayers: (players) => {
+        set({ 
+          players: players.map(p => ({
+            id: p.id,
+            name: p.name,
+            isspy: false,
+            hasRevealed: false
+          }))
+        });
+      },
       
       // Timer management
       setTimerDuration: (minutes) => {
@@ -134,9 +146,9 @@ export const useRangeGameStore = create<RangeGameState>()(
           hasRevealed: false
         }));
         
-        // Determine number of spies. Random uses global min/max settings and clamps to player count - 1.
+        // Determine number of spies. Random uses global min/max settings and clamps to player count.
         const { minSpies, maxSpies } = useSettingsStore.getState();
-        const dynamicMax = Math.max(0, Math.min(maxSpies, resetPlayers.length - 1, 15));
+        const dynamicMax = Math.max(0, Math.min(maxSpies, resetPlayers.length, 15));
         const dynamicMin = Math.max(0, Math.min(minSpies, dynamicMax));
         const numSpies = actualSpyCount === 'random'
           ? (dynamicMin + Math.floor(Math.random() * (dynamicMax - dynamicMin + 1)))
@@ -186,7 +198,7 @@ export const useRangeGameStore = create<RangeGameState>()(
         
         // Determine number of spies (custom questions variant) using global min/max.
         const { minSpies: rMin, maxSpies: rMax } = useSettingsStore.getState();
-        const dynamicMax2 = Math.max(0, Math.min(rMax, resetPlayers.length - 1, 15));
+        const dynamicMax2 = Math.max(0, Math.min(rMax, resetPlayers.length, 15));
         const dynamicMin2 = Math.max(0, Math.min(rMin, dynamicMax2));
         const numSpies2 = actualSpyCount === 'random'
           ? (dynamicMin2 + Math.floor(Math.random() * (dynamicMax2 - dynamicMin2 + 1)))

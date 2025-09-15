@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Alert, Linking, TextInput, Modal, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { ArrowLeft, Palette, RotateCcw, Heart, Volume2, VolumeX, Moon, Sun, Vibrate, Bell, Info, ExternalLink, Eye, Target } from 'lucide-react-native';
+import { ArrowLeft, Palette, RotateCcw, Heart, Volume2, VolumeX, Moon, Sun, Vibrate, Bell, Info, ExternalLink, Eye, Target, Users } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useTheme } from '@/hooks/useTheme';
@@ -44,6 +44,10 @@ export default function SettingsScreen() {
     setMinSpies, 
     maxSpies, 
     setMaxSpies,
+  revealOtherSpies,
+  setRevealOtherSpies,
+  playerPresetsEnabled,
+  setPlayerPresetsEnabled,
   } = useSettingsStore();
   const { colors } = useTheme();
   const vibrate = useVibration();
@@ -356,6 +360,34 @@ export default function SettingsScreen() {
                 onValueChange={(value) => setRolesEnabled(!value)}
                 trackColor={{ false: '#767577', true: colorScheme.primary }}
                 thumbColor={!rolesEnabled ? '#f4f3f4' : '#f4f3f4'}
+              />
+            }
+          />
+
+          <SettingItem
+            icon={Eye}
+            title="Reveal Other Spies"
+            subtitle="Show names of all spies to each spy"
+            rightComponent={
+              <Switch
+                value={revealOtherSpies}
+                onValueChange={setRevealOtherSpies}
+                trackColor={{ false: '#767577', true: colorScheme.primary }}
+                thumbColor={revealOtherSpies ? '#f4f3f4' : '#f4f3f4'}
+              />
+            }
+          />
+
+          <SettingItem
+            icon={Users}
+            title="Enable Player Presets"
+            subtitle="Save and reuse named player groups for quick setup"
+            rightComponent={
+              <Switch
+                value={playerPresetsEnabled}
+                onValueChange={setPlayerPresetsEnabled}
+                trackColor={{ false: '#767577', true: colorScheme.primary }}
+                thumbColor={playerPresetsEnabled ? '#f4f3f4' : '#f4f3f4'}
               />
             }
           />

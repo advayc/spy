@@ -44,6 +44,12 @@ interface SettingsState {
   setMinSpies: (n: number) => void;
   maxSpies: number;
   setMaxSpies: (n: number) => void;
+  // Spy reveal option
+  revealOtherSpies: boolean;
+  setRevealOtherSpies: (enabled: boolean) => void;
+  // Player presets feature
+  playerPresetsEnabled: boolean;
+  setPlayerPresetsEnabled: (enabled: boolean) => void;
 }
 
 const defaultColorScheme: ColorScheme = {
@@ -72,6 +78,8 @@ const defaultSettings = {
   darkMode: true,
   minSpies: 0,
   maxSpies: 15,
+  revealOtherSpies: false,
+  playerPresetsEnabled: true,
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -87,6 +95,10 @@ export const useSettingsStore = create<SettingsState>()(
       setVibrationsEnabled: (enabled) => set({ vibrationsEnabled: enabled }),
       setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
       setDarkMode: (enabled) => set({ darkMode: enabled }),
+  revealOtherSpies: defaultSettings.revealOtherSpies,
+  setRevealOtherSpies: (enabled: boolean) => set({ revealOtherSpies: enabled }),
+  playerPresetsEnabled: defaultSettings.playerPresetsEnabled,
+  setPlayerPresetsEnabled: (enabled: boolean) => set({ playerPresetsEnabled: enabled }),
       // Spy count settings with simple validation/clamping
       minSpies: defaultSettings.minSpies,
       maxSpies: defaultSettings.maxSpies,
