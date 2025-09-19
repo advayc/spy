@@ -68,67 +68,7 @@ You can build the app using EAS . Make sure you have EAS CLI installed and confi
 ```bash
   eas build -p android --profile production
   ```
-Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
 
-```bash
-npx expo prebuild --clean
-```
-
-#### 5. Distribute to App Store
-```bash
-  eas build -p android --profile production
-  ```
-Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
-
-```bash
-npx expo prebuild --clean
-```
-
-#### 5. Distribute to App Store
-```bash
-  eas build -p android --profile production
-  ```
-Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
-
-```bash
-npx expo prebuild --clean
-```
-
-#### 5. Distribute to App Store
-```bash
-  eas build -p android --profile production
-  ```
-Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
-```bash
-npx expo prebuild --clean
-```
-```bash
-  eas build -p android --profile production
-  ```
-Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
-
-```bash
-npx expo prebuild --clean
-```
-
-```bash
-  eas build -p android --profile production
-  ```
-Or, you can just run a prebuild to setup the ios and android folders, then build using Xcode or Android Studio:
-
-```bash
-npx expo prebuild --clean
-```
-
-```bash
-  eas build -p android --profile production
-  ```
-```bash
-npx expo prebuild --clean
-```
-```bash
-npx expo prebuild --clean
-```
 
 #### 5. Distribute to App Store
 
