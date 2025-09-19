@@ -110,10 +110,10 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
-        // Select random topic
-        const randomTopic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
-
-        // Determine number of spies. Random uses global min/max settings and clamps to player count.
+        // Select topic using selectable list that avoids recently used ones
+        const { topicCooldownHours } = useSettingsStore.getState();
+        const selectable = useTopicsStore.getState().getSelectableTopics(selectedCategory, topicCooldownHours);
+        const randomTopic = selectable.length > 0 ? selectable[0] : availableTopics[Math.floor(Math.random() * availableTopics.length)];        // Determine number of spies. Random uses global min/max settings and clamps to player count.
         const { minSpies, maxSpies } = useSettingsStore.getState();
         const dynamicMax = Math.max(0, Math.min(maxSpies, players.length, 15));
         const dynamicMin = Math.max(0, Math.min(minSpies, dynamicMax));
@@ -126,9 +126,13 @@ export const useGameStore = create<GameStore>()(
           finalSpyCount = Math.min(dynamicMax, Math.max(0, typeof actualSpyCount === 'number' ? actualSpyCount : 0));
         }
 
-        // Select random spies
-        const shuffled = [...players].sort(() => Math.random() - 0.5);
-        const spyIds = shuffled.slice(0, finalSpyCount).map(p => p.id);
+        // Select random spies (Fisher-Yates shuffle)
+        const arr = [...players];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        const spyIds = arr.slice(0, finalSpyCount).map(p => p.id);
 
         // Determine if this category uses roles and if roles are globally enabled
         const catMeta = selectedCategory === 'random' ? undefined : getCategory(selectedCategory);
@@ -159,6 +163,8 @@ export const useGameStore = create<GameStore>()(
             spyId: spyIds.length === 1 ? spyIds[0] : null,
           },
         });
+        // Mark topic as used so it won't repeat soon
+        if (randomTopic?.id) useTopicsStore.getState().markTopicUsed(randomTopic.id);
       },
 
       resetGame: () => {

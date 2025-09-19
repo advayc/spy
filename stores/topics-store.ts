@@ -12,16 +12,25 @@ export interface Topic {
 
 interface TopicsStore {
   topics: Topic[];
+  // track builtin topics that users removed so they don't reappear
+  deletedBuiltinTopicIds: string[];
+  // recently used topic timestamps (ms) to reduce repeats across games
+  recentlyUsedTopicTimestamps: Record<string, number>;
   addTopic: (topic: Omit<Topic, 'id'>) => void;
   removeTopic: (id: string) => void;
   updateTopic: (id: string, updates: Partial<Topic>) => void;
   resetToDefaults: () => void;
+  // Helpers for selection
+  markTopicUsed: (id: string) => void;
+  getSelectableTopics: (category?: string, cooldownHours?: number) => Topic[];
 }
 
 export const useTopicsStore = create<TopicsStore>()(
   persist(
     (set, get) => ({
       topics: defaultTopics,
+      deletedBuiltinTopicIds: [],
+      recentlyUsedTopicTimestamps: {},
 
       addTopic: (topicData) => {
         const newTopic: Topic = {
@@ -34,6 +43,16 @@ export const useTopicsStore = create<TopicsStore>()(
       },
 
       removeTopic: (id: string) => {
+        // If the topic is one of the default builtin topics, mark it as deleted so it won't reappear
+        const isBuiltin = defaultTopics.some(t => t.id === id);
+        if (isBuiltin) {
+          set(state => ({
+            deletedBuiltinTopicIds: Array.from(new Set([...state.deletedBuiltinTopicIds, id])),
+            topics: state.topics.filter((topic) => topic.id !== id),
+          }));
+          return;
+        }
+
         set((state) => ({
           topics: state.topics.filter((topic) => topic.id !== id),
         }));
@@ -48,7 +67,46 @@ export const useTopicsStore = create<TopicsStore>()(
       },
 
       resetToDefaults: () => {
-        set({ topics: defaultTopics });
+        const state = get();
+        // Filter out any deleted builtin topics when resetting, so they stay deleted
+        const filteredDefaults = defaultTopics.filter(t => !state.deletedBuiltinTopicIds.includes(t.id));
+        set({ topics: filteredDefaults, recentlyUsedTopicTimestamps: {} });
+        // Keep deletedBuiltinTopicIds intact so deletions persist
+      },
+
+      markTopicUsed: (id: string) => {
+        const ts = Date.now();
+        set(state => ({
+          recentlyUsedTopicTimestamps: { ...state.recentlyUsedTopicTimestamps, [id]: ts }
+        }));
+      },
+
+      getSelectableTopics: (category?: string, cooldownHours = 24) => {
+        const state = get();
+        const cutoff = Date.now() - cooldownHours * 60 * 60 * 1000;
+
+        // Build base list excluding any builtin topics that were deleted
+        let base = state.topics.filter(t => !state.deletedBuiltinTopicIds.includes(t.id));
+        if (category && category !== 'random') {
+          base = base.filter(t => t.category === category);
+        }
+
+        // Filter out recently used topics
+        const filtered = base.filter(t => {
+          const ts = state.recentlyUsedTopicTimestamps[t.id];
+          return !ts || ts < cutoff;
+        });
+
+        // If filtering removed everything, return base (so we always have options)
+        const result = filtered.length > 0 ? filtered : base;
+
+        // Shuffle result (Fisher-Yates)
+        const arr = [...result];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
       },
     }),
     {
@@ -64,6 +122,13 @@ export const useTopicsStore = create<TopicsStore>()(
         removeItem: async (name: string) => {
           await AsyncStorage.removeItem(name);
         },
+      },
+      onRehydrateStorage: () => (state) => {
+        if (state?.deletedBuiltinTopicIds?.length) {
+          // Filter out deleted builtin topics from the loaded topics
+          const filteredTopics = state.topics.filter(t => !state.deletedBuiltinTopicIds.includes(t.id));
+          state.topics = filteredTopics;
+        }
       },
     }
   )

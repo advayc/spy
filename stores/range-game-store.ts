@@ -156,19 +156,24 @@ export const useRangeGameStore = create<RangeGameState>()(
 
   // console.log('Range Game - Spy count:', numSpies, 'from input:', actualSpyCount, 'max allowed:', maxAllowedSpies);
 
-        // Randomly select spy(s)
-        const shuffledIndexes = Array.from({ length: resetPlayers.length }, (_, i) => i).sort(() => Math.random() - 0.5);
-        const selectedSpyIndexes = shuffledIndexes.slice(0, numSpies);
-        selectedSpyIndexes.forEach((idx: number) => {
-          if (resetPlayers[idx]) resetPlayers[idx].isspy = true;
+        // Randomly select spy(s) with Fisher-Yates shuffle
+        const arr = [...resetPlayers];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        const selected = arr.slice(0, numSpies).map(p => p.id);
+        selected.forEach(id => {
+          const idx = resetPlayers.findIndex(p => p.id === id);
+          if (idx !== -1) resetPlayers[idx].isspy = true;
         });
 
   // console.log('Range Game - Selected spy indexes:', selectedSpyIndexes);
   // console.log('Range Game - Players with spy status:', resetPlayers.map(p => ({ name: p.name, isspy: p.isspy })));
         
-        // Select a new question
-        const newQuestion = getRandomQuestion(state.usedQuestionIds);
-        const newUsedIds = [...state.usedQuestionIds, newQuestion.id];
+  // Select a new question (avoid recently used via usedQuestionIds)
+  const newQuestion = getRandomQuestion(state.usedQuestionIds);
+  const newUsedIds = [...state.usedQuestionIds, newQuestion.id];
         
         // If we've used too many questions, reset the used list
         const finalUsedIds = newUsedIds.length > 350 ? [newQuestion.id] : newUsedIds;
@@ -182,6 +187,8 @@ export const useRangeGameStore = create<RangeGameState>()(
           currentTimer: state.timerDuration * 60,
           votes: {}
         });
+        // mark question used via usedQuestionIds already set; if topic tracking exists, mark topic used too
+        // Note: range questions are separate from spy topics; no further action here.
       },
       
       startGameWithCustom: (customQuestions, spyCount?: number | 'random') => {

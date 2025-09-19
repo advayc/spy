@@ -215,7 +215,7 @@ export default function RangeGamePlayScreen() {
                 return (
                   <View style={styles.spyContainer}>
                     <Eye size={48} color={colors.primary} />
-                    <Text style={styles.spyText}>You're the spy!</Text>
+                    <Text style={styles.spyText}>You are the spy!</Text>
                     {revealLine && (
                       <Text style={styles.spyRevealText}>{revealLine}</Text>
                     )}

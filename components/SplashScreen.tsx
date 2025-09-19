@@ -4,42 +4,25 @@ import { Eye } from 'lucide-react-native';
 import { useSettingsStore } from '@/stores/settings-store';
 
 export default function SplashScreen() {
-  try {
-    const { colorScheme } = useSettingsStore();
+  const settings = useSettingsStore();
+  const colorScheme = settings?.colorScheme ?? { primary: '#007AFF' };
 
-    return (
-      <View style={styles.container}>
-        {/* Logo */}
-        <View style={styles.logoContainer}>
-          <View style={[styles.eyeContainer, { backgroundColor: `${colorScheme.primary}20` }]}>
-            <Eye size={80} color={colorScheme.primary} strokeWidth={2} />
-          </View>
-        </View>
-
-        {/* Title */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Spy</Text>
-          <Text style={styles.subtitle}>Social Deduction Party Game</Text>
+  return (
+    <View style={styles.container}>
+      {/* Logo */}
+      <View style={styles.logoContainer}>
+        <View style={[styles.eyeContainer, { backgroundColor: `${colorScheme.primary}20` }]}> 
+          <Eye size={80} color={colorScheme.primary} strokeWidth={2} />
         </View>
       </View>
-    );
-  } catch (error) {
-    console.error('SplashScreen error:', error);
-    return (
-      <View style={styles.container}>
-        {/* Fallback UI */}
-        <View style={styles.logoContainer}>
-          <View style={styles.eyeContainer}>
-            <Eye size={80} color="#007AFF" strokeWidth={2} />
-          </View>
-        </View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Spy</Text>
-          <Text style={styles.subtitle}>Social Deduction Party Game</Text>
-        </View>
+
+      {/* Title */}
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Spy</Text>
+        <Text style={styles.subtitle}>Social Deduction Party Game</Text>
       </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

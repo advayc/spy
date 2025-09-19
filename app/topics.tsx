@@ -534,8 +534,13 @@ export default function TopicsScreen() {
   ), [editingCategoryId]);
 
   if (selectedCategory) {
-    const category = categories.find(c => c.id === selectedCategory);
-    const categoryTopics = getCategoryTopics(selectedCategory);
+  const category = categories.find(c => c.id === selectedCategory);
+  // Filter out deleted builtin topics
+  const deletedBuiltinTopicIds = useTopicsStore(state => state.deletedBuiltinTopicIds);
+  const categoryTopics = getCategoryTopics(selectedCategory);
+  const visibleCategoryTopics = categoryTopics.filter(
+    topic => !deletedBuiltinTopicIds.includes(topic.id)
+  );
 
     return (
       <SafeAreaView style={styles.container}>
@@ -586,7 +591,7 @@ export default function TopicsScreen() {
         )}
 
         <FlatList
-          data={categoryTopics}
+          data={visibleCategoryTopics}
           renderItem={renderTopicItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.topicsList}

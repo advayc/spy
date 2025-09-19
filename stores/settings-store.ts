@@ -50,6 +50,10 @@ interface SettingsState {
   // Player presets feature
   playerPresetsEnabled: boolean;
   setPlayerPresetsEnabled: (enabled: boolean) => void;
+  
+  // Topic cooldown to reduce repeats
+  topicCooldownHours: number;
+  setTopicCooldownHours: (hours: number) => void;
 }
 
 const defaultColorScheme: ColorScheme = {
@@ -80,6 +84,7 @@ const defaultSettings = {
   maxSpies: 15,
   revealOtherSpies: false,
   playerPresetsEnabled: true,
+  topicCooldownHours: 24,
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -114,6 +119,12 @@ export const useSettingsStore = create<SettingsState>()(
         set({ maxSpies: clamped });
       },
       // removed allowMaxSpies toggle
+      
+      setTopicCooldownHours: (hours: number) => {
+        // Allow 0-168 hours (0 = no cooldown, 168 = one week max)
+        const clamped = Math.max(0, Math.min(Math.floor(hours || 0), 168));
+        set({ topicCooldownHours: clamped });
+      },
       
       addCustomScheme: (scheme) => {
         const current = get().customSchemes;

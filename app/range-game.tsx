@@ -245,12 +245,8 @@ export default function RangeGameScreen() {
             <Target size={20} color={colors.primary} />
             <Text style={styles.infoTitle}>How to Play Range Game</Text>
           </View>
-          <Text style={styles.infoText}>
-            Everyone gets the same question except one player who gets a range. Try to figure out who has the range!
-          </Text>
-          <Text style={styles.exampleText}>
-            Example: "Age you learned to drive" vs "Range: 10-25"
-          </Text>
+          <Text style={styles.infoText}>Everyone gets the same question except one player who gets a range. Try to figure out who has the range!</Text>
+          <Text style={styles.exampleText}>Example: Age you learned to drive vs Range: 10-25</Text>
         </View>
 
         {/* Players Section */}

@@ -25,6 +25,8 @@ export const builtinCategories: Record<string, { name: string; icon: string; use
   'history': { name: 'History', icon: '📜', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'internet': { name: 'Internet', icon: '🌐', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'famous-people': { name: 'Famous People', icon: '🌟', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'household': { name: 'Household', icon: '🏠', useRoles: false, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'hobbies': { name: 'Hobbies', icon: '🎨', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
 };
 
 interface CategoriesStore {

@@ -60,7 +60,7 @@ You can build the app using EAS . Make sure you have EAS CLI installed and confi
 
 - iOS:
 
-  ```bash
+```bash
   eas build -p ios --profile production
   ```
 - Android:
@@ -69,6 +69,14 @@ You can build the app using EAS . Make sure you have EAS CLI installed and confi
   eas build -p android --profile production
   ```
 
+to test it you should run a prebuild
+
+```bash
+npx expo prebuild --clean
+```
+```bash
+npx expo run:ios
+```
 
 #### 5. Distribute to App Store
 

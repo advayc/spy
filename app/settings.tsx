@@ -48,6 +48,8 @@ export default function SettingsScreen() {
   setRevealOtherSpies,
   playerPresetsEnabled,
   setPlayerPresetsEnabled,
+  topicCooldownHours,
+  setTopicCooldownHours,
   } = useSettingsStore();
   const { colors } = useTheme();
   const vibrate = useVibration();
@@ -93,6 +95,9 @@ export default function SettingsScreen() {
   // Local inputs for min/max spies
   const [localMinSpies, setLocalMinSpies] = useState(String(minSpies ?? 0));
   const [localMaxSpies, setLocalMaxSpies] = useState(String(maxSpies ?? 15));
+  
+  // Local input for topic cooldown
+  const [localTopicCooldown, setLocalTopicCooldown] = useState(String(topicCooldownHours ?? 24));
 
   // Docs modal
   const [showDocsModal, setShowDocsModal] = useState(false);
@@ -139,6 +144,24 @@ export default function SettingsScreen() {
       return;
     }
     setMaxSpies(n);
+    vibrate.success();
+  };
+
+  const applyTopicCooldown = () => {
+    const n = parseInt(localTopicCooldown || '0', 10);
+    if (isNaN(n) || n < 0) {
+      Alert.alert('Invalid', 'Topic cooldown must be 0 or more hours.');
+      setLocalTopicCooldown(String(topicCooldownHours ?? 24));
+      return;
+    }
+    if (n > 168) {
+      Alert.alert('Limited', 'Topic cooldown is capped at 168 hours (1 week). It has been reduced to 168.');
+      setLocalTopicCooldown('168');
+      setTopicCooldownHours(168);
+      vibrate.success();
+      return;
+    }
+    setTopicCooldownHours(n);
     vibrate.success();
   };
 
@@ -435,6 +458,36 @@ export default function SettingsScreen() {
               </View>
             </View>
             {/* Removed allowMaxSpies toggle placeholder */}
+          </View>
+
+          {/* Topic Cooldown */}
+          <View style={{ marginTop: 12 }}>
+            <Text style={[styles.settingTitle, { marginLeft: 4 }]}>Topic Repeat Prevention</Text>
+            <Text style={[styles.settingSubtitle, { marginLeft: 4, marginBottom: 8 }]}>Avoid recently used topics to reduce repetition. Set to 0 to disable cooldown and allow any topic.</Text>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.settingSubtitle, { marginBottom: 6 }]}>Cooldown (hours)</Text>
+                <TextInput
+                  keyboardType="number-pad"
+                  value={localTopicCooldown}
+                  onChangeText={setLocalTopicCooldown}
+                  onEndEditing={applyTopicCooldown}
+                  style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
+                  placeholder="24"
+                />
+              </View>
+              <View style={{ flex: 2, paddingLeft: 8 }}>
+                <Text style={[styles.settingSubtitle, { fontSize: 12, lineHeight: 16 }]}>
+                  {topicCooldownHours === 0 
+                    ? 'No cooldown - any topic can repeat'
+                    : topicCooldownHours === 1
+                    ? '1 hour cooldown'
+                    : `${topicCooldownHours} hour cooldown`
+                  }
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
 
