@@ -1,52 +1,243 @@
-# Spy Selection Fairness Testing
+# Spy Game Tests Monorepo
 
-This directory contains comprehensive tests to validate the fairness of the spy selection algorithm used in the React Native spy game.
+A comprehensive testing suite for the Spy game, organized as a monorepo with multiple specialized packages.
 
-## Overview
+## 📦 Packages
 
-The spy selection algorithm uses the Fisher-Yates shuffle algorithm to randomly select spies from the player pool. This test suite simulates thousands of games to ensure that each player has an approximately equal probability of being selected as a spy.
+### 🔍 [fairness-tests](./packages/fairness-tests/)
+Core algorithms for testing the fairness of spy selection mechanisms.
 
-## Files
+**Features:**
+- Fisher-Yates shuffle implementation testing
+- Statistical analysis of spy selection fairness
+- Multiple test scenarios (fixed vs random spy counts)
+- Comprehensive fairness scoring
 
-- `spy_selection_simulation.py` - Main simulation script
-- `requirements.txt` - Python dependencies
-- `run_tests.sh` - Bash script to run all tests
-- Generated results folders:
-  - `scenario_1_fixed_spy/` - Results for single spy games
-  - `scenario_2_multiple_spies/` - Results for multiple spy games
-  - `scenario_3_random_spies/` - Results for random spy count games
+```bash
+cd packages/fairness-tests
+pip install -e .
+```
 
-## Running the Tests
+### 📊 [visualization](./packages/visualization/)
+Beautiful visualization tools for test results and statistical analysis.
+
+**Features:**
+- Clean, professional charts for fairness analysis
+- Multiple visualization types (bar charts, histograms, heatmaps)
+- Export to multiple formats (PNG, SVG, PDF)
+- Customizable themes and colors
+
+```bash
+cd packages/visualization
+pip install -e .
+```
+
+### ⚡ [benchmark](./packages/benchmark/)
+Performance benchmarking and profiling tools for algorithms.
+
+**Features:**
+- Algorithm performance comparison
+- Memory usage profiling
+- Execution time analysis
+- Statistical performance metrics
+
+```bash
+cd packages/benchmark
+pip install -e .
+```
+
+### 🔗 [integration](./packages/integration/)
+Integration tests that connect with the main Spy game application.
+
+## 🚀 Quick Start
 
 ### Prerequisites
+- Python 3.9+
+- Node.js 18+ (for monorepo management)
+- Git
 
-Make sure you have Python 3.8+ installed, then install dependencies:
+### Installation
 
+1. **Clone the repository:**
 ```bash
-cd tests
+git clone https://github.com/advayc/spy-test.git
+cd spy-test
+```
+
+2. **Install dependencies:**
+```bash
+# Install Python dependencies
 pip install -r requirements.txt
+
+# Or install all packages
+npm run install:all
 ```
 
-### Run All Tests
+3. **Run tests:**
+```bash
+# Run all tests
+npm run test
+
+# Run specific package tests
+npm run test:fairness
+npm run test:visualization
+npm run test:benchmark
+```
+
+## 📋 Available Scripts
 
 ```bash
-# Using Python directly
-python spy_selection_simulation.py
+# Testing
+npm run test              # Run all tests
+npm run test:fairness     # Test fairness algorithms
+npm run test:visualization # Test visualization tools
+npm run test:benchmark    # Run performance benchmarks
+npm run test:all          # Run all tests sequentially
 
-# Or using the bash script
-./run_tests.sh
+# Development
+npm run install:all       # Install all dependencies
+npm run clean             # Clean build artifacts
+npm run lint              # Lint Python code
+npm run format            # Format Python code
 ```
 
-### Quick Test (fewer simulations)
+## 🏗️ Project Structure
 
-To run a quick test with fewer simulations for faster results:
+```
+spy-test/
+├── packages/
+│   ├── fairness-tests/        # Core fairness testing
+│   │   ├── src/
+│   │   │   └── spy_fairness_tests/
+│   │   ├── tests/
+│   │   ├── docs/
+│   │   ├── pyproject.toml
+│   │   └── README.md
+│   ├── visualization/         # Visualization tools
+│   │   ├── src/
+│   │   │   └── spy_visualization/
+│   │   ├── tests/
+│   │   ├── docs/
+│   │   ├── pyproject.toml
+│   │   └── README.md
+│   ├── benchmark/             # Performance benchmarking
+│   │   ├── src/
+│   │   │   └── spy_benchmark/
+│   │   ├── tests/
+│   │   ├── docs/
+│   │   ├── pyproject.toml
+│   │   └── README.md
+│   └── integration/           # Integration tests
+│       ├── src/
+│       ├── tests/
+│       ├── docs/
+│       ├── pyproject.toml
+│       └── README.md
+├── results/                   # Test output and visualizations
+├── requirements.txt           # Python dependencies
+├── package.json              # Monorepo configuration
+├── pyproject.toml            # Root Python configuration
+├── .gitignore               # Git ignore rules
+├── .gitattributes          # Git attributes
+└── README.md               # This file
+```
+
+## 🔬 Usage Examples
+
+### Testing Spy Selection Fairness
 
 ```python
-# Edit spy_selection_simulation.py and change:
-games_to_simulate=1000  # instead of 10000
+from spy_fairness_tests.algorithms import FisherYatesTester, TestConfig
+
+# Configure test
+config = TestConfig(
+    players=["advay", "bobby", "waleed", "farhan", "sohun"],
+    games=10000,
+    spy_count=1
+)
+
+# Run fairness test
+tester = FisherYatesTester(config.players)
+results = tester.run_single_test(config)
+
+print(f"Fairness Score: {results.statistics['fairness_score']:.1f}/100")
 ```
 
-## Test Scenarios
+### Creating Visualizations
+
+```python
+from spy_visualization.plot_generator import PlotGenerator
+
+# Generate fairness plot
+generator = PlotGenerator(theme="clean")
+generator.create_fairness_plot(
+    spy_counts={"advay": 650, "bobby": 680, "waleed": 670},
+    total_games=2000,
+    expected_prob=6.67,
+    save_path="fairness_analysis.png"
+)
+```
+
+### Performance Benchmarking
+
+```python
+from spy_benchmark.profiler import AlgorithmProfiler
+
+# Benchmark algorithm performance
+profiler = AlgorithmProfiler()
+results = profiler.benchmark_algorithm(
+    algorithm=my_spy_selection_function,
+    iterations=100
+)
+
+print(f"Average time: {results['avg_time']:.4f}s")
+print(f"Memory usage: {results['memory_mb']:.2f} MB")
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Run tests: `npm run test`
+5. Commit your changes: `git commit -m 'Add amazing feature'`
+6. Push to the branch: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+## 📝 Development Guidelines
+
+### Code Style
+- Follow PEP 8 for Python code
+- Use type hints for all function parameters and return values
+- Write comprehensive docstrings
+- Keep functions focused and single-purpose
+
+### Testing
+- Write unit tests for all new functionality
+- Aim for >90% code coverage
+- Use descriptive test names
+- Test edge cases and error conditions
+
+### Documentation
+- Update README files when adding new features
+- Include code examples in docstrings
+- Document API changes and breaking changes
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
+
+## 🔗 Links
+
+- [Main Spy Game Repository](https://github.com/advayc/spy)
+- [Issues](https://github.com/advayc/spy-test/issues)
+- [Discussions](https://github.com/advayc/spy-test/discussions)
+
+## 🙏 Acknowledgments
+
+- Built for testing the Spy game's fairness algorithms
+- Uses Fisher-Yates shuffle for optimal randomization
+- Inspired by statistical analysis best practices
 
 ### Scenario 1: Fixed Single Spy
 - **Players**: 15

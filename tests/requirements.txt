@@ -1,4 +1,37 @@
-matplotlib>=3.6.0
-seaborn>=0.12.0
+# Core scientific computing and data analysis
 numpy>=1.21.0
 pandas>=1.5.0
+scipy>=1.9.0
+
+# Visualization
+matplotlib>=3.6.0
+seaborn>=0.12.0
+plotly>=5.10.0
+pillow>=9.0.0
+
+# Development and testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+black>=22.0.0
+isort>=5.10.0
+flake8>=5.0.0
+mypy>=1.0.0
+
+# Performance profiling
+psutil>=5.9.0
+memory-profiler>=0.61.0
+line-profiler>=4.0.0
+
+# Utilities
+tqdm>=4.64.0
+click>=8.1.0
+
+# Optional: Jupyter support for interactive analysis
+jupyter>=1.0.0
+ipykernel>=6.15.0
+jupyterlab>=3.4.0
+
+# Build tools
+setuptools>=65.0.0
+wheel>=0.37.0
+build>=0.8.0
