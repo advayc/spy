@@ -2,3 +2,7 @@
 	path = website
 	url = https://github.com/advayc/spy-web.git
 	branch = main
+[submodule "tests"]
+	path = tests
+	url = https://github.com/advayc/spy-test.git
+	branch = main
