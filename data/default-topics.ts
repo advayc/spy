@@ -3882,5 +3882,1213 @@ export const defaultTopics: Topic[] = [
     name: 'Chess',
     category: 'hobbies',
     roles: ['Player', 'Coach', 'Tournament Organizer', 'Puzzle Creator', 'Opening Theorist', 'Endgame Specialist', 'Stream Commentator', 'Chess Author']
+  },
+  // countries
+  {
+    id: 'countries_001',
+    name: 'United States',
+    category: 'countries',
+    roles: ['President', 'Congress Member', 'Supreme Court Justice', 'Military General', 'Business Tycoon', 'Hollywood Star', 'Professional Athlete', 'Tech Entrepreneur']
+  },
+  {
+    id: 'countries_002',
+    name: 'United Kingdom',
+    category: 'countries',
+    roles: ['Prime Minister', 'Member of Parliament', 'Royal Family Member', 'Military Officer', 'Business Leader', 'Actor', 'Football Player', 'Author']
+  },
+  {
+    id: 'countries_003',
+    name: 'China',
+    category: 'countries',
+    roles: ['President', 'Premier', 'Military Commander', 'Business Magnate', 'Film Star', 'Olympic Athlete', 'Tech Innovator', 'Ancient Philosopher']
+  },
+  {
+    id: 'countries_004',
+    name: 'India',
+    category: 'countries',
+    roles: ['Prime Minister', 'President', 'Military Chief', 'Bollywood Actor', 'Cricket Player', 'Business Leader', 'Spiritual Guru', 'Scientist']
+  },
+  {
+    id: 'countries_005',
+    name: 'Japan',
+    category: 'countries',
+    roles: ['Prime Minister', 'Emperor', 'Military Leader', 'Business Executive', 'Anime Creator', 'Sumo Wrestler', 'Tech Pioneer', 'Samurai']
+  },
+  {
+    id: 'countries_006',
+    name: 'Germany',
+    category: 'countries',
+    roles: ['Chancellor', 'President', 'Military General', 'Business CEO', 'Film Director', 'Soccer Player', 'Engineer', 'Philosopher']
+  },
+  {
+    id: 'countries_007',
+    name: 'France',
+    category: 'countries',
+    roles: ['President', 'Prime Minister', 'Military Officer', 'Fashion Designer', 'Film Actor', 'Chef', 'Artist', 'Philosopher']
+  },
+  {
+    id: 'countries_008',
+    name: 'Brazil',
+    category: 'countries',
+    roles: ['President', 'Military Leader', 'Soccer Player', 'Carnival Dancer', 'Business Leader', 'Amazon Explorer', 'Surfer', 'Samba Musician']
+  },
+  {
+    id: 'countries_009',
+    name: 'Russia',
+    category: 'countries',
+    roles: ['President', 'Prime Minister', 'Military General', 'Ballet Dancer', 'Chess Grandmaster', 'Cosmonaut', 'Business Oligarch', 'Author']
+  },
+  {
+    id: 'countries_010',
+    name: 'Australia',
+    category: 'countries',
+    roles: ['Prime Minister', 'Military Commander', 'Cricket Player', 'Surfer', 'Aboriginal Elder', 'Film Actor', 'Scientist', 'Bushranger']
+  },
+  {
+    id: 'countries_011',
+    name: 'Canada',
+    category: 'countries',
+    roles: ['Prime Minister', 'Governor General', 'Military Officer', 'Hockey Player', 'Mountie', 'Film Actor', 'Business Leader', 'Indigenous Chief']
+  },
+  {
+    id: 'countries_012',
+    name: 'Mexico',
+    category: 'countries',
+    roles: ['President', 'Military General', 'Soccer Player', 'Mariachi Musician', 'Business Leader', 'Film Actor', 'Chef', 'Revolutionary']
+  },
+  // jobs
+  {
+    id: 'jobs_001',
+    name: 'Doctor',
+    category: 'jobs',
+    roles: ['Surgeon', 'General Practitioner', 'Pediatrician', 'Psychiatrist', 'Nurse', 'Pharmacist', 'Medical Researcher', 'Hospital Administrator']
+  },
+  {
+    id: 'jobs_002',
+    name: 'Teacher',
+    category: 'jobs',
+    roles: ['Elementary Teacher', 'High School Teacher', 'Professor', 'Principal', 'Substitute Teacher', 'Tutor', 'School Counselor', 'Librarian']
+  },
+  {
+    id: 'jobs_003',
+    name: 'Engineer',
+    category: 'jobs',
+    roles: ['Software Engineer', 'Mechanical Engineer', 'Civil Engineer', 'Electrical Engineer', 'Chemical Engineer', 'Aerospace Engineer', 'Project Manager', 'Quality Assurance']
+  },
+  {
+    id: 'jobs_004',
+    name: 'Chef',
+    category: 'jobs',
+    roles: ['Head Chef', 'Sous Chef', 'Pastry Chef', 'Line Cook', 'Food Critic', 'Restaurant Owner', 'Personal Chef', 'Culinary Instructor']
+  },
+  {
+    id: 'jobs_005',
+    name: 'Police Officer',
+    category: 'jobs',
+    roles: ['Patrol Officer', 'Detective', 'SWAT Team Member', 'Chief of Police', 'Traffic Cop', 'K-9 Handler', 'Forensic Analyst', 'Community Liaison']
+  },
+  {
+    id: 'jobs_006',
+    name: 'Firefighter',
+    category: 'jobs',
+    roles: ['Fire Captain', 'Paramedic', 'Arson Investigator', 'Search and Rescue', 'Fire Prevention Officer', 'Hazmat Technician', 'Training Instructor', 'Fire Marshal']
+  },
+  {
+    id: 'jobs_007',
+    name: 'Pilot',
+    category: 'jobs',
+    roles: ['Commercial Pilot', 'Airline Captain', 'Co-pilot', 'Flight Instructor', 'Air Traffic Controller', 'Military Pilot', 'Test Pilot', 'Drone Operator']
+  },
+  {
+    id: 'jobs_008',
+    name: 'Actor',
+    category: 'jobs',
+    roles: ['Film Actor', 'Theater Actor', 'Voice Actor', 'Stunt Performer', 'Director', 'Producer', 'Casting Director', 'Acting Coach']
+  },
+  {
+    id: 'jobs_009',
+    name: 'Musician',
+    category: 'jobs',
+    roles: ['Singer', 'Guitarist', 'Pianist', 'Drummer', 'Conductor', 'Music Producer', 'Songwriter', 'Music Teacher']
+  },
+  {
+    id: 'jobs_010',
+    name: 'Artist',
+    category: 'jobs',
+    roles: ['Painter', 'Sculptor', 'Graphic Designer', 'Photographer', 'Illustrator', 'Art Teacher', 'Gallery Owner', 'Art Critic']
+  },
+  {
+    id: 'jobs_011',
+    name: 'Scientist',
+    category: 'jobs',
+    roles: ['Research Scientist', 'Lab Technician', 'Professor', 'Field Researcher', 'Data Analyst', 'Environmental Scientist', 'Biologist', 'Chemist']
+  },
+  {
+    id: 'jobs_012',
+    name: 'Lawyer',
+    category: 'jobs',
+    roles: ['Criminal Lawyer', 'Corporate Lawyer', 'Judge', 'Prosecutor', 'Defense Attorney', 'Legal Assistant', 'Paralegal', 'Law Professor']
+  },
+  // food
+  {
+    id: 'food_001',
+    name: 'Pizza',
+    category: 'food',
+    roles: ['Pizza Chef', 'Delivery Driver', 'Restaurant Owner', 'Dough Maker', 'Topping Specialist', 'Food Critic', 'Regular Customer', 'Pizza Lover']
+  },
+  {
+    id: 'food_002',
+    name: 'Burger',
+    category: 'food',
+    roles: ['Burger Flipper', 'Fast Food Worker', 'Grill Master', 'Restaurant Manager', 'Food Blogger', 'Health Inspector', 'Competitive Eater', 'Burger Enthusiast']
+  },
+  {
+    id: 'food_003',
+    name: 'Sushi',
+    category: 'food',
+    roles: ['Sushi Chef', 'Fish Cutter', 'Restaurant Owner', 'Sake Sommelier', 'Food Critic', 'Regular Customer', 'Wasabi Expert', 'Japanese Cuisine Lover']
+  },
+  {
+    id: 'food_004',
+    name: 'Pasta',
+    category: 'food',
+    roles: ['Pasta Maker', 'Italian Chef', 'Restaurant Owner', 'Sauce Specialist', 'Food Critic', 'Pasta Enthusiast', 'Culinary Student', 'Italian Immigrant']
+  },
+  {
+    id: 'food_005',
+    name: 'Chocolate',
+    category: 'food',
+    roles: ['Chocolatier', 'Chocolate Maker', 'Candy Factory Worker', 'Pastry Chef', 'Chocolate Taster', 'Food Scientist', 'Chocolate Historian', 'Sweet Tooth']
+  },
+  {
+    id: 'food_006',
+    name: 'Coffee',
+    category: 'food',
+    roles: ['Barista', 'Coffee Roaster', 'Café Owner', 'Coffee Taster', 'Latte Artist', 'Coffee Bean Farmer', 'Espresso Expert', 'Morning Person']
+  },
+  {
+    id: 'food_007',
+    name: 'Ice Cream',
+    category: 'food',
+    roles: ['Ice Cream Scooper', 'Flavor Creator', 'Ice Cream Truck Driver', 'Dessert Chef', 'Food Critic', 'Child', 'Summer Enthusiast', 'Cone Specialist']
+  },
+  {
+    id: 'food_008',
+    name: 'Tacos',
+    category: 'food',
+    roles: ['Taco Chef', 'Street Vendor', 'Restaurant Owner', 'Salsa Maker', 'Food Critic', 'Taco Tuesday Regular', 'Mexican Cuisine Expert', 'Spice Lover']
+  },
+  {
+    id: 'food_009',
+    name: 'Steak',
+    category: 'food',
+    roles: ['Grill Master', 'Butcher', 'Steakhouse Owner', 'Meat Cutter', 'Food Critic', 'BBQ Enthusiast', 'Rare Meat Lover', 'Cowboy']
+  },
+  {
+    id: 'food_010',
+    name: 'Cake',
+    category: 'food',
+    roles: ['Baker', 'Cake Decorator', 'Pastry Chef', 'Wedding Planner', 'Birthday Child', 'Food Photographer', 'Sugar Artist', 'Dessert Lover']
+  },
+  {
+    id: 'food_011',
+    name: 'Wine',
+    category: 'food',
+    roles: ['Sommelier', 'Wine Maker', 'Vineyard Owner', 'Wine Taster', 'Restaurant Owner', 'Wine Critic', 'Grape Grower', 'Connoisseur']
+  },
+  {
+    id: 'food_012',
+    name: 'Bread',
+    category: 'food',
+    roles: ['Baker', 'Bread Maker', 'Bakery Owner', 'Dough Kneader', 'Bread Critic', 'Sandwich Artist', 'Gluten Expert', 'Morning Baker']
+  },
+  // animals
+  {
+    id: 'animals_001',
+    name: 'Dog',
+    category: 'animals',
+    roles: ['Veterinarian', 'Dog Trainer', 'Pet Owner', 'Breeder', 'Groomer', 'Animal Shelter Worker', 'K-9 Police Officer', 'Dog Walker']
+  },
+  {
+    id: 'animals_002',
+    name: 'Cat',
+    category: 'animals',
+    roles: ['Veterinarian', 'Cat Owner', 'Breeder', 'Groomer', 'Animal Behaviorist', 'Cat Café Owner', 'Feline Photographer', 'Cat Lover']
+  },
+  {
+    id: 'animals_003',
+    name: 'Horse',
+    category: 'animals',
+    roles: ['Rider', 'Trainer', 'Farrier', 'Stable Owner', 'Veterinarian', 'Jockey', 'Cowboy', 'Horse Breeder']
+  },
+  {
+    id: 'animals_004',
+    name: 'Elephant',
+    category: 'animals',
+    roles: ['Zookeeper', 'Trainer', 'Veterinarian', 'Conservationist', 'Safari Guide', 'Circus Performer', 'Poacher Hunter', 'Elephant Researcher']
+  },
+  {
+    id: 'animals_005',
+    name: 'Lion',
+    category: 'animals',
+    roles: ['Zookeeper', 'Trainer', 'Veterinarian', 'Safari Guide', 'Lion Tamer', 'Conservationist', 'Big Cat Expert', 'Zoo Director']
+  },
+  {
+    id: 'animals_006',
+    name: 'Monkey',
+    category: 'animals',
+    roles: ['Zookeeper', 'Trainer', 'Veterinarian', 'Primate Researcher', 'Animal Behaviorist', 'Jungle Guide', 'Circus Performer', 'Monkey Photographer']
+  },
+  {
+    id: 'animals_007',
+    name: 'Bird',
+    category: 'animals',
+    roles: ['Ornithologist', 'Bird Watcher', 'Veterinarian', 'Bird Trainer', 'Aviary Keeper', 'Falconer', 'Bird Photographer', 'Songbird Expert']
+  },
+  {
+    id: 'animals_008',
+    name: 'Fish',
+    category: 'animals',
+    roles: ['Aquarium Owner', 'Fish Breeder', 'Marine Biologist', 'Fisherman', 'Aquarium Cleaner', 'Fish Veterinarian', 'Diver', 'Sushi Chef']
+  },
+  {
+    id: 'animals_009',
+    name: 'Snake',
+    category: 'animals',
+    roles: ['Herpetologist', 'Snake Handler', 'Veterinarian', 'Zoo Keeper', 'Antidote Researcher', 'Snake Charmer', 'Reptile Photographer', 'Conservationist']
+  },
+  {
+    id: 'animals_010',
+    name: 'Bear',
+    category: 'animals',
+    roles: ['Zookeeper', 'Wildlife Biologist', 'Bear Trainer', 'Park Ranger', 'Conservationist', 'Bear Hunter', 'Bear Photographer', 'Forest Guide']
+  },
+  {
+    id: 'animals_011',
+    name: 'Panda',
+    category: 'animals',
+    roles: ['Zookeeper', 'Conservationist', 'Panda Researcher', 'Veterinarian', 'Bamboo Farmer', 'Panda Trainer', 'Zoo Director', 'Chinese Official']
+  },
+  {
+    id: 'animals_012',
+    name: 'Dolphin',
+    category: 'animals',
+    roles: ['Marine Biologist', 'Trainer', 'Veterinarian', 'Aquarium Owner', 'Diver', 'Oceanographer', 'Dolphin Researcher', 'Swim Instructor']
+  },
+  // Additional countries
+  {
+    id: 'countries_013',
+    name: 'Italy',
+    category: 'countries',
+    roles: ['Prime Minister', 'President', 'Fashion Designer', 'Chef', 'Film Director', 'Opera Singer', 'Football Player', 'Artist']
+  },
+  {
+    id: 'countries_014',
+    name: 'Spain',
+    category: 'countries',
+    roles: ['Prime Minister', 'King', 'Flamenco Dancer', 'Bullfighter', 'Chef', 'Football Player', 'Artist', 'Explorer']
+  },
+  {
+    id: 'countries_015',
+    name: 'South Korea',
+    category: 'countries',
+    roles: ['President', 'K-pop Star', 'Film Director', 'Tech Entrepreneur', 'Taekwondo Master', 'Chef', 'Business Leader', 'Scientist']
+  },
+  {
+    id: 'countries_016',
+    name: 'Argentina',
+    category: 'countries',
+    roles: ['President', 'Football Legend', 'Tango Dancer', 'Gaucho', 'Chef', 'Wine Maker', 'Business Leader', 'Scientist']
+  },
+  {
+    id: 'countries_017',
+    name: 'Netherlands',
+    category: 'countries',
+    roles: ['Prime Minister', 'King', 'Cyclist', 'Tulip Farmer', 'Painter', 'Engineer', 'Business Leader', 'Scientist']
+  },
+  {
+    id: 'countries_018',
+    name: 'Sweden',
+    category: 'countries',
+    roles: ['Prime Minister', 'King', 'IKEA Founder', 'Musician', 'Engineer', 'Athlete', 'Chef', 'Designer']
+  },
+  {
+    id: 'countries_019',
+    name: 'Norway',
+    category: 'countries',
+    roles: ['Prime Minister', 'King', 'Viking', 'Explorer', 'Oil Executive', 'Athlete', 'Chef', 'Engineer']
+  },
+  {
+    id: 'countries_020',
+    name: 'Denmark',
+    category: 'countries',
+    roles: ['Prime Minister', 'Queen', 'Designer', 'Chef', 'Engineer', 'Athlete', 'Business Leader', 'Scientist']
+  },
+  {
+    id: 'countries_021',
+    name: 'Finland',
+    category: 'countries',
+    roles: ['President', 'Prime Minister', 'Sauna Expert', 'Designer', 'Engineer', 'Athlete', 'Musician', 'Chef']
+  },
+  {
+    id: 'countries_022',
+    name: 'Switzerland',
+    category: 'countries',
+    roles: ['President', 'Banker', 'Watchmaker', 'Chef', 'Engineer', 'Athlete', 'Business Leader', 'Scientist']
+  },
+  {
+    id: 'countries_023',
+    name: 'Austria',
+    category: 'countries',
+    roles: ['Chancellor', 'Composer', 'Chef', 'Engineer', 'Athlete', 'Business Leader', 'Scientist', 'Artist']
+  },
+  {
+    id: 'countries_024',
+    name: 'Belgium',
+    category: 'countries',
+    roles: ['Prime Minister', 'King', 'Chocolate Maker', 'Chef', 'Engineer', 'Athlete', 'Business Leader', 'Scientist']
+  },
+  {
+    id: 'countries_025',
+    name: 'Portugal',
+    category: 'countries',
+    roles: ['Prime Minister', 'President', 'Explorer', 'Chef', 'Football Player', 'Engineer', 'Business Leader', 'Scientist']
+  },
+  {
+    id: 'countries_026',
+    name: 'Greece',
+    category: 'countries',
+    roles: ['Prime Minister', 'Philosopher', 'Chef', 'Athlete', 'Business Leader', 'Scientist', 'Artist', 'Historian']
+  },
+  {
+    id: 'countries_027',
+    name: 'Turkey',
+    category: 'countries',
+    roles: ['President', 'Chef', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Historian']
+  },
+  {
+    id: 'countries_028',
+    name: 'Egypt',
+    category: 'countries',
+    roles: ['President', 'Pharaoh', 'Archaeologist', 'Engineer', 'Business Leader', 'Scientist', 'Artist', 'Historian']
+  },
+  {
+    id: 'countries_029',
+    name: 'South Africa',
+    category: 'countries',
+    roles: ['President', 'Nelson Mandela', 'Athlete', 'Business Leader', 'Engineer', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_030',
+    name: 'Nigeria',
+    category: 'countries',
+    roles: ['President', 'Business Leader', 'Athlete', 'Engineer', 'Scientist', 'Artist', 'Chef', 'Musician']
+  },
+  {
+    id: 'countries_031',
+    name: 'Kenya',
+    category: 'countries',
+    roles: ['President', 'Athlete', 'Safari Guide', 'Business Leader', 'Engineer', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_032',
+    name: 'Morocco',
+    category: 'countries',
+    roles: ['King', 'Chef', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Historian']
+  },
+  {
+    id: 'countries_033',
+    name: 'Thailand',
+    category: 'countries',
+    roles: ['Prime Minister', 'King', 'Chef', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist']
+  },
+  {
+    id: 'countries_034',
+    name: 'Vietnam',
+    category: 'countries',
+    roles: ['President', 'Chef', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Historian']
+  },
+  {
+    id: 'countries_035',
+    name: 'Indonesia',
+    category: 'countries',
+    roles: ['President', 'Chef', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Historian']
+  },
+  {
+    id: 'countries_036',
+    name: 'Philippines',
+    category: 'countries',
+    roles: ['President', 'Chef', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Musician']
+  },
+  {
+    id: 'countries_037',
+    name: 'New Zealand',
+    category: 'countries',
+    roles: ['Prime Minister', 'Athlete', 'Chef', 'Business Leader', 'Engineer', 'Scientist', 'Artist', 'Explorer']
+  },
+  {
+    id: 'countries_038',
+    name: 'Ireland',
+    category: 'countries',
+    roles: ['Taoiseach', 'Musician', 'Writer', 'Athlete', 'Business Leader', 'Engineer', 'Scientist', 'Chef']
+  },
+  {
+    id: 'countries_039',
+    name: 'Poland',
+    category: 'countries',
+    roles: ['President', 'Prime Minister', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_040',
+    name: 'Czech Republic',
+    category: 'countries',
+    roles: ['President', 'Prime Minister', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_041',
+    name: 'Hungary',
+    category: 'countries',
+    roles: ['Prime Minister', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef', 'Historian']
+  },
+  {
+    id: 'countries_042',
+    name: 'Romania',
+    category: 'countries',
+    roles: ['President', 'Prime Minister', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_043',
+    name: 'Bulgaria',
+    category: 'countries',
+    roles: ['Prime Minister', 'President', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_044',
+    name: 'Croatia',
+    category: 'countries',
+    roles: ['Prime Minister', 'President', 'Athlete', 'Business Leader', 'Engineer', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_045',
+    name: 'Serbia',
+    category: 'countries',
+    roles: ['President', 'Prime Minister', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_046',
+    name: 'Ukraine',
+    category: 'countries',
+    roles: ['President', 'Prime Minister', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_047',
+    name: 'Israel',
+    category: 'countries',
+    roles: ['Prime Minister', 'President', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef']
+  },
+  {
+    id: 'countries_048',
+    name: 'Saudi Arabia',
+    category: 'countries',
+    roles: ['King', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef', 'Historian']
+  },
+  {
+    id: 'countries_049',
+    name: 'United Arab Emirates',
+    category: 'countries',
+    roles: ['President', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef', 'Architect']
+  },
+  {
+    id: 'countries_050',
+    name: 'Singapore',
+    category: 'countries',
+    roles: ['Prime Minister', 'Business Leader', 'Engineer', 'Athlete', 'Scientist', 'Artist', 'Chef', 'Architect']
+  },
+  // Additional jobs
+  {
+    id: 'jobs_013',
+    name: 'Nurse',
+    category: 'jobs',
+    roles: ['Registered Nurse', 'Nurse Practitioner', 'Pediatric Nurse', 'ER Nurse', 'Surgical Nurse', 'Nurse Educator', 'Nurse Manager', 'Home Health Nurse']
+  },
+  {
+    id: 'jobs_014',
+    name: 'Dentist',
+    category: 'jobs',
+    roles: ['General Dentist', 'Orthodontist', 'Oral Surgeon', 'Pediatric Dentist', 'Dental Hygienist', 'Dental Assistant', 'Dental Lab Technician', 'Dental Researcher']
+  },
+  {
+    id: 'jobs_015',
+    name: 'Pharmacist',
+    category: 'jobs',
+    roles: ['Retail Pharmacist', 'Hospital Pharmacist', 'Clinical Pharmacist', 'Pharmacy Technician', 'Pharmaceutical Researcher', 'Pharmacy Manager', 'Compounding Pharmacist', 'Consultant Pharmacist']
+  },
+  {
+    id: 'jobs_016',
+    name: 'Journalist',
+    category: 'jobs',
+    roles: ['Reporter', 'Editor', 'Photojournalist', 'Broadcast Journalist', 'Investigative Journalist', 'Sports Journalist', 'Political Correspondent', 'Columnist']
+  },
+  {
+    id: 'jobs_017',
+    name: 'Photographer',
+    category: 'jobs',
+    roles: ['Portrait Photographer', 'Wedding Photographer', 'Photojournalist', 'Fashion Photographer', 'Nature Photographer', 'Studio Photographer', 'Photo Editor', 'Photography Instructor']
+  },
+  {
+    id: 'jobs_018',
+    name: 'Architect',
+    category: 'jobs',
+    roles: ['Residential Architect', 'Commercial Architect', 'Landscape Architect', 'Interior Designer', 'Urban Planner', 'Architectural Drafter', 'Project Manager', 'Historic Preservationist']
+  },
+  {
+    id: 'jobs_019',
+    name: 'Accountant',
+    category: 'jobs',
+    roles: ['CPA', 'Tax Accountant', 'Auditor', 'Financial Analyst', 'Bookkeeper', 'Controller', 'Forensic Accountant', 'Accounting Professor']
+  },
+  {
+    id: 'jobs_020',
+    name: 'Electrician',
+    category: 'jobs',
+    roles: ['Residential Electrician', 'Commercial Electrician', 'Industrial Electrician', 'Electrical Inspector', 'Electrical Engineer', 'Maintenance Electrician', 'Solar Installer', 'Electrical Contractor']
+  },
+  {
+    id: 'jobs_021',
+    name: 'Plumber',
+    category: 'jobs',
+    roles: ['Residential Plumber', 'Commercial Plumber', 'Pipefitter', 'Plumbing Inspector', 'Plumbing Contractor', 'Maintenance Plumber', 'Water Treatment Specialist', 'Plumbing Instructor']
+  },
+  {
+    id: 'jobs_022',
+    name: 'Mechanic',
+    category: 'jobs',
+    roles: ['Auto Mechanic', 'Diesel Mechanic', 'Motorcycle Mechanic', 'Aircraft Mechanic', 'Heavy Equipment Mechanic', 'Small Engine Mechanic', 'Shop Foreman', 'Auto Body Technician']
+  },
+  {
+    id: 'jobs_023',
+    name: 'Carpenter',
+    category: 'jobs',
+    roles: ['Framing Carpenter', 'Finish Carpenter', 'Cabinetmaker', 'Furniture Maker', 'Restoration Carpenter', 'Construction Carpenter', 'Carpentry Instructor', 'Carpentry Contractor']
+  },
+  {
+    id: 'jobs_024',
+    name: 'Farmer',
+    category: 'jobs',
+    roles: ['Crop Farmer', 'Livestock Farmer', 'Organic Farmer', 'Farm Manager', 'Agricultural Engineer', 'Agronomist', 'Farm Equipment Operator', 'Farm Consultant']
+  },
+  {
+    id: 'jobs_025',
+    name: 'Salesperson',
+    category: 'jobs',
+    roles: ['Retail Salesperson', 'Real Estate Agent', 'Car Salesperson', 'Insurance Agent', 'Pharmaceutical Sales Rep', 'Sales Manager', 'Telemarketer', 'Sales Trainer']
+  },
+  {
+    id: 'jobs_026',
+    name: 'Receptionist',
+    category: 'jobs',
+    roles: ['Office Receptionist', 'Hotel Receptionist', 'Medical Receptionist', 'Dental Receptionist', 'Spa Receptionist', 'Salon Receptionist', 'Administrative Assistant', 'Customer Service Rep']
+  },
+  {
+    id: 'jobs_027',
+    name: 'Librarian',
+    category: 'jobs',
+    roles: ['Public Librarian', 'School Librarian', 'University Librarian', 'Research Librarian', 'Digital Librarian', 'Children\'s Librarian', 'Library Director', 'Archivist']
+  },
+  {
+    id: 'jobs_028',
+    name: 'Psychologist',
+    category: 'jobs',
+    roles: ['Clinical Psychologist', 'Counseling Psychologist', 'School Psychologist', 'Industrial Psychologist', 'Forensic Psychologist', 'Sports Psychologist', 'Research Psychologist', 'Psychology Professor']
+  },
+  {
+    id: 'jobs_029',
+    name: 'Veterinarian',
+    category: 'jobs',
+    roles: ['Small Animal Vet', 'Large Animal Vet', 'Exotic Animal Vet', 'Equine Vet', 'Veterinary Surgeon', 'Veterinary Pathologist', 'Animal Shelter Vet', 'Veterinary Researcher']
+  },
+  {
+    id: 'jobs_030',
+    name: 'Social Worker',
+    category: 'jobs',
+    roles: ['Child Welfare Worker', 'School Social Worker', 'Clinical Social Worker', 'Medical Social Worker', 'Community Organizer', 'Case Manager', 'Social Work Supervisor', 'Social Work Professor']
+  },
+  {
+    id: 'jobs_031',
+    name: 'Graphic Designer',
+    category: 'jobs',
+    roles: ['Print Designer', 'Web Designer', 'UI/UX Designer', 'Logo Designer', 'Brand Designer', 'Illustrator', 'Art Director', 'Design Professor']
+  },
+  {
+    id: 'jobs_032',
+    name: 'Programmer',
+    category: 'jobs',
+    roles: ['Software Developer', 'Web Developer', 'Mobile App Developer', 'Game Developer', 'Systems Programmer', 'Database Administrator', 'DevOps Engineer', 'Computer Science Professor']
+  },
+  {
+    id: 'jobs_033',
+    name: 'Marketing Manager',
+    category: 'jobs',
+    roles: ['Digital Marketing Manager', 'Brand Manager', 'Product Manager', 'Content Marketing Manager', 'SEO Specialist', 'Social Media Manager', 'Marketing Analyst', 'Marketing Director']
+  },
+  {
+    id: 'jobs_034',
+    name: 'Real Estate Agent',
+    category: 'jobs',
+    roles: ['Residential Agent', 'Commercial Agent', 'Property Manager', 'Real Estate Appraiser', 'Mortgage Broker', 'Real Estate Attorney', 'Real Estate Photographer', 'Real Estate Investor']
+  },
+  {
+    id: 'jobs_035',
+    name: 'Flight Attendant',
+    category: 'jobs',
+    roles: ['Commercial Flight Attendant', 'Private Jet Attendant', 'Lead Flight Attendant', 'Flight Attendant Trainer', 'In-flight Service Manager', 'Emergency Response Specialist', 'Customer Service Rep', 'Travel Coordinator']
+  },
+  {
+    id: 'jobs_036',
+    name: 'Bartender',
+    category: 'jobs',
+    roles: ['Mixologist', 'Bar Manager', 'Wine Specialist', 'Cocktail Server', 'Bartending Instructor', 'Event Bartender', 'Craft Beer Expert', 'Beverage Consultant']
+  },
+  {
+    id: 'jobs_037',
+    name: 'Hair Stylist',
+    category: 'jobs',
+    roles: ['Salon Stylist', 'Color Specialist', 'Hair Cutter', 'Makeup Artist', 'Salon Manager', 'Hair Educator', 'Celebrity Stylist', 'Hair Product Developer']
+  },
+  {
+    id: 'jobs_038',
+    name: 'Personal Trainer',
+    category: 'jobs',
+    roles: ['Gym Trainer', 'Private Trainer', 'Group Fitness Instructor', 'Nutrition Coach', 'Sports Trainer', 'Rehabilitation Specialist', 'Fitness Director', 'Wellness Coach']
+  },
+  {
+    id: 'jobs_039',
+    name: 'Tour Guide',
+    category: 'jobs',
+    roles: ['City Tour Guide', 'Historical Tour Guide', 'Adventure Tour Guide', 'Museum Guide', 'Wine Tour Guide', 'Nature Guide', 'Cruise Ship Guide', 'Tour Company Owner']
+  },
+  {
+    id: 'jobs_040',
+    name: 'Event Planner',
+    category: 'jobs',
+    roles: ['Wedding Planner', 'Corporate Event Planner', 'Party Planner', 'Conference Organizer', 'Festival Coordinator', 'Catering Manager', 'Event Photographer', 'Event Marketing Specialist']
+  },
+  {
+    id: 'jobs_041',
+    name: 'Translator',
+    category: 'jobs',
+    roles: ['Language Translator', 'Interpreter', 'Localization Specialist', 'Technical Translator', 'Literary Translator', 'Legal Translator', 'Medical Translator', 'Translation Professor']
+  },
+  {
+    id: 'jobs_042',
+    name: 'Researcher',
+    category: 'jobs',
+    roles: ['Academic Researcher', 'Market Researcher', 'Medical Researcher', 'Social Researcher', 'Environmental Researcher', 'Data Researcher', 'Research Analyst', 'Research Director']
+  },
+  {
+    id: 'jobs_043',
+    name: 'Consultant',
+    category: 'jobs',
+    roles: ['Management Consultant', 'IT Consultant', 'Financial Consultant', 'HR Consultant', 'Strategy Consultant', 'Business Consultant', 'Technical Consultant', 'Consulting Partner']
+  },
+  {
+    id: 'jobs_044',
+    name: 'Therapist',
+    category: 'jobs',
+    roles: ['Physical Therapist', 'Occupational Therapist', 'Speech Therapist', 'Massage Therapist', 'Art Therapist', 'Music Therapist', 'Family Therapist', 'Therapy Supervisor']
+  },
+  {
+    id: 'jobs_045',
+    name: 'Security Guard',
+    category: 'jobs',
+    roles: ['Mall Security', 'Bank Security', 'Event Security', 'Private Security', 'Cybersecurity Specialist', 'Security Consultant', 'Security Trainer', 'Security Director']
+  },
+  {
+    id: 'jobs_046',
+    name: 'Customer Service Rep',
+    category: 'jobs',
+    roles: ['Call Center Rep', 'Retail Associate', 'Technical Support', 'Customer Success Manager', 'Complaint Handler', 'Service Supervisor', 'Quality Assurance', 'Customer Service Trainer']
+  },
+  {
+    id: 'jobs_047',
+    name: 'Data Analyst',
+    category: 'jobs',
+    roles: ['Business Analyst', 'Data Scientist', 'Statistical Analyst', 'Market Analyst', 'Financial Analyst', 'Operations Analyst', 'Data Visualization Specialist', 'Analytics Manager']
+  },
+  {
+    id: 'jobs_048',
+    name: 'Project Manager',
+    category: 'jobs',
+    roles: ['IT Project Manager', 'Construction PM', 'Marketing PM', 'Product Manager', 'Event PM', 'Program Manager', 'Portfolio Manager', 'PMO Director']
+  },
+  {
+    id: 'jobs_049',
+    name: 'Writer',
+    category: 'jobs',
+    roles: ['Journalist', 'Author', 'Copywriter', 'Technical Writer', 'Content Writer', 'Screenwriter', 'Editor', 'Publishing Professional']
+  },
+  {
+    id: 'jobs_050',
+    name: 'Entrepreneur',
+    category: 'jobs',
+    roles: ['Startup Founder', 'Small Business Owner', 'E-commerce Seller', 'Franchise Owner', 'Consultant', 'Inventor', 'Social Entrepreneur', 'Business Mentor']
+  },
+  // Additional food
+  {
+    id: 'food_013',
+    name: 'Sushi Rolls',
+    category: 'food',
+    roles: ['Sushi Chef', 'Sashimi Cutter', 'Rice Specialist', 'Fish Slicer', 'Sushi Instructor', 'Restaurant Owner', 'Food Critic', 'Sushi Lover']
+  },
+  {
+    id: 'food_014',
+    name: 'Fried Chicken',
+    category: 'food',
+    roles: ['Fried Chicken Chef', 'Fast Food Worker', 'Colonel Sanders', 'Restaurant Owner', 'Food Critic', 'Spice Expert', 'Batter Specialist', 'Chicken Farmer']
+  },
+  {
+    id: 'food_015',
+    name: 'French Fries',
+    category: 'food',
+    roles: ['Fast Food Worker', 'Potato Farmer', 'Chef', 'Restaurant Owner', 'Food Critic', 'Oil Expert', 'Seasoning Specialist', 'Snack Lover']
+  },
+  {
+    id: 'food_016',
+    name: 'Hot Dog',
+    category: 'food',
+    roles: ['Hot Dog Vendor', 'Chef', 'Restaurant Owner', 'Food Critic', 'Sausage Maker', 'Bun Baker', 'Condiment Expert', 'Street Food Lover']
+  },
+  {
+    id: 'food_017',
+    name: 'Hamburger',
+    category: 'food',
+    roles: ['Burger Flipper', 'Chef', 'Restaurant Owner', 'Food Critic', 'Beef Farmer', 'Bun Baker', 'Cheese Specialist', 'Fast Food Worker']
+  },
+  {
+    id: 'food_018',
+    name: 'Spaghetti',
+    category: 'food',
+    roles: ['Italian Chef', 'Pasta Maker', 'Sauce Specialist', 'Restaurant Owner', 'Food Critic', 'Tomato Grower', 'Herb Expert', 'Pasta Lover']
+  },
+  {
+    id: 'food_019',
+    name: 'Ramen',
+    category: 'food',
+    roles: ['Ramen Chef', 'Broth Master', 'Noodle Maker', 'Restaurant Owner', 'Food Critic', 'Egg Specialist', 'Topping Expert', 'Japanese Cuisine Lover']
+  },
+  {
+    id: 'food_020',
+    name: 'Dumplings',
+    category: 'food',
+    roles: ['Chinese Chef', 'Dumpling Maker', 'Wrapper Specialist', 'Restaurant Owner', 'Food Critic', 'Filling Expert', 'Steamer Master', 'Asian Cuisine Lover']
+  },
+  {
+    id: 'food_021',
+    name: 'Falafel',
+    category: 'food',
+    roles: ['Middle Eastern Chef', 'Chickpea Grinder', 'Tahini Maker', 'Street Vendor', 'Food Critic', 'Pita Baker', 'Spice Expert', 'Mediterranean Food Lover']
+  },
+  {
+    id: 'food_022',
+    name: 'Chicken Curry',
+    category: 'food',
+    roles: ['Indian Chef', 'Spice Master', 'Restaurant Owner', 'Food Critic', 'Rice Cooker', 'Naan Baker', 'Curry Expert', 'Indian Cuisine Lover']
+  },
+  {
+    id: 'food_023',
+    name: 'Pho',
+    category: 'food',
+    roles: ['Vietnamese Chef', 'Broth Master', 'Noodle Maker', 'Restaurant Owner', 'Food Critic', 'Herb Specialist', 'Beef Expert', 'Vietnamese Cuisine Lover']
+  },
+  {
+    id: 'food_024',
+    name: 'Paella',
+    category: 'food',
+    roles: ['Spanish Chef', 'Rice Specialist', 'Seafood Expert', 'Restaurant Owner', 'Food Critic', 'Saffron Trader', 'Paella Master', 'Spanish Cuisine Lover']
+  },
+  {
+    id: 'food_025',
+    name: 'Kimchi',
+    category: 'food',
+    roles: ['Korean Chef', 'Fermentation Expert', 'Cabbage Farmer', 'Restaurant Owner', 'Food Critic', 'Spice Specialist', 'Kimchi Master', 'Korean Cuisine Lover']
+  },
+  {
+    id: 'food_026',
+    name: 'Hummus',
+    category: 'food',
+    roles: ['Middle Eastern Chef', 'Chickpea Expert', 'Tahini Maker', 'Restaurant Owner', 'Food Critic', 'Pita Baker', 'Dip Specialist', 'Mediterranean Food Lover']
+  },
+  {
+    id: 'food_027',
+    name: 'Tacos',
+    category: 'food',
+    roles: ['Mexican Chef', 'Tortilla Maker', 'Meat Specialist', 'Street Vendor', 'Food Critic', 'Salsa Expert', 'Taco Master', 'Mexican Cuisine Lover']
+  },
+  {
+    id: 'food_028',
+    name: 'Pad Thai',
+    category: 'food',
+    roles: ['Thai Chef', 'Noodle Expert', 'Shrimp Specialist', 'Restaurant Owner', 'Food Critic', 'Tamarind Expert', 'Pad Thai Master', 'Thai Cuisine Lover']
+  },
+  {
+    id: 'food_029',
+    name: 'Lasagna',
+    category: 'food',
+    roles: ['Italian Chef', 'Pasta Layer', 'Cheese Specialist', 'Restaurant Owner', 'Food Critic', 'Meat Sauce Expert', 'Lasagna Master', 'Italian Cuisine Lover']
+  },
+  {
+    id: 'food_030',
+    name: 'Sashimi',
+    category: 'food',
+    roles: ['Japanese Chef', 'Fish Cutter', 'Sushi Expert', 'Restaurant Owner', 'Food Critic', 'Fish Farmer', 'Sashimi Master', 'Japanese Cuisine Lover']
+  },
+  {
+    id: 'food_031',
+    name: 'Biryani',
+    category: 'food',
+    roles: ['Indian Chef', 'Rice Cooker', 'Spice Master', 'Restaurant Owner', 'Food Critic', 'Meat Specialist', 'Biryani Expert', 'Indian Cuisine Lover']
+  },
+  {
+    id: 'food_032',
+    name: 'Mac and Cheese',
+    category: 'food',
+    roles: ['American Chef', 'Cheese Specialist', 'Pasta Expert', 'Restaurant Owner', 'Food Critic', 'Comfort Food Lover', 'Child Favorite', 'Home Cook']
+  },
+  {
+    id: 'food_033',
+    name: 'Poutine',
+    category: 'food',
+    roles: ['Canadian Chef', 'Dumpling Maker', 'Potato Expert', 'Restaurant Owner', 'Food Critic', 'Sauce Specialist', 'Poutine Master', 'Eastern European Cuisine Lover']
+  },
+  {
+    id: 'food_034',
+    name: 'Empanadas',
+    category: 'food',
+    roles: ['Latin American Chef', 'Pastry Maker', 'Meat Filler', 'Street Vendor', 'Food Critic', 'Spice Expert', 'Empanada Master', 'Latin Cuisine Lover']
+  },
+  {
+    id: 'food_035',
+    name: 'Goulash',
+    category: 'food',
+    roles: ['Hungarian Chef', 'Stew Master', 'Paprika Expert', 'Restaurant Owner', 'Food Critic', 'Beef Specialist', 'Goulash Lover', 'Hungarian Cuisine Expert']
+  },
+  {
+    id: 'food_036',
+    name: 'Miso Soup',
+    category: 'food',
+    roles: ['Japanese Chef', 'Miso Master', 'Tofu Expert', 'Restaurant Owner', 'Food Critic', 'Seaweed Specialist', 'Soup Lover', 'Japanese Cuisine Expert']
+  },
+  {
+    id: 'food_037',
+    name: 'Chili Con Carne',
+    category: 'food',
+    roles: ['American Chef', 'Spice Master', 'Bean Expert', 'Restaurant Owner', 'Food Critic', 'Meat Specialist', 'Chili Cook-off Winner', 'Tex-Mex Cuisine Lover']
+  },
+  {
+    id: 'food_038',
+    name: 'Risotto',
+    category: 'food',
+    roles: ['Italian Chef', 'Rice Cooker', 'Wine Expert', 'Restaurant Owner', 'Food Critic', 'Parmesan Specialist', 'Risotto Master', 'Italian Cuisine Lover']
+  },
+  {
+    id: 'food_039',
+    name: 'Korean Rice Bowl',
+    category: 'food',
+    roles: ['Korean Chef', 'Rice Expert', 'Vegetable Specialist', 'Restaurant Owner', 'Food Critic', 'Gochujang Expert', 'Bibimbap Master', 'Korean Cuisine Lover']
+  },
+  {
+    id: 'food_040',
+    name: 'Brazilian Stew',
+    category: 'food',
+    roles: ['Brazilian Chef', 'Bean Expert', 'Meat Specialist', 'Restaurant Owner', 'Food Critic', 'Black Bean Master', 'Feijoada Lover', 'Brazilian Cuisine Expert']
+  },
+  {
+    id: 'food_041',
+    name: 'Greek Casserole',
+    category: 'food',
+    roles: ['Greek Chef', 'Eggplant Expert', 'Meat Layer', 'Restaurant Owner', 'Food Critic', 'Cheese Specialist', 'Moussaka Master', 'Greek Cuisine Lover']
+  },
+  {
+    id: 'food_042',
+    name: 'Ceviche',
+    category: 'food',
+    roles: ['Peruvian Chef', 'Fish Specialist', 'Lime Expert', 'Restaurant Owner', 'Food Critic', 'Seafood Lover', 'Ceviche Master', 'Peruvian Cuisine Expert']
+  },
+  {
+    id: 'food_043',
+    name: 'Shawarma',
+    category: 'food',
+    roles: ['Middle Eastern Chef', 'Meat Specialist', 'Spice Master', 'Restaurant Owner', 'Food Critic', 'Grill Master', 'Shawarma Lover', 'Middle Eastern Cuisine Expert']
+  },
+  {
+    id: 'food_044',
+    name: 'Jerk Chicken',
+    category: 'food',
+    roles: ['Jamaican Chef', 'Spice Master', 'Chicken Expert', 'Restaurant Owner', 'Food Critic', 'Allspice Specialist', 'Jerk Master', 'Caribbean Cuisine Lover']
+  },
+  {
+    id: 'food_045',
+    name: 'Butter Chicken',
+    category: 'food',
+    roles: ['Indian Chef', 'Curry Master', 'Spice Expert', 'Restaurant Owner', 'Food Critic', 'Tomato Specialist', 'Butter Chicken Lover', 'Indian Cuisine Expert']
+  },
+  {
+    id: 'food_046',
+    name: 'Peking Duck',
+    category: 'food',
+    roles: ['Chinese Chef', 'Duck Specialist', 'Pancake Maker', 'Restaurant Owner', 'Food Critic', 'Hoisin Expert', 'Peking Duck Master', 'Chinese Cuisine Lover']
+  },
+  {
+    id: 'food_047',
+    name: 'Gazpacho',
+    category: 'food',
+    roles: ['Spanish Chef', 'Tomato Expert', 'Cold Soup Master', 'Restaurant Owner', 'Food Critic', 'Bread Specialist', 'Gazpacho Lover', 'Spanish Cuisine Expert']
+  },
+  {
+    id: 'food_048',
+    name: 'Rice',
+    category: 'food',
+    roles: ['Indian Chef', 'Cream Specialist', 'Spice Master', 'Restaurant Owner', 'Food Critic', 'Chicken Expert', 'Korma Lover', 'Indian Cuisine Expert']
+  },
+  {
+    id: 'food_049',
+    name: 'Ratatouille',
+    category: 'food',
+    roles: ['French Chef', 'Vegetable Expert', 'Stew Master', 'Restaurant Owner', 'Food Critic', 'Herb Specialist', 'Ratatouille Lover', 'French Cuisine Expert']
+  },
+  {
+    id: 'food_050',
+    name: 'Pasta',
+    category: 'food',
+    roles: ['Brazilian Chef', 'Grill Master', 'Meat Specialist', 'Restaurant Owner', 'Food Critic', 'Salt Expert', 'Churrasco Lover', 'Brazilian Cuisine Expert']
+  },
+  // Additional animals
+  {
+    id: 'animals_013',
+    name: 'Tiger',
+    category: 'animals',
+    roles: ['Zookeeper', 'Conservationist', 'Tiger Trainer', 'Veterinarian', 'Wildlife Biologist', 'Safari Guide', 'Tiger Photographer', 'Big Cat Expert']
+  },
+  {
+    id: 'animals_014',
+    name: 'Elephant',
+    category: 'animals',
+    roles: ['Zookeeper', 'Conservationist', 'Elephant Trainer', 'Veterinarian', 'Wildlife Biologist', 'Safari Guide', 'Elephant Photographer', 'Mammal Expert']
+  },
+  {
+    id: 'animals_015',
+    name: 'Giraffe',
+    category: 'animals',
+    roles: ['Zookeeper', 'Conservationist', 'Giraffe Trainer', 'Veterinarian', 'Wildlife Biologist', 'Safari Guide', 'Giraffe Photographer', 'Tall Animal Expert']
+  },
+  {
+    id: 'animals_016',
+    name: 'Zebra',
+    category: 'animals',
+    roles: ['Zookeeper', 'Conservationist', 'Zebra Trainer', 'Veterinarian', 'Wildlife Biologist', 'Safari Guide', 'Zebra Photographer', 'Stripe Expert']
+  },
+  {
+    id: 'animals_017',
+    name: 'Kangaroo',
+    category: 'animals',
+    roles: ['Zookeeper', 'Conservationist', 'Kangaroo Trainer', 'Veterinarian', 'Wildlife Biologist', 'Australian Guide', 'Kangaroo Photographer', 'Marsupial Expert']
+  },
+  {
+    id: 'animals_018',
+    name: 'Koala',
+    category: 'animals',
+    roles: ['Zookeeper', 'Conservationist', 'Koala Trainer', 'Veterinarian', 'Wildlife Biologist', 'Australian Guide', 'Koala Photographer', 'Eucalyptus Expert']
+  },
+  {
+    id: 'animals_019',
+    name: 'Penguin',
+    category: 'animals',
+    roles: ['Zookeeper', 'Conservationist', 'Penguin Trainer', 'Veterinarian', 'Wildlife Biologist', 'Antarctic Guide', 'Penguin Photographer', 'Bird Expert']
+  },
+  {
+    id: 'animals_020',
+    name: 'Polar Bear',
+    category: 'animals',
+    roles: ['Zookeeper', 'Conservationist', 'Polar Bear Trainer', 'Veterinarian', 'Wildlife Biologist', 'Arctic Guide', 'Polar Bear Photographer', 'Ice Expert']
+  },
+  {
+    id: 'animals_021',
+    name: 'Shark',
+    category: 'animals',
+    roles: ['Marine Biologist', 'Aquarium Owner', 'Shark Trainer', 'Veterinarian', 'Oceanographer', 'Diver', 'Shark Photographer', 'Predator Expert']
+  },
+  {
+    id: 'animals_022',
+    name: 'Whale',
+    category: 'animals',
+    roles: ['Marine Biologist', 'Whale Watcher', 'Whale Trainer', 'Veterinarian', 'Oceanographer', 'Diver', 'Whale Photographer', 'Mammal Expert']
+  },
+  {
+    id: 'animals_023',
+    name: 'Octopus',
+    category: 'animals',
+    roles: ['Marine Biologist', 'Aquarium Owner', 'Octopus Trainer', 'Veterinarian', 'Oceanographer', 'Diver', 'Octopus Photographer', 'Cephalopod Expert']
+  },
+  {
+    id: 'animals_024',
+    name: 'Jellyfish',
+    category: 'animals',
+    roles: ['Marine Biologist', 'Aquarium Owner', 'Jellyfish Expert', 'Veterinarian', 'Oceanographer', 'Diver', 'Jellyfish Photographer', 'Cnidarian Specialist']
+  },
+  {
+    id: 'animals_025',
+    name: 'Butterfly',
+    category: 'animals',
+    roles: ['Entomologist', 'Butterfly Farmer', 'Conservationist', 'Veterinarian', 'Wildlife Biologist', 'Garden Guide', 'Butterfly Photographer', 'Insect Expert']
+  },
+  {
+    id: 'animals_026',
+    name: 'Bee',
+    category: 'animals',
+    roles: ['Apiculturist', 'Bee Keeper', 'Pollination Expert', 'Veterinarian', 'Wildlife Biologist', 'Honey Producer', 'Bee Photographer', 'Insect Specialist']
+  },
+  {
+    id: 'animals_027',
+    name: 'Ant',
+    category: 'animals',
+    roles: ['Entomologist', 'Ant Farm Owner', 'Myrmecologist', 'Veterinarian', 'Wildlife Biologist', 'Colony Observer', 'Ant Photographer', 'Insect Expert']
+  },
+  {
+    id: 'animals_028',
+    name: 'Spider',
+    category: 'animals',
+    roles: ['Arachnologist', 'Spider Keeper', 'Web Expert', 'Veterinarian', 'Wildlife Biologist', 'Arachnid Photographer', 'Venom Specialist', 'Arthropod Expert']
+  },
+  {
+    id: 'animals_029',
+    name: 'Frog',
+    category: 'animals',
+    roles: ['Herpetologist', 'Frog Breeder', 'Amphibian Expert', 'Veterinarian', 'Wildlife Biologist', 'Pond Guide', 'Frog Photographer', 'Amphibian Specialist']
+  },
+  {
+    id: 'animals_030',
+    name: 'Turtle',
+    category: 'animals',
+    roles: ['Herpetologist', 'Turtle Breeder', 'Reptile Expert', 'Veterinarian', 'Wildlife Biologist', 'Aquarium Owner', 'Turtle Photographer', 'Reptile Specialist']
+  },
+  {
+    id: 'animals_031',
+    name: 'Crocodile',
+    category: 'animals',
+    roles: ['Herpetologist', 'Crocodile Trainer', 'Reptile Expert', 'Veterinarian', 'Wildlife Biologist', 'Swamp Guide', 'Crocodile Photographer', 'Predator Expert']
+  },
+  {
+    id: 'animals_032',
+    name: 'Eagle',
+    category: 'animals',
+    roles: ['Ornithologist', 'Eagle Trainer', 'Bird Expert', 'Veterinarian', 'Wildlife Biologist', 'Falconer', 'Eagle Photographer', 'Raptor Specialist']
+  },
+  {
+    id: 'animals_033',
+    name: 'Owl',
+    category: 'animals',
+    roles: ['Ornithologist', 'Owl Trainer', 'Night Bird Expert', 'Veterinarian', 'Wildlife Biologist', 'Forest Guide', 'Owl Photographer', 'Nocturnal Specialist']
+  },
+  {
+    id: 'animals_034',
+    name: 'Parrot',
+    category: 'animals',
+    roles: ['Ornithologist', 'Parrot Trainer', 'Bird Expert', 'Veterinarian', 'Wildlife Biologist', 'Pet Store Owner', 'Parrot Photographer', 'Tropical Bird Specialist']
+  },
+  {
+    id: 'animals_035',
+    name: 'Ostrich',
+    category: 'animals',
+    roles: ['Ornithologist', 'Ostrich Farmer', 'Bird Expert', 'Veterinarian', 'Wildlife Biologist', 'Farm Guide', 'Ostrich Photographer', 'Flightless Bird Specialist']
+  },
+  {
+    id: 'animals_036',
+    name: 'Peacock',
+    category: 'animals',
+    roles: ['Ornithologist', 'Peacock Breeder', 'Bird Expert', 'Veterinarian', 'Wildlife Biologist', 'Zoo Guide', 'Peacock Photographer', 'Colorful Bird Specialist']
+  },
+  {
+    id: 'animals_037',
+    name: 'Sloth',
+    category: 'animals',
+    roles: ['Zookeeper', 'Sloth Trainer', 'Mammal Expert', 'Veterinarian', 'Wildlife Biologist', 'Jungle Guide', 'Sloth Photographer', 'Slow Animal Specialist']
+  },
+  {
+    id: 'animals_038',
+    name: 'Monkey',
+    category: 'animals',
+    roles: ['Primatologist', 'Monkey Trainer', 'Primate Expert', 'Veterinarian', 'Wildlife Biologist', 'Jungle Guide', 'Monkey Photographer', 'Primate Specialist']
+  },
+  {
+    id: 'animals_039',
+    name: 'Gorilla',
+    category: 'animals',
+    roles: ['Primatologist', 'Gorilla Trainer', 'Primate Expert', 'Veterinarian', 'Wildlife Biologist', 'Jungle Guide', 'Gorilla Photographer', 'Great Ape Specialist']
+  },
+  {
+    id: 'animals_040',
+    name: 'Chimpanzee',
+    category: 'animals',
+    roles: ['Primatologist', 'Chimp Trainer', 'Primate Expert', 'Veterinarian', 'Wildlife Biologist', 'Research Assistant', 'Chimp Photographer', 'Primate Specialist']
+  },
+  {
+    id: 'animals_041',
+    name: 'Wolf',
+    category: 'animals',
+    roles: ['Zookeeper', 'Wolf Trainer', 'Canine Expert', 'Veterinarian', 'Wildlife Biologist', 'Forest Guide', 'Wolf Photographer', 'Pack Animal Specialist']
+  },
+  {
+    id: 'animals_042',
+    name: 'Fox',
+    category: 'animals',
+    roles: ['Zookeeper', 'Fox Trainer', 'Canine Expert', 'Veterinarian', 'Wildlife Biologist', 'Forest Guide', 'Fox Photographer', 'Cunning Animal Specialist']
+  },
+  {
+    id: 'animals_043',
+    name: 'Rabbit',
+    category: 'animals',
+    roles: ['Zookeeper', 'Rabbit Breeder', 'Lagomorph Expert', 'Veterinarian', 'Wildlife Biologist', 'Pet Store Owner', 'Rabbit Photographer', 'Burrowing Animal Specialist']
+  },
+  {
+    id: 'animals_044',
+    name: 'Hamster',
+    category: 'animals',
+    roles: ['Pet Store Owner', 'Hamster Breeder', 'Rodent Expert', 'Veterinarian', 'Wildlife Biologist', 'Cage Cleaner', 'Hamster Photographer', 'Small Pet Specialist']
+  },
+  {
+    id: 'animals_045',
+    name: 'Guinea Pig',
+    category: 'animals',
+    roles: ['Pet Store Owner', 'Guinea Pig Breeder', 'Rodent Expert', 'Veterinarian', 'Wildlife Biologist', 'Hay Farmer', 'Guinea Pig Photographer', 'Social Animal Specialist']
+  },
+  {
+    id: 'animals_046',
+    name: 'Ferret',
+    category: 'animals',
+    roles: ['Pet Store Owner', 'Ferret Breeder', 'Mustelid Expert', 'Veterinarian', 'Wildlife Biologist', 'Tube Cleaner', 'Ferret Photographer', 'Playful Animal Specialist']
+  },
+  {
+    id: 'animals_047',
+    name: 'Hedgehog',
+    category: 'animals',
+    roles: ['Pet Store Owner', 'Hedgehog Breeder', 'Erinaceid Expert', 'Veterinarian', 'Wildlife Biologist', 'Wheel Spinner', 'Hedgehog Photographer', 'Spiny Animal Specialist']
+  },
+  {
+    id: 'animals_048',
+    name: 'Goldfish',
+    category: 'animals',
+    roles: ['Pet Store Owner', 'Goldfish Breeder', 'Aquarium Expert', 'Veterinarian', 'Wildlife Biologist', 'Tank Cleaner', 'Goldfish Photographer', 'Freshwater Fish Specialist']
+  },
+  {
+    id: 'animals_049',
+    name: 'Tropical Fish',
+    category: 'animals',
+    roles: ['Pet Store Owner', 'Fish Breeder', 'Aquarium Expert', 'Veterinarian', 'Wildlife Biologist', 'Coral Farmer', 'Tropical Fish Photographer', 'Saltwater Specialist']
+  },
+  {
+    id: 'animals_050',
+    name: 'Iguana',
+    category: 'animals',
+    roles: ['Pet Store Owner', 'Iguana Breeder', 'Reptile Expert', 'Veterinarian', 'Wildlife Biologist', 'Terrarium Builder', 'Iguana Photographer', 'Lizard Specialist']
   }
 ];
