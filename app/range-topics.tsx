@@ -281,7 +281,7 @@ export default function RangeTopicsScreen() {
                     </TouchableOpacity>
                   </View>
                 </TouchableOpacity>
-                <Text style={[styles.topicsCount, { color: colors.textSecondary }]}>{builtinCount + customCount} questions • {item.useRoles ? 'Roles on' : 'No roles'}</Text>
+                <Text style={[styles.topicsCount, { color: colors.textSecondary }]}>{builtinCount + customCount} questions</Text>
               </View>
             );
           }}

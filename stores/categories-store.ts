@@ -17,6 +17,10 @@ export const builtinCategories: Record<string, { name: string; icon: string; use
   'locations': { name: 'Locations', icon: '📍', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'movies': { name: 'Movies', icon: '🎬', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'tv-shows': { name: 'TV Shows', icon: '📺', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'countries': { name: 'Countries', icon: '🌍', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'jobs': { name: 'Jobs', icon: '💼', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'food': { name: 'Food', icon: '🍕', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'animals': { name: 'Animals', icon: '🐶', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'pop-culture': { name: 'Pop Culture', icon: '⭐', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'events': { name: 'Events', icon: '🎉', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'sports': { name: 'Sports', icon: '⚽', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
@@ -24,16 +28,19 @@ export const builtinCategories: Record<string, { name: string; icon: string; use
   'science': { name: 'Science', icon: '🔬', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'history': { name: 'History', icon: '📜', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'internet': { name: 'Internet', icon: '🌐', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
-  'famous-people': { name: 'Famous People', icon: '🌟', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
-  'household': { name: 'Household', icon: '🏠', useRoles: false, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'famous-people': { name:'Famous People', icon: '🌟', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
+  'household': { name: 'Household', icon: '🏠', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
   'hobbies': { name: 'Hobbies', icon: '🎨', useRoles: true, numspies: 1, randomizespies: false, maxRandomspies: 1 },
 };
 
 interface CategoriesStore {
   customCategories: CategoryMeta[];
+  deletedBuiltinCategoryIds: string[];
   addCategory: (cat: Omit<CategoryMeta, 'id'> & { id?: string; numspies?: number; randomizespies?: boolean; maxRandomspies?: number }) => void;
   updateCategory: (id: string, updates: Partial<CategoryMeta>) => void;
   removeCategory: (id: string) => void;
+  restoreBuiltinCategory: (id: string) => void;
+  resetToDefaults: () => void;
   getAllCategories: () => CategoryMeta[]; // Merged view (builtin + custom)
   getCategory: (id: string) => CategoryMeta | undefined; // Merged lookup
 }
@@ -42,6 +49,7 @@ export const useCategoriesStore = create<CategoriesStore>()(
   persist(
     (set, get) => ({
       customCategories: [],
+      deletedBuiltinCategoryIds: [],
 
       addCategory: ({ id, name, icon, useRoles, numspies = 1, randomizespies = false, maxRandomspies = 1 }) => {
         const makeId = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -66,26 +74,50 @@ export const useCategoriesStore = create<CategoriesStore>()(
       },
 
       removeCategory: (id) => {
+        if (builtinCategories[id]) {
+          // Hide built-in category instead of permanently deleting it
+          set(state => ({
+            deletedBuiltinCategoryIds: Array.from(new Set([...(state.deletedBuiltinCategoryIds || []), id]))
+          }));
+          return;
+        }
         set(state => ({ customCategories: state.customCategories.filter(c => c.id !== id) }));
+      },
+
+      restoreBuiltinCategory: (id: string) => {
+        if (builtinCategories[id]) {
+          set(state => ({
+            deletedBuiltinCategoryIds: (state.deletedBuiltinCategoryIds || []).filter(deletedId => deletedId !== id)
+          }));
+        }
+      },
+
+      resetToDefaults: () => {
+        set({ customCategories: [], deletedBuiltinCategoryIds: [] });
       },
 
       getAllCategories: () => {
         const customs = get().customCategories;
-        const builtins: CategoryMeta[] = Object.entries(builtinCategories).map(([id, v]) => ({
-          id,
-          name: v.name,
-          icon: v.icon,
-          useRoles: v.useRoles ?? true,
-          numspies: v.numspies ?? 1,
-          randomizespies: v.randomizespies ?? false,
-          maxRandomspies: v.maxRandomspies ?? (v.numspies ?? 1),
-        }));
+        const hidden = new Set(get().deletedBuiltinCategoryIds || []);
+        const builtins: CategoryMeta[] = Object.entries(builtinCategories)
+          .filter(([id]) => !hidden.has(id))
+          .map(([id, v]) => ({
+            id,
+            name: v.name,
+            icon: v.icon,
+            useRoles: v.useRoles ?? true,
+            numspies: v.numspies ?? 1,
+            randomizespies: v.randomizespies ?? false,
+            maxRandomspies: v.maxRandomspies ?? (v.numspies ?? 1),
+          }));
         return [...builtins, ...customs];
       },
 
       getCategory: (id) => {
         const custom = get().customCategories.find(c => c.id === id);
         if (custom) return custom;
+        const hidden = new Set(get().deletedBuiltinCategoryIds || []);
+        if (hidden.has(id)) return undefined;
         const builtin = builtinCategories[id];
         return builtin ? { id, name: builtin.name, icon: builtin.icon, useRoles: builtin.useRoles ?? true, numspies: builtin.numspies ?? 1, randomizespies: builtin.randomizespies ?? false, maxRandomspies: builtin.maxRandomspies ?? (builtin.numspies ?? 1) } : undefined;
       },

@@ -4,6 +4,8 @@ import { router } from 'expo-router';
 import { ArrowLeft, Palette, RotateCcw, Heart, Volume2, VolumeX, Moon, Sun, Vibrate, Bell, Info, ExternalLink, Eye, Target, Users } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore } from '@/stores/settings-store';
+import { useTopicsStore } from '@/stores/topics-store';
+import { useCategoriesStore } from '@/stores/categories-store';
 import { useTheme } from '@/hooks/useTheme';
 import { useVibration } from '@/hooks/useVibration';
 
@@ -51,6 +53,8 @@ export default function SettingsScreen() {
   topicCooldownHours,
   setTopicCooldownHours,
   } = useSettingsStore();
+  const { resetToDefaults: resetTopics } = useTopicsStore();
+  const { resetToDefaults: resetCategories } = useCategoriesStore();
   const { colors } = useTheme();
   const vibrate = useVibration();
 
@@ -79,6 +83,26 @@ export default function SettingsScreen() {
             resetAllSettings();
             vibrate.success();
             Alert.alert('Settings Reset', 'All settings have been reset to default values.');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleResetTopics = () => {
+    Alert.alert(
+      'Reset Topics & Categories',
+      'Are you sure you want to reset all topics and categories to default? This will remove all custom topics and categories. This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: () => {
+            resetTopics();
+            resetCategories();
+            vibrate.success();
+            Alert.alert('Topics Reset', 'All topics and categories have been reset to default values.');
           },
         },
       ]
@@ -571,6 +595,11 @@ export default function SettingsScreen() {
             <RotateCcw size={20} color="#FF6B6B" />
             <Text style={styles.resetButtonText}>Reset All Settings</Text>
           </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.resetButton} onPress={handleResetTopics}>
+            <RotateCcw size={20} color="#FF6B6B" />
+            <Text style={styles.resetButtonText}>Reset Topics & Categories</Text>
+          </TouchableOpacity>
         </View>
 
       {/* Docs Modal */}
@@ -647,7 +676,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   section: {
-    marginTop: 32,
+    marginTop: 22,
     paddingHorizontal: 20,
   },
   sectionTitle: {
@@ -738,6 +767,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   resetButton: {
+    marginTop: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

@@ -67,11 +67,12 @@ export const useTopicsStore = create<TopicsStore>()(
       },
 
       resetToDefaults: () => {
-        const state = get();
-        // Filter out any deleted builtin topics when resetting, so they stay deleted
-        const filteredDefaults = defaultTopics.filter(t => !state.deletedBuiltinTopicIds.includes(t.id));
-        set({ topics: filteredDefaults, recentlyUsedTopicTimestamps: {} });
-        // Keep deletedBuiltinTopicIds intact so deletions persist
+        // Complete reset - restore all default topics and clear all user data
+        set({ 
+          topics: [...defaultTopics], 
+          deletedBuiltinTopicIds: [], 
+          recentlyUsedTopicTimestamps: {} 
+        });
       },
 
       markTopicUsed: (id: string) => {
@@ -124,10 +125,25 @@ export const useTopicsStore = create<TopicsStore>()(
         },
       },
       onRehydrateStorage: () => (state) => {
-        if (state?.deletedBuiltinTopicIds?.length) {
-          // Filter out deleted builtin topics from the loaded topics
-          const filteredTopics = state.topics.filter(t => !state.deletedBuiltinTopicIds.includes(t.id));
-          state.topics = filteredTopics;
+        if (!state) return;
+
+        // 1) Respect deleted builtins: ensure any deleted default topics are not present
+        if (state.deletedBuiltinTopicIds?.length) {
+          state.topics = state.topics.filter(t => !state.deletedBuiltinTopicIds.includes(t.id));
+        }
+
+        // 2) Migration: merge in any NEW default topics that don't exist yet and weren't deleted
+        try {
+          const existingIds = new Set(state.topics.map(t => t.id));
+          const deletedIds = new Set(state.deletedBuiltinTopicIds || []);
+          const missingDefaults = defaultTopics.filter(dt => !existingIds.has(dt.id) && !deletedIds.has(dt.id));
+          if (missingDefaults.length) {
+            state.topics = [...state.topics, ...missingDefaults];
+          }
+        } catch (e) {
+          // best-effort; do not crash
+          // eslint-disable-next-line no-console
+          console.warn('topics-store migration merge failed:', e);
         }
       },
     }

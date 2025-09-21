@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, FlatList, Modal, Pressable, Switch } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, FlatList, Modal, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2, Edit2 } from 'lucide-react-native';
 import { useTopicsStore, Topic } from '@/stores/topics-store';
@@ -319,19 +319,38 @@ type EmojiCategoryKey = keyof typeof emojiCategories;
 
 export default function TopicsScreen() {
   const { colors } = useTheme();
-  const { topics, addTopic, removeTopic, updateTopic } = useTopicsStore();
-  const { customCategories, addCategory, removeCategory, updateCategory, getAllCategories, getCategory } = useCategoriesStore();
+  
+  // All hooks must be at the top level - never inside try/catch or conditionals
+  const topicsStore = useTopicsStore();
+  const categoriesStore = useCategoriesStore();
+  const deletedBuiltinTopicIds = useTopicsStore(state => state.deletedBuiltinTopicIds);
+  
+  // Destructure store values
+  const {
+    topics = [],
+    addTopic,
+    removeTopic,
+    updateTopic
+  } = topicsStore;
+  
+  const {
+    customCategories = [],
+    addCategory,
+    removeCategory,
+    updateCategory,
+    getAllCategories,
+    getCategory
+  } = categoriesStore;
   const [editingTopic, setEditingTopic] = useState<Topic | null>(null);
   const [editingTopicName, setEditingTopicName] = useState<string>('');
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [editingCategoryName, setEditingCategoryName] = useState<string>('');
   const [editingCategoryIcon, setEditingCategoryIcon] = useState<string>('');
-  const [editingCategoryUseRoles, setEditingCategoryUseRoles] = useState<boolean>(true);
+  // Removed per-category Use Roles editing; roles are managed globally or by built-in defaults
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [newTopicName, setNewTopicName] = useState<string>('');
   const [newCategoryName, setNewCategoryName] = useState<string>('');
   const [newCategoryIcon, setNewCategoryIcon] = useState<string>('⭐');
-  const [newCategoryUseRoles, setNewCategoryUseRoles] = useState<boolean>(true);
   const [showAddCategory, setShowAddCategory] = useState<boolean>(false);
   const [showAddTopic, setShowAddTopic] = useState<boolean>(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
@@ -339,24 +358,38 @@ export default function TopicsScreen() {
   const [manualEmoji, setManualEmoji] = useState<string>('');
   const [emojiSearch, setEmojiSearch] = useState<string>('');
   const [selectedEmojiCategory, setSelectedEmojiCategory] = useState<EmojiCategoryKey>('Smileys');
-  const [newCategoryNumspies, setNewCategoryNumspies] = useState<number>(1);
-  const [editingCategoryNumspies, setEditingCategoryNumspies] = useState<number>(1);
-  const [newCategoryRandomizespies, setNewCategoryRandomizespies] = useState<boolean>(false);
-  const [newCategoryMaxRandomspies, setNewCategoryMaxRandomspies] = useState<number>(2);
-  const [editingCategoryRandomizespies, setEditingCategoryRandomizespies] = useState<boolean>(false);
-  const [editingCategoryMaxRandomspies, setEditingCategoryMaxRandomspies] = useState<number>(2);
+  // Removed per-category spies controls; managed in Settings instead.
 
-  const MAX_spies_CAP = 6;
+  // No MAX spies cap here; not editable per-category.
 
-  const categories = getAllCategories();
+  // Safely get categories with error handling
+  let categories: Array<{id: string; name: string; icon: string; useRoles: boolean}> = [];
+  try {
+    categories = getAllCategories ? getAllCategories() : [];
+  } catch (error) {
+    console.error('Error getting categories:', error);
+    categories = [];
+  }
 
   const getTopicsCountForCategory = useCallback((categoryId: string) => {
-    return topics.filter(topic => topic.category === categoryId).length;
+    try {
+      return topics ? topics.filter(topic => topic?.category === categoryId).length : 0;
+    } catch (error) {
+      console.error('Error counting topics:', error);
+      return 0;
+    }
   }, [topics]);
 
   const getCategoryTopics = useCallback((categoryId: string) => {
-    return topics.filter(topic => topic.category === categoryId);
+    try {
+      return topics ? topics.filter(topic => topic?.category === categoryId) : [];
+    } catch (error) {
+      console.error('Error getting category topics:', error);
+      return [];
+    }
   }, [topics]);
+
+
 
   const handleAddTopic = useCallback(() => {
     if (!selectedCategory || !newTopicName.trim()) {
@@ -380,6 +413,8 @@ export default function TopicsScreen() {
 
   const handleDeleteCategory = useCallback((categoryId: string) => {
     const categoryTopics = getCategoryTopics(categoryId);
+    const isBuiltinCategory = builtinCategories[categoryId];
+    
     if (categoryTopics.length > 0) {
       Alert.alert(
         'Delete Category', 
@@ -391,16 +426,36 @@ export default function TopicsScreen() {
             style: 'destructive', 
             onPress: () => {
               categoryTopics.forEach(topic => removeTopic(topic.id));
-              if (!builtinCategories[categoryId]) {
-                removeCategory(categoryId);
+              // Always invoke removeCategory; built-ins will be hidden via the store
+              removeCategory(categoryId);
+              
+              // Show info about restoring built-in categories
+              if (isBuiltinCategory) {
+                setTimeout(() => {
+                  Alert.alert(
+                    'Category Hidden', 
+                    'This built-in category has been hidden. You can restore all default categories in Settings if needed.',
+                    [{ text: 'OK' }]
+                  );
+                }, 500);
               }
             }
           },
         ]
       );
     } else {
-      if (!builtinCategories[categoryId]) {
-        removeCategory(categoryId);
+      // Always invoke removeCategory; built-ins will be hidden via the store
+      removeCategory(categoryId);
+      
+      // Show info about restoring built-in categories
+      if (isBuiltinCategory) {
+        setTimeout(() => {
+          Alert.alert(
+            'Category Hidden', 
+            'This built-in category has been hidden. You can restore all default categories in Settings if needed.',
+            [{ text: 'OK' }]
+          );
+        }, 200);
       }
     }
   }, [getCategoryTopics, removeTopic, removeCategory]);
@@ -434,7 +489,7 @@ export default function TopicsScreen() {
             </TouchableOpacity>
           </View>
         </View>
-  <Text style={styles.topicsCount}>{topicsCount} topics • {item.useRoles ? 'Roles on' : 'No roles'}</Text>
+        <Text style={styles.topicsCount}>{topicsCount} topics</Text>
       </TouchableOpacity>
     );
   }, [getTopicsCountForCategory, handleDeleteCategory]);
@@ -484,16 +539,13 @@ export default function TopicsScreen() {
     setEditingCategoryId(catId);
     setEditingCategoryName(cat.name);
     setEditingCategoryIcon(cat.icon);
-    setEditingCategoryUseRoles(cat.useRoles ?? true);
-  setEditingCategoryNumspies(cat.numspies ?? 1);
-  setEditingCategoryRandomizespies(!!cat.randomizespies);
-  setEditingCategoryMaxRandomspies(cat.maxRandomspies ?? (cat.numspies ?? 1));
+    // Per-category Use Roles is not editable here
   };
 
   const saveEditCategory = () => {
     if (!editingCategoryId) return;
     if (!builtinCategories[editingCategoryId]) {
-  updateCategory(editingCategoryId, { name: editingCategoryName.trim(), icon: editingCategoryIcon, useRoles: editingCategoryUseRoles, numspies: editingCategoryNumspies, randomizespies: editingCategoryRandomizespies, maxRandomspies: editingCategoryRandomizespies ? Math.min(editingCategoryMaxRandomspies, MAX_spies_CAP) : editingCategoryNumspies });
+      updateCategory(editingCategoryId, { name: editingCategoryName.trim(), icon: editingCategoryIcon });
     }
     setEditingCategoryId(null);
     setEmojiSearch('');
@@ -503,10 +555,6 @@ export default function TopicsScreen() {
     setEditingCategoryId(null);
     setEditingCategoryName('');
     setEditingCategoryIcon('');
-    setEditingCategoryUseRoles(true);
-  setEditingCategoryNumspies(1);
-  setEditingCategoryRandomizespies(false);
-  setEditingCategoryMaxRandomspies(2);
     setEmojiSearch('');
   };
 
@@ -536,7 +584,6 @@ export default function TopicsScreen() {
   if (selectedCategory) {
   const category = categories.find(c => c.id === selectedCategory);
   // Filter out deleted builtin topics
-  const deletedBuiltinTopicIds = useTopicsStore(state => state.deletedBuiltinTopicIds);
   const categoryTopics = getCategoryTopics(selectedCategory);
   const visibleCategoryTopics = categoryTopics.filter(
     topic => !deletedBuiltinTopicIds.includes(topic.id)
@@ -664,13 +711,7 @@ export default function TopicsScreen() {
               <Text style={styles.emojiLabel}>Icon:</Text>
               <Text style={styles.emojiDisplay}>{newCategoryIcon}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.rolesCheckbox}
-              onPress={() => setNewCategoryUseRoles(v => !v)}
-            >
-              <Text style={styles.checkboxIcon}>{newCategoryUseRoles ? '✅' : '⬜️'}</Text>
-              <Text style={styles.checkboxLabel}>Use roles</Text>
-            </TouchableOpacity>
+            {/* Roles toggle removed from category UI */}
           </View>
           {showEmojiPicker && (
             <View style={[styles.emojiPickerModal, { height: '60%' }]}> 
@@ -728,43 +769,7 @@ export default function TopicsScreen() {
               )}
             </View>
           )}
-          <View style={{ height: 12 }} />
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <Text style={{ color: 'white' }}>spies:</Text>
-            <TextInput
-              style={[styles.addCategoryInput, { width: 80 }]}
-              value={String(newCategoryNumspies)}
-              onChangeText={(t) => {
-                const n = parseInt(t || '0', 10);
-                if (!isNaN(n) && n >= 1) setNewCategoryNumspies(n);
-              }}
-              keyboardType="number-pad"
-              placeholder="1"
-              placeholderTextColor="#666"
-            />
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 8 }}>
-            <Text style={{ color: 'white' }}>Randomize spies</Text>
-            <TouchableOpacity onPress={() => setNewCategoryRandomizespies(v => !v)} style={styles.rolesCheckbox}>
-              <Text style={styles.checkboxIcon}>{newCategoryRandomizespies ? '✅' : '⬜️'}</Text>
-            </TouchableOpacity>
-            {newCategoryRandomizespies && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Text style={{ color: 'white' }}>Max:</Text>
-                <TextInput
-                  style={[styles.addCategoryInput, { width: 80 }]}
-                  value={String(newCategoryMaxRandomspies)}
-                  onChangeText={(t) => {
-                    const n = parseInt(t || '0', 10);
-                    if (!isNaN(n) && n >= 1) setNewCategoryMaxRandomspies(Math.min(n, MAX_spies_CAP));
-                  }}
-                  keyboardType="number-pad"
-                  placeholder="2"
-                  placeholderTextColor="#666"
-                />
-              </View>
-            )}
-      </View>
+          {/* Spies controls removed from category UI */}
           <View style={styles.addTopicActions}>
             <TouchableOpacity 
               style={styles.cancelButton}
@@ -772,10 +777,6 @@ export default function TopicsScreen() {
                 setShowAddCategory(false);
                 setNewCategoryName('');
                 setNewCategoryIcon('⭐');
-                setNewCategoryUseRoles(true);
-        setNewCategoryNumspies(1);
-        setNewCategoryRandomizespies(false);
-        setNewCategoryMaxRandomspies(2);
                 setEmojiSearch('');
               }}
             >
@@ -786,14 +787,10 @@ export default function TopicsScreen() {
               onPress={() => {
                 const name = newCategoryName.trim();
                 if (!name) return;
-        addCategory({ name, icon: newCategoryIcon || '⭐', useRoles: newCategoryUseRoles, numspies: newCategoryNumspies, randomizespies: newCategoryRandomizespies, maxRandomspies: newCategoryRandomizespies ? Math.min(newCategoryMaxRandomspies, MAX_spies_CAP) : newCategoryNumspies });
+                addCategory({ name, icon: newCategoryIcon || '⭐', useRoles: true });
                 setShowAddCategory(false);
                 setNewCategoryName('');
                 setNewCategoryIcon('⭐');
-                setNewCategoryUseRoles(true);
-        setNewCategoryNumspies(1);
-        setNewCategoryRandomizespies(false);
-        setNewCategoryMaxRandomspies(2);
                 setEmojiSearch('');
               }}
             >
@@ -835,10 +832,7 @@ export default function TopicsScreen() {
                 <Text style={styles.emojiLabel}>Icon:</Text>
                 <Text style={styles.emojiDisplay}>{editingCategoryIcon}</Text>
               </TouchableOpacity>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ marginRight: 8, color: 'white' }}>Use Roles</Text>
-                <Switch value={editingCategoryUseRoles} onValueChange={setEditingCategoryUseRoles} />
-              </View>
+              {/* Per-category Use Roles toggle removed */}
             </View>
             {showEmojiPicker && (
               <View style={styles.emojiPickerModal}>
@@ -880,20 +874,7 @@ export default function TopicsScreen() {
                 />
               </View>
             )}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 8 }}>
-              <Text style={{ color: 'white' }}>spies:</Text>
-              <TextInput
-                style={[styles.modalInput, { width: 80 }]}
-                value={String(editingCategoryNumspies)}
-                onChangeText={(t) => {
-                  const n = parseInt(t || '0', 10);
-                  if (!isNaN(n) && n >= 1) setEditingCategoryNumspies(n);
-                }}
-                keyboardType="number-pad"
-                placeholder="1"
-                placeholderTextColor="#666"
-              />
-            </View>
+            {/* Per-category spies controls removed from modal */}
             <View style={styles.modalButtons}>
               <Pressable style={[styles.modalButton, styles.modalCancel]} onPress={cancelEditCategory}>
                 <Text style={styles.modalButtonText}>Cancel</Text>
