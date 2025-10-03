@@ -347,7 +347,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = spy/spy.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = P6PV2R9443;
+				DEVELOPMENT_TEAM = 5FU387AV9F;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -368,7 +368,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hackclub.spy;
+				PRODUCT_BUNDLE_IDENTIFIER = com.advayc.spy;
 				PRODUCT_NAME = spy;
 				SWIFT_OBJC_BRIDGING_HEADER = "spy/spy-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -386,7 +386,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = spy/spy.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = P6PV2R9443;
+				DEVELOPMENT_TEAM = 5FU387AV9F;
 				INFOPLIST_FILE = spy/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = spy;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
@@ -402,7 +402,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hackclub.spy;
+				PRODUCT_BUNDLE_IDENTIFIER = com.advayc.spy;
 				PRODUCT_NAME = spy;
 				SWIFT_OBJC_BRIDGING_HEADER = "spy/spy-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

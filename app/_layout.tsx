@@ -5,24 +5,30 @@ import { useState } from "react";
 import SplashScreenComponent from "@/components/SplashScreen";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
+import { useTheme } from "@/hooks/useTheme";
 
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
+  const { colors, isDark } = useTheme();
+  
   return (
-    <Stack screenOptions={{ 
-      headerShown: false,
-      contentStyle: { backgroundColor: '#000000' }
-    }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="create-game" />
-      <Stack.Screen name="game" />
-      <Stack.Screen name="topics" />
-      <Stack.Screen name="settings" />
-      <Stack.Screen name="range-play" />
-      <Stack.Screen name="range-topics" />
-      <Stack.Screen name="range-game" />
-    </Stack>
+    <>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <Stack screenOptions={{ 
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.background }
+      }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="create-game" />
+        <Stack.Screen name="game" />
+        <Stack.Screen name="topics" />
+        <Stack.Screen name="settings" />
+        <Stack.Screen name="range-play" />
+        <Stack.Screen name="range-topics" />
+        <Stack.Screen name="range-game" />
+      </Stack>
+    </>
   );
 }
 
@@ -44,7 +50,6 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style="light" />
       <RootLayoutNav />
     </GestureHandlerRootView>
   );

@@ -131,28 +131,28 @@ function getCategoryIcon(category: string): string {
   const categoryInfo = getCategoryDisplay(gameState.currentTopic.category);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ChevronLeft size={24} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={styles.categoryText}>
+        <Text style={[styles.categoryText, { color: colors.textSecondary }]}>
           {selectedCategory === 'random' ? 'Random Mix' : getCategory(selectedCategory)?.name || selectedCategory}
         </Text>
         <View style={styles.placeholder} />
       </View>
 
       <View style={styles.timerContainer}>
-        <Clock size={24} color="white" />
-        <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+        <Clock size={24} color={colors.text} />
+        <Text style={[styles.timerText, { color: colors.text }]}>{formatTime(timeLeft)}</Text>
       </View>
 
-      <Text style={styles.instructionText}>Tap to see role.</Text>
+      <Text style={[styles.instructionText, { color: colors.textSecondary }]}>Tap to see role.</Text>
 
       <View style={styles.playersContainer}>
   <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.playersGrid, { paddingBottom: 140 }]} showsVerticalScrollIndicator={true} keyboardShouldPersistTaps="handled">
           {players.map((player) => (
-            <View key={player.id} style={[styles.playerCard, { width: playerCardWidth }]}>
+            <View key={player.id} style={[styles.playerCard, { width: playerCardWidth, backgroundColor: colors.surface }]}>
               <TouchableOpacity
                 style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 onPress={() => handlePlayerPress(player.id)}
@@ -162,7 +162,7 @@ function getCategoryIcon(category: string): string {
                     {player.name.charAt(0).toUpperCase()}
                   </Text>
                 </View>
-                <Text style={styles.playerName} numberOfLines={1} ellipsizeMode="tail">{player.name}</Text>
+                <Text style={[styles.playerName, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">{player.name}</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -193,9 +193,9 @@ function getCategoryIcon(category: string): string {
         onDismiss={() => setSelectedPlayer(null)}
       >
         <Pressable style={styles.modalOverlay} onPress={handleCloseModal}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             {selectedPlayerData && (
-              <Text style={styles.playerNameInModal} numberOfLines={1} ellipsizeMode="tail">{selectedPlayerData.name}</Text>
+              <Text style={[styles.playerNameInModal, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">{selectedPlayerData.name}</Text>
             )}
             {playerRole?.isSpy ? (
               <View style={styles.spyContainer}>
@@ -209,9 +209,9 @@ function getCategoryIcon(category: string): string {
                   const revealLine = revealOtherSpies ? formatSpyReveal(spyNames) : null;
                   return (
                     <>
-                      <Text style={styles.spyText}>You are the spy!</Text>
+                      <Text style={[styles.spyText, { color: colors.text }]}>You are the spy!</Text>
                       {revealLine && (
-                        <Text style={styles.spyRevealText}>{revealLine}</Text>
+                        <Text style={[styles.spyRevealText, { color: colors.textSecondary, backgroundColor: colors.surface, borderColor: colors.border }]}>{revealLine}</Text>
                       )}
                     </>
                   );
@@ -220,19 +220,19 @@ function getCategoryIcon(category: string): string {
             ) : (
               rolesEnabled ? (
                 <View style={styles.roleContainer}>
-                  <Text style={styles.topicText}>
+                  <Text style={[styles.topicText, { color: colors.text }]}>
                     {categoryInfo.icon} {categoryInfo.name}: {gameState.currentTopic.name}
                   </Text>
-                  <Text style={styles.roleText}>
+                  <Text style={[styles.roleText, { color: colors.text }]}>
                     Your role is: {playerRole?.role}
                   </Text>
                 </View>
               ) : (
                 <View style={styles.roleContainer}>
-                  <Text style={styles.topicText}>
+                  <Text style={[styles.topicText, { color: colors.text }]}>
                     {categoryInfo.icon} {categoryInfo.name}: {gameState.currentTopic.name}
                   </Text>
-                  <Text style={styles.roleText}>
+                  <Text style={[styles.roleText, { color: colors.text }]}>
                     Your word is: {gameState.currentTopic?.name ?? ''}
                   </Text>
                 </View>
@@ -251,7 +251,6 @@ function getCategoryIcon(category: string): string {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
   },
   header: {
     flexDirection: 'row',
@@ -270,11 +269,9 @@ const styles = StyleSheet.create({
     width: 32,
   },
   backText: {
-    color: '#007AFF',
     fontSize: 16,
   },
   categoryText: {
-    color: '#666666',
     fontSize: 16,
     fontWeight: '500',
   },
@@ -285,12 +282,10 @@ const styles = StyleSheet.create({
   gap: 6,
   },
   timerText: {
-    color: 'white',
     fontSize: 32,
     fontWeight: '300',
   },
   instructionText: {
-    color: '#666666',
     fontSize: 16,
   textAlign: 'center',
   marginBottom: 16,
@@ -310,7 +305,6 @@ const styles = StyleSheet.create({
   playerCard: {
     // width is calculated inline to make a 3-column responsive grid
     height: 104,
-    backgroundColor: '#1a1a1a',
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -320,7 +314,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#007AFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -330,7 +323,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   playerName: {
-    color: 'white',
     fontSize: 14,
     fontWeight: '500',
   },
@@ -361,7 +353,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-  backgroundColor: '#1a1a1a',
   borderTopLeftRadius: 20,
   borderTopRightRadius: 20,
   paddingVertical: 28,
@@ -370,7 +361,6 @@ const styles = StyleSheet.create({
   minHeight: 160,
   },
   playerNameInModal: {
-    color: 'white',
     fontSize: 24,
     fontWeight: '600',
     marginBottom: 16,
@@ -380,35 +370,29 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   spyText: {
-    color: 'white',
     fontSize: 24,
     fontWeight: '600',
   },
   spyRevealText: {
-    color: '#999999',
     fontSize: 13,
     fontWeight: '500',
     textAlign: 'center',
     marginTop: 8,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#1a1a1a',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#2a2a2a',
   },
   roleContainer: {
     alignItems: 'center',
     gap: 16,
   },
   topicText: {
-    color: 'white',
     fontSize: 18,
     fontWeight: '500',
     textAlign: 'center',
   },
   roleText: {
-    color: 'white',
     fontSize: 18,
     fontWeight: '500',
     textAlign: 'center',
@@ -417,7 +401,6 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingVertical: 12,
     paddingHorizontal: 24,
-    backgroundColor: '#007AFF',
     borderRadius: 12,
   },
   closeButtonText: {
@@ -426,7 +409,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   errorText: {
-    color: 'white',
     fontSize: 18,
     textAlign: 'center',
     marginTop: 100,
@@ -436,13 +418,11 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   customWordLabel: {
-    color: '#666666',
     fontSize: 16,
     fontWeight: '400',
     marginTop: 8,
   },
   customWordText: {
-    color: 'white',
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',

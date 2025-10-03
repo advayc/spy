@@ -2,13 +2,15 @@ import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Eye } from 'lucide-react-native';
 import { useSettingsStore } from '@/stores/settings-store';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function SplashScreen() {
   const settings = useSettingsStore();
   const colorScheme = settings?.colorScheme ?? { primary: '#007AFF' };
+  const { colors } = useTheme();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Logo */}
       <View style={styles.logoContainer}>
         <View style={[styles.eyeContainer, { backgroundColor: `${colorScheme.primary}20` }]}> 
@@ -18,8 +20,8 @@ export default function SplashScreen() {
 
       {/* Title */}
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>Spy</Text>
-        <Text style={styles.subtitle}>Social Deduction Party Game</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Spy</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Social Deduction Party Game</Text>
       </View>
     </View>
   );
@@ -28,7 +30,6 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
@@ -40,7 +41,6 @@ const styles = StyleSheet.create({
   eyeContainer: {
     padding: 20,
     borderRadius: 50,
-    backgroundColor: 'rgba(0, 122, 255, 0.1)',
   },
   titleContainer: {
     alignItems: 'center',
@@ -49,13 +49,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: 'white',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 18,
-    color: '#888',
     textAlign: 'center',
   },
 });

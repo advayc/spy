@@ -181,12 +181,12 @@ export default function CreateGameScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ChevronLeft size={24} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Create Game</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Create Game</Text>
         <TouchableOpacity onPress={() => router.push('/topics')} style={styles.topicsButton}>
           <List size={24} color={colors.primary} />
         </TouchableOpacity>
@@ -195,13 +195,13 @@ export default function CreateGameScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
   {/* Players Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Players ({players.length}/15)</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Players ({players.length}/15)</Text>
           
           <View style={styles.addPlayerContainer}>
             <TextInput
-              style={styles.playerInput}
+              style={[styles.playerInput, { backgroundColor: colors.surface, color: colors.text }]}
               placeholder="Enter player name"
-              placeholderTextColor="#666666"
+              placeholderTextColor={colors.textSecondary}
               value={newPlayerName}
               onChangeText={setNewPlayerName}
               onSubmitEditing={handleAddPlayer}
@@ -209,28 +209,28 @@ export default function CreateGameScreen() {
             />
             <TouchableOpacity 
               onPress={handleAddPlayer}
-              style={[styles.addButton, !newPlayerName.trim() && styles.addButtonDisabled]}
+              style={[styles.addButton, { backgroundColor: colors.surface }, !newPlayerName.trim() && styles.addButtonDisabled]}
               disabled={!newPlayerName.trim() || players.length >= 15}
             >
-              <Plus size={20} color={!newPlayerName.trim() || players.length >= 15 ? "#666666" : colors.primary} />
+              <Plus size={20} color={!newPlayerName.trim() || players.length >= 15 ? colors.textSecondary : colors.primary} />
             </TouchableOpacity>
           </View>
 
           <View style={styles.playersGrid}>
             {players.map((player) => (
-              <View key={player.id} style={styles.playerCard}>
+              <View key={player.id} style={[styles.playerCard, { backgroundColor: colors.surface }]}>
                 {editingPlayer === player.id ? (
                   <View style={styles.editPlayerContainer}>
                     <TextInput
-                      style={styles.editPlayerInput}
+                      style={[styles.editPlayerInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                       value={editPlayerName}
                       onChangeText={setEditPlayerName}
                       onSubmitEditing={handleSavePlayerEdit}
                       autoFocus
                     />
                     <View style={styles.editPlayerActions}>
-                      <TouchableOpacity onPress={handleCancelPlayerEdit} style={styles.editActionButton}>
-                        <Text style={styles.editActionText}>Cancel</Text>
+                      <TouchableOpacity onPress={handleCancelPlayerEdit} style={[styles.editActionButton, { backgroundColor: colors.background }]}>
+                        <Text style={[styles.editActionText, { color: colors.text }]}>Cancel</Text>
                       </TouchableOpacity>
                       <TouchableOpacity onPress={handleSavePlayerEdit} style={[styles.editActionButton, { backgroundColor: colors.primary }]}>
                         <Text style={[styles.editActionText, { color: 'white' }]}>Save</Text>
@@ -244,7 +244,7 @@ export default function CreateGameScreen() {
                         {player.name.charAt(0).toUpperCase()}
                       </Text>
                     </View>
-                    <Text style={styles.playerName}>{player.name}</Text>
+                    <Text style={[styles.playerName, { color: colors.text }]}>{player.name}</Text>
                     <View style={styles.playerActions}>
                       <TouchableOpacity 
                         onPress={() => handleEditPlayer(player.id)}
@@ -267,20 +267,20 @@ export default function CreateGameScreen() {
 
           {/* Player Presets */}
           {playerPresetsEnabled && (
-            <View style={styles.presetsContainer}>
+            <View style={[styles.presetsContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={styles.presetsHeader}>
                 <TouchableOpacity 
                   onPress={() => setShowPresets(!showPresets)}
                   style={styles.presetsToggle}
                 >
                   <BookOpen size={18} color={colors.primary} />
-                  <Text style={styles.presetsTitle}>Player Presets</Text>
+                  <Text style={[styles.presetsTitle, { color: colors.text }]}>Player Presets</Text>
                   {showPresets ? <ChevronUp size={18} color={colors.primary} /> : <ChevronDown size={18} color={colors.primary} />}
                 </TouchableOpacity>
                 {players.length > 0 && (
                   <TouchableOpacity 
                     onPress={() => setShowSavePreset(!showSavePreset)}
-                    style={[styles.savePresetButton, { backgroundColor: showSavePreset ? colors.primary + '20' : '#2a2a2a' }]}
+                    style={[styles.savePresetButton, { backgroundColor: showSavePreset ? colors.primary + '20' : colors.surface, borderColor: colors.border }]}
                   >
                     <Save size={14} color={colors.primary} />
                     <Text style={[styles.savePresetText, { color: colors.primary }]}>Save</Text>
@@ -291,9 +291,9 @@ export default function CreateGameScreen() {
               {showSavePreset && (
                 <View style={styles.savePresetContainer}>
                   <TextInput
-                    style={styles.presetNameInput}
+                    style={[styles.presetNameInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                     placeholder="Preset name"
-                    placeholderTextColor="#666666"
+                    placeholderTextColor={colors.textSecondary}
                     value={newPresetName}
                     onChangeText={setNewPresetName}
                     onSubmitEditing={handleSavePreset}
@@ -312,25 +312,25 @@ export default function CreateGameScreen() {
                 <View style={styles.presetsList}>
                   {presets.length === 0 ? (
                     <View style={styles.emptyState}>
-                      <Star size={24} color="#666666" />
-                      <Text style={styles.noPresetsText}>No presets saved yet</Text>
-                      <Text style={styles.emptyStateSubtext}>Save your favorite player groups for quick setup</Text>
+                      <Star size={24} color={colors.textSecondary} />
+                      <Text style={[styles.noPresetsText, { color: colors.textSecondary }]}>No presets saved yet</Text>
+                      <Text style={[styles.emptyStateSubtext, { color: colors.textSecondary }]}>Save your favorite player groups for quick setup</Text>
                     </View>
                   ) : (
                     presets.map((preset) => {
                       const isSelected = getSelectedPresetId() === preset.id;
                       return (
-                        <View key={preset.id} style={styles.presetItem}>
+                        <View key={preset.id} style={[styles.presetItem, { backgroundColor: colors.background, borderColor: colors.border }]}>
                           <TouchableOpacity 
                             onPress={() => handleLoadPreset(preset.id)}
                             style={styles.presetInfo}
                           >
-                            <View style={styles.presetIconWrapper}>
+                            <View style={[styles.presetIconWrapper, { backgroundColor: colors.surface }]}>
                               <Users size={14} color={colors.primary} />
                             </View>
                             <View style={styles.presetDetails}>
-                              <Text style={styles.presetName}>{preset.name}</Text>
-                              <Text style={styles.presetPlayerCount}>
+                              <Text style={[styles.presetName, { color: colors.text }]}>{preset.name}</Text>
+                              <Text style={[styles.presetPlayerCount, { color: colors.textSecondary }]}>
                                 {preset.players.length} player{preset.players.length !== 1 ? 's' : ''} • Tap to load
                               </Text>
                             </View>
@@ -358,8 +358,8 @@ export default function CreateGameScreen() {
 
         {/* Timer Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            <Clock size={20} color="white" /> Game Timer
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            <Clock size={20} color={colors.text} /> Game Timer
           </Text>
           <View style={styles.timerOptions}>
             {timerOptions.map((option) => (
@@ -367,12 +367,14 @@ export default function CreateGameScreen() {
                 key={option.value}
                 style={[
                   styles.timerOption,
+                  { backgroundColor: colors.surface },
                   timerDuration === option.value && { ...styles.timerOptionSelected, borderColor: colors.primary, backgroundColor: colors.surface }
                 ]}
                 onPress={() => setTimerDuration(option.value)}
               >
                 <Text style={[
                   styles.timerOptionText,
+                  { color: colors.textSecondary },
                   timerDuration === option.value && { ...styles.timerOptionTextSelected, color: colors.primary }
                 ]}>
                   {option.label}
@@ -384,13 +386,14 @@ export default function CreateGameScreen() {
 
         {/* spy Selector Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Number of spies</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Number of spies</Text>
           <View style={[styles.spyOptionsWrap, isSmallScreen && styles.spyOptionsWrapSmall]}>
             {spyOptions.map((option) => (
               <TouchableOpacity
                 key={String(option.value)}
                 style={[
                   styles.spyOption,
+                  { backgroundColor: colors.surface },
                   isSmallScreen && styles.spyOptionSmall,
                   numspies === option.value && { ...styles.spyOptionSelected, borderColor: colors.error, backgroundColor: colors.surface }
                 ]}
@@ -398,6 +401,7 @@ export default function CreateGameScreen() {
               >
                 <Text style={[
                   styles.spyOptionText,
+                  { color: colors.textSecondary },
                   numspies === option.value && { ...styles.spyOptionTextSelected, color: colors.error }
                 ]}>
                   {option.label}
@@ -409,8 +413,8 @@ export default function CreateGameScreen() {
 
         {/* Category Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            <Shuffle size={20} color="white" /> Topic Category
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            <Shuffle size={20} color={colors.text} /> Topic Category
           </Text>
           <View style={styles.categoriesGrid}>
             {categories.map((category) => (
@@ -418,6 +422,7 @@ export default function CreateGameScreen() {
                 key={category.id}
                 style={[
                   styles.categoryCard,
+                  { backgroundColor: colors.surface },
                   selectedCategory === category.id && { ...styles.categoryCardSelected, borderColor: colors.primary, backgroundColor: colors.surface }
                 ]}
                 onPress={() => setSelectedCategory(category.id)}
@@ -425,6 +430,7 @@ export default function CreateGameScreen() {
                 <Text style={styles.categoryIcon}>{category.icon}</Text>
                 <Text style={[
                   styles.categoryName,
+                  { color: colors.textSecondary },
                   selectedCategory === category.id && { ...styles.categoryNameSelected, color: colors.primary }
                 ]}>
                   {category?.name ?? 'Unknown'}
@@ -460,7 +466,6 @@ export default function CreateGameScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
   },
   header: {
     flexDirection: 'row',
@@ -469,7 +474,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#1a1a1a',
   },
   backButton: {
     padding: 8,
@@ -477,7 +481,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: 'white',
   },
   topicsButton: {
     padding: 8,
@@ -492,7 +495,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: 'white',
     marginBottom: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -505,15 +507,12 @@ const styles = StyleSheet.create({
   },
   playerInput: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    color: 'white',
     fontSize: 16,
   },
   addButton: {
-    backgroundColor: '#1a1a1a',
     borderRadius: 12,
     width: 48,
     height: 48,
@@ -530,7 +529,6 @@ const styles = StyleSheet.create({
   justifyContent: 'flex-start',
   },
   playerCard: {
-  backgroundColor: '#1a1a1a',
   borderRadius: 12,
   padding: 12,
   width: '100%',
@@ -554,7 +552,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   playerName: {
-    color: 'white',
     fontSize: 16,
     fontWeight: '500',
     flex: 1,
@@ -570,11 +567,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   editPlayerInput: {
-    backgroundColor: '#2a2a2a',
     borderRadius: 8,
     padding: 12,
-    color: 'white',
     fontSize: 16,
+    borderWidth: 1,
   },
   editPlayerActions: {
     flexDirection: 'row',
@@ -585,10 +581,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: '#2a2a2a',
   },
   editActionText: {
-    color: 'white',
     fontSize: 14,
     fontWeight: '500',
   },
@@ -611,7 +605,6 @@ const styles = StyleSheet.create({
   paddingVertical: 12,
   paddingHorizontal: 16,
   borderRadius: 12,
-  backgroundColor: '#181818',
   alignItems: 'center',
   justifyContent: 'center',
   borderWidth: 2,
@@ -623,20 +616,16 @@ const styles = StyleSheet.create({
     width: '22%',
   },
   spyOptionSelected: {
-    backgroundColor: '#001a33',
   },
   spyOptionText: {
-    color: '#666666',
     fontSize: 14,
     fontWeight: '500',
   },
   spyOptionTextSelected: {
-    color: '#FF3B30',
     fontWeight: '600',
   },
   timerOption: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
@@ -644,16 +633,12 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   timerOptionSelected: {
-    borderColor: '#007AFF',
-    backgroundColor: '#001a33',
   },
   timerOptionText: {
-    color: '#666666',
     fontSize: 16,
     fontWeight: '500',
   },
   timerOptionTextSelected: {
-    color: '#007AFF',
     fontWeight: '600',
   },
   categoriesGrid: {
@@ -663,7 +648,6 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     width: '48%',
-    backgroundColor: '#1a1a1a',
     borderRadius: 12,
     padding: 20,
     alignItems: 'center',
@@ -671,21 +655,17 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   categoryCardSelected: {
-    borderColor: '#007AFF',
-    backgroundColor: '#001a33',
   },
   categoryIcon: {
     fontSize: 32,
     marginBottom: 8,
   },
   categoryName: {
-    color: '#666666',
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
   },
   categoryNameSelected: {
-    color: '#007AFF',
     fontWeight: '600',
   },
   footer: {
@@ -714,11 +694,9 @@ const styles = StyleSheet.create({
   // Presets styles
   presetsContainer: {
     marginTop: 16,
-    backgroundColor: '#1a1a1a',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#2a2a2a',
   },
   presetsHeader: {
     flexDirection: 'row',
@@ -732,7 +710,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   presetsTitle: {
-    color: 'white',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -744,7 +721,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#3a3a3a',
   },
   savePresetText: {
     fontSize: 12,
@@ -755,14 +731,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   presetNameInput: {
-    backgroundColor: '#2a2a2a',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    color: 'white',
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#3a3a3a',
   },
   savePresetConfirmButton: {
     borderRadius: 12,
@@ -789,24 +762,20 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   noPresetsText: {
-    color: '#888888',
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
   },
   emptyStateSubtext: {
-    color: '#666666',
     fontSize: 12,
     textAlign: 'center',
   },
   presetItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#242424',
     borderRadius: 12,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#2a2a2a',
   },
   presetInfo: {
     flex: 1,
@@ -818,7 +787,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#2a2a2a',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -826,12 +794,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   presetName: {
-    color: 'white',
     fontSize: 14,
     fontWeight: '600',
   },
   presetPlayerCount: {
-    color: '#888888',
     fontSize: 11,
     marginTop: 2,
   },
