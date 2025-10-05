@@ -1,7 +1,7 @@
 {
   "name": "expo-app",
   "main": "expo-router/entry",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "scripts": {
     "start": "bunx rork start -p o1d9kua2jj94sagp33bod --tunnel",
     "start-web": "bunx rork start -p o1d9kua2jj94sagp33bod --web --tunnel",
@@ -42,6 +42,7 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.5",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-google-mobile-ads": "^15.8.0",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
     "react-native-svg": "15.11.2",

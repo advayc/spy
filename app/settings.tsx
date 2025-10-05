@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Alert, Linking, TextInput, Modal, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { ArrowLeft, Palette, RotateCcw, Heart, Volume2, VolumeX, Moon, Sun, Vibrate, Bell, Info, ExternalLink, Eye, Target, Users } from 'lucide-react-native';
+import { ArrowLeft, Palette, RotateCcw, Heart, Volume2, VolumeX, Moon, Sun, Vibrate, Bell, Info, ExternalLink, Eye, Target, Users, BarChart3 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useTopicsStore } from '@/stores/topics-store';
@@ -565,6 +565,18 @@ export default function SettingsScreen() {
         {/* Support & Info */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Support & Information</Text>
+          
+          <SettingItem
+            icon={BarChart3}
+            title="Ad Statistics"
+            subtitle="View your ad watching stats and support the app"
+            onPress={() => {
+              vibrate.light();
+              router.push('/ad-stats' as any);
+            }}
+            rightComponent={<ExternalLink size={20} color="#888" />}
+          />
+          
           <SettingItem
             icon={Info}
             title="Help / How to play"
@@ -584,7 +596,7 @@ export default function SettingsScreen() {
           <SettingItem
             icon={Info}
             title="App Version"
-            subtitle="1.2.0"
+            subtitle="1.2.1"
             rightComponent={null}
           />
         </View>

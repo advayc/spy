@@ -6,8 +6,19 @@ import SplashScreenComponent from "@/components/SplashScreen";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { useTheme } from "@/hooks/useTheme";
+import mobileAds from 'react-native-google-mobile-ads';
 
 SplashScreen.preventAutoHideAsync();
+
+// Initialize Google Mobile Ads
+mobileAds()
+  .initialize()
+  .then(adapterStatuses => {
+    console.log('AdMob initialized:', adapterStatuses);
+  })
+  .catch(err => {
+    console.error('AdMob initialization error:', err);
+  });
 
 function RootLayoutNav() {
   const { colors, isDark } = useTheme();
@@ -24,6 +35,7 @@ function RootLayoutNav() {
         <Stack.Screen name="game" />
         <Stack.Screen name="topics" />
         <Stack.Screen name="settings" />
+        <Stack.Screen name="ad-stats" />
         <Stack.Screen name="range-play" />
         <Stack.Screen name="range-topics" />
         <Stack.Screen name="range-game" />
